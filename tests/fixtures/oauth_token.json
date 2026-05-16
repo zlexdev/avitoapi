@@ -1,0 +1,5 @@
+{
+  "access_token": "test_tok_abc",
+  "token_type": "Bearer",
+  "expires_in": 86400
+}

@@ -1,0 +1,8 @@
+{
+  "parcel_id": "parcel_001",
+  "status": "in_transit",
+  "history": [
+    {"at": "2026-05-17T10:30:00Z", "event": "accepted"},
+    {"at": "2026-05-17T12:00:00Z", "event": "in_transit"}
+  ]
+}

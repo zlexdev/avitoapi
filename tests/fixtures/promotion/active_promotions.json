@@ -1,0 +1,12 @@
+[
+  {
+    "item_id": 9001,
+    "service": "premium",
+    "expires_at": "2026-05-23T00:00:00Z"
+  },
+  {
+    "item_id": 9002,
+    "service": "highlight",
+    "expires_at": "2026-05-20T00:00:00Z"
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "name": "Premium",
+  "plan": "premium_v3",
+  "limits": {
+    "items": 5000,
+    "vas_per_day": 25
+  },
+  "expiresAt": "2026-12-31T23:59:59+00:00"
+}

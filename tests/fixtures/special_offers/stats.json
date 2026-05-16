@@ -1,0 +1,10 @@
+[
+  {
+    "offerId": "off-001",
+    "sent": 100,
+    "accepted": 12,
+    "declined": 3,
+    "periodFrom": "2026-05-01T00:00:00+00:00",
+    "periodTo": "2026-05-17T00:00:00+00:00"
+  }
+]

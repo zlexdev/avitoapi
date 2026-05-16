@@ -1,0 +1,5 @@
+{
+  "feed_url": "https://seller.example.com/feed.xml",
+  "schedule": "0 */6 * * *",
+  "format": "xml"
+}

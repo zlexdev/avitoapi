@@ -1,0 +1,4 @@
+[
+  {"offerId": "off-001", "confirmed": true, "error": null},
+  {"offerId": "off-002", "confirmed": false, "error": "discount exceeds cap"}
+]

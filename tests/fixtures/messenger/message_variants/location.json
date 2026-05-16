@@ -1,0 +1,13 @@
+{
+  "id": "v-loc",
+  "chat_id": "c-1",
+  "author_id": 1,
+  "created_at": "2026-05-16T10:00:00+00:00",
+  "type": "location",
+  "content": {
+    "lat": 55.7558,
+    "lng": 37.6173,
+    "title": "Москва",
+    "text": "встретимся тут"
+  }
+}

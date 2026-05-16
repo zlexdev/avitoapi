@@ -1,0 +1,22 @@
+{
+  "id": "u2i-aaa111",
+  "state": "active",
+  "participants": [
+    {"user_id": 555, "name": "Buyer"},
+    {"user_id": 999, "name": "Seller"}
+  ],
+  "item": {
+    "id": 123456,
+    "title": "Велосипед",
+    "url": "https://www.avito.ru/items/123456"
+  },
+  "unread_count": 0,
+  "last_message": {
+    "id": "msg-001",
+    "chat_id": "u2i-aaa111",
+    "author_id": 555,
+    "created_at": "2026-05-16T10:00:00+00:00",
+    "type": "text",
+    "content": {"text": "ещё в продаже?"}
+  }
+}

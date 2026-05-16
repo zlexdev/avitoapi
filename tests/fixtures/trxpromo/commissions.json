@@ -1,0 +1,14 @@
+[
+  {
+    "category_id": 42,
+    "commission_pct": 5.5,
+    "effective_from": "2026-01-01",
+    "effective_to": "2026-12-31"
+  },
+  {
+    "category_id": 100,
+    "commission_pct": 3.0,
+    "effective_from": null,
+    "effective_to": null
+  }
+]

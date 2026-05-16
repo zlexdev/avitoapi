@@ -1,0 +1,14 @@
+[
+  {
+    "item_id": 9001,
+    "current_bid": 50,
+    "min_bid": 10,
+    "recommended": 75
+  },
+  {
+    "item_id": 9001,
+    "current_bid": 60,
+    "min_bid": 15,
+    "recommended": 80
+  }
+]

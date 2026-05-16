@@ -1,0 +1,31 @@
+{
+  "messages": [
+    {
+      "id": "msg-001",
+      "chat_id": "u2i-aaa111",
+      "author_id": 555,
+      "created_at": "2026-05-16T10:00:00+00:00",
+      "type": "text",
+      "content": {"text": "ещё в продаже?"}
+    },
+    {
+      "id": "msg-002",
+      "chat_id": "u2i-aaa111",
+      "author_id": 999,
+      "created_at": "2026-05-16T10:01:00+00:00",
+      "type": "text",
+      "content": {"text": "да, в наличии"}
+    },
+    {
+      "id": "msg-003",
+      "chat_id": "u2i-aaa111",
+      "author_id": 555,
+      "created_at": "2026-05-16T10:02:00+00:00",
+      "type": "image",
+      "content": {
+        "image_id": "img-zzz",
+        "sizes": {"140x105": "https://cdn.avito.ru/img/zzz_140x105.jpg"}
+      }
+    }
+  ]
+}

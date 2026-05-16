@@ -1,0 +1,66 @@
+"""Spawn-and-return middleware — keeps the HTTP reply under Avito's 2s timeout.
+
+Avito's webhook contract retries any delivery that isn't acknowledged with a
+``200 OK`` inside 2 seconds. This middleware spawns the actual handler as a
+background task so the response can return immediately.
+
+Backed by ``evented.TaskTracker`` when installed; falls back to an in-package
+tracker that uses ``asyncio.create_task`` and a strong-ref set so tasks don't
+get GC'd mid-flight.
+"""
+from __future__ import annotations
+
+import asyncio
+from collections.abc import Awaitable, Coroutine
+from typing import Any
+
+
+class _FallbackTaskTracker:
+    """Minimal task tracker — keeps strong refs so tasks aren't GC'd."""
+
+    def __init__(self) -> None:
+        self._tasks: set[asyncio.Task[Any]] = set()
+
+    def spawn(self, coro: Coroutine[Any, Any, Any]) -> asyncio.Task[Any]:
+        """Schedule ``coro`` and return the task. Reference held until done."""
+        task = asyncio.create_task(coro)
+        self._tasks.add(task)
+        task.add_done_callback(self._tasks.discard)
+        return task
+
+    async def shutdown(self, timeout: float = 5.0) -> None:  # noqa: ASYNC109 — timeout is wait budget, not deadline
+        """Wait for in-flight tasks. Idempotent."""
+        if not self._tasks:
+            return
+        await asyncio.wait(self._tasks, timeout=timeout)
+
+
+class WebhookFastReturnMiddleware:
+    """Spawn the handler on the supplied task tracker; return immediately.
+
+    ``task_tracker`` is duck-typed: anything with a ``spawn(coro)`` method
+    (returning the spawned task) works. ``evented.TaskTracker`` matches by
+    construction; the in-package :class:`_FallbackTaskTracker` is supplied
+    as a default for environments without ``evented``.
+    """
+
+    def __init__(self, task_tracker: Any | None = None) -> None:
+        self._tracker = task_tracker or _FallbackTaskTracker()
+
+    @property
+    def tracker(self) -> Any:
+        """The underlying tracker — exposed for shutdown coordination."""
+        return self._tracker
+
+    def schedule(
+        self,
+        coro_or_awaitable: Coroutine[Any, Any, Any] | Awaitable[Any],
+    ) -> asyncio.Task[Any]:
+        """Hand off to the tracker. Returns the task; caller may ignore it."""
+        if asyncio.iscoroutine(coro_or_awaitable):
+            return self._tracker.spawn(coro_or_awaitable)  # type: ignore[no-any-return]
+        # Awaitable that isn't a coroutine — wrap so the tracker sees a coroutine.
+        async def _wrap() -> Any:
+            return await coro_or_awaitable
+
+        return self._tracker.spawn(_wrap())  # type: ignore[no-any-return]

@@ -1,0 +1,51 @@
+# env / secrets
+.env
+.env.*
+!.env.example
+
+# python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg
+*.egg-info/
+build/
+dist/
+.eggs/
+
+# virtual envs
+.venv/
+venv/
+env/
+
+# tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.tox/
+.nox/
+
+# editor
+.idea/
+.vscode/
+*.swp
+*~
+
+# os
+.DS_Store
+Thumbs.db
+
+# playwright traces
+.playwright-mcp/
+
+# planning scratch (intermediate splice / agent transcripts)
+.plans/avito-sdk-framework/_w7_client_patches/
+
+# claude code session state
+.claude/

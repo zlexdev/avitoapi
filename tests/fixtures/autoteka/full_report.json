@@ -1,0 +1,8 @@
+{
+  "vin": "WVWZZZ1KZAW123456",
+  "summary": {"accidents": 0, "owners": 2, "mileage_km": 86000},
+  "sections": {
+    "ownership": {"owners": [{"from": "2019-01", "to": "2022-05"}, {"from": "2022-05"}]},
+    "accidents": {"records": []}
+  }
+}

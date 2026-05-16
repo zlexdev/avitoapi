@@ -1,0 +1,9 @@
+{
+  "id": "call-abc-1",
+  "item_id": 12345,
+  "phone": "+79991234567",
+  "duration_s": 73,
+  "status": "answered",
+  "recording_url": "https://cdn.avito.ru/calltracking/call-abc-1.mp3",
+  "created_at": "2026-05-16T12:30:00Z"
+}

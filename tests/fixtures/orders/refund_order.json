@@ -1,0 +1,10 @@
+{
+  "id": "ord_abc123",
+  "status": "refunded",
+  "item_id": 9001,
+  "buyer_id": 555,
+  "seller_id": 12345,
+  "total": {"amount": "1500.00", "currency": "RUB"},
+  "created_at": "2026-05-15T10:30:00Z",
+  "updated_at": "2026-05-16T08:45:00Z"
+}

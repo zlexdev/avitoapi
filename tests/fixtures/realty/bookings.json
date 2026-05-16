@@ -1,0 +1,11 @@
+[
+  {
+    "id": "booking-1",
+    "item_id": 555,
+    "guest_name": "Ivan I.",
+    "check_in": "2026-06-01",
+    "check_out": "2026-06-05",
+    "status": "confirmed",
+    "total": {"amount": "12000", "currency": "RUB"}
+  }
+]

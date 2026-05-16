@@ -1,0 +1,17 @@
+[
+  {
+    "item_id": 9001,
+    "mode": "auto",
+    "bid": null
+  },
+  {
+    "item_id": 9002,
+    "mode": "manual",
+    "bid": 120
+  },
+  {
+    "item_id": 9003,
+    "mode": "off",
+    "bid": null
+  }
+]

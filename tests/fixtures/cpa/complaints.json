@@ -1,0 +1,10 @@
+[
+  {
+    "id": "cpl_1",
+    "action_id": "act_call_1",
+    "kind": "spam",
+    "status": "pending",
+    "created_at": "2026-05-16T09:00:00Z",
+    "reason": "Звонок не был релевантен"
+  }
+]

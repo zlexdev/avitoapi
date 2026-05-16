@@ -1,0 +1,5 @@
+{
+  "min_bid": {"amount": "30.00", "currency": "RUB"},
+  "recommended_bid": {"amount": "75.00", "currency": "RUB"},
+  "expected_views": 12500
+}

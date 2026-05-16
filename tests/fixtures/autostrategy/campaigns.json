@@ -1,0 +1,18 @@
+[
+  {
+    "id": "as_001",
+    "name": "Premium Campaign",
+    "status": "active",
+    "daily_budget": {"amount": "1500.00", "currency": "RUB"},
+    "created_at": "2026-05-01T10:00:00Z",
+    "updated_at": "2026-05-16T08:00:00Z"
+  },
+  {
+    "id": "as_002",
+    "name": "Draft Campaign",
+    "status": "draft",
+    "daily_budget": null,
+    "created_at": "2026-05-15T09:00:00Z",
+    "updated_at": "2026-05-15T09:00:00Z"
+  }
+]

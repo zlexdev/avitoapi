@@ -1,0 +1,4 @@
+[
+  {"id": "tariff_cdek", "name": "СДЭК", "carrier": "cdek"},
+  {"id": "tariff_post", "name": "Почта России", "carrier": "post"}
+]

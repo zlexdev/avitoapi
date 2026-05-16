@@ -1,0 +1,20 @@
+[
+  {
+    "id": "call-a",
+    "item_id": 1,
+    "phone": "+79990000001",
+    "duration_s": 42,
+    "status": "answered",
+    "recording_url": null,
+    "created_at": "2026-05-16T10:00:00Z"
+  },
+  {
+    "id": "call-b",
+    "item_id": 2,
+    "phone": "+79990000002",
+    "duration_s": 0,
+    "status": "missed",
+    "recording_url": null,
+    "created_at": "2026-05-16T11:00:00Z"
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "id": "v-image",
+  "chat_id": "c-1",
+  "author_id": 1,
+  "created_at": "2026-05-16T10:00:00+00:00",
+  "type": "image",
+  "content": {
+    "image_id": "img-xyz",
+    "sizes": {
+      "140x105": "https://cdn.avito.ru/img/xyz_140x105.jpg",
+      "640x480": "https://cdn.avito.ru/img/xyz_640x480.jpg"
+    }
+  }
+}

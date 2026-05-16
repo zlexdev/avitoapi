@@ -1,0 +1,16 @@
+[
+  {
+    "date": "2026-05-14",
+    "spent": {"amount": "500.00", "currency": "RUB"},
+    "impressions": 12500,
+    "clicks": 340,
+    "contacts": 28
+  },
+  {
+    "date": "2026-05-15",
+    "spent": {"amount": "640.50", "currency": "RUB"},
+    "impressions": 15200,
+    "clicks": 421,
+    "contacts": 35
+  }
+]

@@ -1,0 +1,109 @@
+[build-system]
+requires = ["hatchling>=1.18"]
+build-backend = "hatchling.build"
+
+[project]
+name = "avitoapi"
+version = "0.1.0"
+description = "Aiogram-style async Python SDK over the Avito Partner API."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "zlexdev" }]
+keywords = ["avito", "sdk", "async", "api", "aiogram-style"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: AsyncIO",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Typing :: Typed",
+]
+
+dependencies = [
+    "pydantic>=2.6",
+    "pydantic-settings>=2.2",
+    "curl_cffi>=0.7",
+    "structlog>=24",
+    "email-validator>=2.1",
+    # `evented` is a private dep at github.com/zlexdev/evented and requires
+    # a GitHub token to install. Add it manually after cloning:
+    #   GH_TOKEN=... pip install \
+    #     'git+https://${GH_TOKEN}@github.com/zlexdev/evented.git@master'
+    # Without it: Dispatcher / WebApp / WebhookRunner imports raise
+    # ImportError at the call site; everything else (Client + 200+ methods)
+    # works untouched.
+]
+
+[project.optional-dependencies]
+httpx = ["httpx>=0.27"]
+redis = ["redis>=5.0"]
+mongo = ["motor>=3.4"]
+fastapi = ["fastapi>=0.110"]
+litestar = ["litestar>=2.7"]
+playwright = ["playwright>=1.42"]
+twocaptcha = ["2captcha-python>=1.2"]
+capsolver = ["capsolver>=1.0"]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.23",
+    "pytest-cov>=5",
+    "ruff>=0.4",
+    "mypy>=1.10",
+    "httpx>=0.27",
+    "fakeredis>=2.21",
+    "mongomock>=4.1",
+]
+
+[project.urls]
+Homepage = "https://github.com/zlexdev/avitoapi"
+Issues = "https://github.com/zlexdev/avitoapi/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["avitoapi"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+src = ["avitoapi", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E", "F", "W", "I", "B", "UP", "SIM", "PIE", "ASYNC",
+    "ANN", "PL", "RUF", "PT", "TID", "T20", "ERA",
+]
+ignore = [
+    "ANN401",
+    "PLR0913",
+    "PLR2004",
+    "TID252",   # relative imports — intentional per aiogram-style-sdk-framework skill
+    "PLC0415",  # lazy imports — intentional for circular-dep break + optional-dep gating
+    "E501",     # long lines — ruff format already enforces a soft cap
+    "B027",     # empty abstract default OK on ABC hook methods
+    "RUF012",   # mutable class default — explicit override on Pydantic models
+    "RUF100",   # let project decide on individual noqa lines
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["ANN", "PLR2004", "B011", "SIM102", "SIM105", "F841", "PLW0603", "ASYNC240", "PT017", "PT006", "RUF003", "RUF015"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_ignores = true
+disallow_any_generics = true
+no_implicit_optional = true
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["curl_cffi.*", "evented.*", "fakeredis.*", "mongomock.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+filterwarnings = ["error"]

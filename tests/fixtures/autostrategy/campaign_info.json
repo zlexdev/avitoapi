@@ -1,0 +1,19 @@
+{
+  "id": "as_001",
+  "name": "Premium Campaign",
+  "status": "active",
+  "daily_budget": {"amount": "1500.00", "currency": "RUB"},
+  "created_at": "2026-05-01T10:00:00Z",
+  "updated_at": "2026-05-16T08:00:00Z",
+  "budget": {
+    "daily_budget": {"amount": "1500.00", "currency": "RUB"},
+    "spent_today": {"amount": "320.50", "currency": "RUB"},
+    "spent_total": {"amount": "14250.75", "currency": "RUB"},
+    "remaining_today": {"amount": "1179.50", "currency": "RUB"}
+  },
+  "targeting": {
+    "item_ids": [9001, 9002, 9003],
+    "category_ids": [42],
+    "regions": ["moscow", "spb"]
+  }
+}

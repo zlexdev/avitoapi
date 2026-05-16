@@ -1,0 +1,5 @@
+{
+  "category_id": 5,
+  "required": ["title", "price", "description"],
+  "optional": ["images", "video_url"]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "report-2026-05-16",
+  "report_date": "2026-05-16T03:00:00Z",
+  "total": 120,
+  "success": 118,
+  "errors": 2,
+  "items": [
+    {"ad_id": 1, "status": "success", "messages": []},
+    {"ad_id": 2, "status": "error", "messages": ["price is missing"]}
+  ]
+}
