@@ -6,10 +6,11 @@ from typing import ClassVar
 from pydantic import Field
 
 from ..models.orders import Order, OrderList, OrderStatus
+from ..pagination import PageMethod
 from ._base import BaseMethod
 
 
-class ListOrders(BaseMethod[OrderList]):
+class ListOrders(PageMethod[OrderList]):
     """List DBS orders via ``GET /orders/list`` (paginated).
 
     The DBS surface is documented unevenly across third-party clients;
@@ -19,6 +20,7 @@ class ListOrders(BaseMethod[OrderList]):
 
     __http_method__: ClassVar[str] = "GET"
     __endpoint__: ClassVar[str] = "/orders/list"
+    __items_attr__: ClassVar[str | None] = "orders"
 
     page: int = Field(default=1, ge=1)
     per_page: int = Field(default=25, ge=1, le=100)

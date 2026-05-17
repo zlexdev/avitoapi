@@ -8,6 +8,7 @@ from pydantic import Field
 
 from ..models.balance import Balance, BalanceBonus, Operation
 from ..models.common import Page
+from ..pagination import PageMethod
 from ._base import BaseMethod
 
 
@@ -31,7 +32,7 @@ class GetBalanceBonus(BaseMethod[BalanceBonus]):
     user_id: int = Field(..., ge=1)
 
 
-class OperationsHistory(BaseMethod[Page[Operation]]):
+class OperationsHistory(PageMethod[Page[Operation]]):
     """Paginated wallet operations history via ``POST /core/v1/accounts/operations_history/``.
 
     Body fields = date range + page/per_page. Avito returns a page envelope.

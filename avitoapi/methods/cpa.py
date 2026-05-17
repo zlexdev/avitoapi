@@ -14,6 +14,7 @@ from ..models.cpa import (
     ComplaintList,
     CpaBalanceInfo,
 )
+from ..pagination import PageMethod
 from ._base import BaseMethod
 
 
@@ -53,8 +54,12 @@ class ChatByActionId(BaseMethod[ChatByTime]):
     action_id: str = Field(..., min_length=1)
 
 
-class ListComplaints(BaseMethod[ComplaintList]):
-    """List CPA complaints via ``GET /cpa/v3/complaints``."""
+class ListComplaints(PageMethod[ComplaintList]):
+    """List CPA complaints via ``GET /cpa/v3/complaints``.
+
+    ``ComplaintList`` is a ``RootModel[list[Complaint]]`` — default extractor
+    pulls items from ``.root``.
+    """
 
     __http_method__: ClassVar[str] = "GET"
     __endpoint__: ClassVar[str] = "/cpa/v3/complaints"

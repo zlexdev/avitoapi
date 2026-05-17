@@ -27,10 +27,11 @@ from ..models.messenger import (
     VoiceFiles,
     WebhookActionResult,
 )
+from ..pagination import OffsetMethod
 from ._base import BaseMethod
 
 
-class ListChats(BaseMethod[ChatList]):
+class ListChats(OffsetMethod[ChatList]):
     """List chats via ``GET /messenger/v2/accounts/{user_id}/chats``.
 
     Args:
@@ -44,6 +45,7 @@ class ListChats(BaseMethod[ChatList]):
     __http_method__: ClassVar[str] = "GET"
     __endpoint__: ClassVar[str] = "/messenger/v2/accounts/{user_id}/chats"
     __path_fields__: ClassVar[frozenset[str]] = frozenset({"user_id"})
+    __items_attr__: ClassVar[str | None] = "chats"
 
     user_id: int = Field(..., ge=1)
     unread_only: bool | None = Field(default=None)
@@ -63,7 +65,7 @@ class GetChat(BaseMethod[Chat]):
     chat_id: str = Field(..., min_length=1)
 
 
-class ListMessages(BaseMethod[MessageList]):
+class ListMessages(OffsetMethod[MessageList]):
     """List messages via ``GET /messenger/v3/accounts/{user_id}/chats/{chat_id}/messages/``."""
 
     __http_method__: ClassVar[str] = "GET"
@@ -71,6 +73,7 @@ class ListMessages(BaseMethod[MessageList]):
         "/messenger/v3/accounts/{user_id}/chats/{chat_id}/messages/"
     )
     __path_fields__: ClassVar[frozenset[str]] = frozenset({"user_id", "chat_id"})
+    __items_attr__: ClassVar[str | None] = "messages"
 
     user_id: int = Field(..., ge=1)
     chat_id: str = Field(..., min_length=1)

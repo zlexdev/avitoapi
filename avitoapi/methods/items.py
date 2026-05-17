@@ -7,10 +7,11 @@ from pydantic import Field, field_validator
 
 from ..models.common import Page
 from ..models.items import Item, ItemStatus, VasOrderResult
+from ..pagination import PageMethod
 from ._base import BaseMethod
 
 
-class ListItems(BaseMethod[Page[Item]]):
+class ListItems(PageMethod[Page[Item]]):
     """List own items via ``GET /core/v1/items``.
 
     Args:

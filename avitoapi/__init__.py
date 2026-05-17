@@ -72,7 +72,12 @@ from .models.balance import (
 )
 from .models.common import AvitoErrorBody, Currency, Money, Page
 from .models.items import Item, ItemStatus, VasService
-from .pagination import IndexPaginator, TimeWindowPaginator
+from .pagination import (
+    MethodPaginator,
+    OffsetMethod,
+    PageMethod,
+    PaginatedMethod,
+)
 from .routers import (
     AutoloadRouter,
     BalanceRouter,
@@ -125,7 +130,6 @@ __all__ = [
     "HealthState",
     "HealthStatus",
     "HostKey",
-    "IndexPaginator",
     "Item",
     "ItemArchived",
     "ItemBlocked",
@@ -139,9 +143,11 @@ __all__ = [
     "MessageRead",
     "MessengerRouter",
     "MethodNotBoundError",
+    "MethodPaginator",
     "Money",
     "NewMessage",
     "NotFoundError",
+    "OffsetMethod",
     "Operation",
     "OperationType",
     "OrderCancelled",
@@ -154,6 +160,8 @@ __all__ = [
     "OrderStatusChanged",
     "OrdersRouter",
     "Page",
+    "PageMethod",
+    "PaginatedMethod",
     "ParcelDelivered",
     "ParcelHandedOver",
     "ParcelReturned",
@@ -169,7 +177,6 @@ __all__ = [
     "ServerError",
     "Shutdown",
     "Startup",
-    "TimeWindowPaginator",
     "TokenRefreshed",
     "UnauthorizedError",
     "ValidationFailed",

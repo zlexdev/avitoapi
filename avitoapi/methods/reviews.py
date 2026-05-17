@@ -6,11 +6,16 @@ from typing import ClassVar
 from pydantic import Field
 
 from ..models.reviews import RatingInfo, ReviewList, ReviewReply
+from ..pagination import PageMethod
 from ._base import BaseMethod
 
 
-class ListReviews(BaseMethod[ReviewList]):
-    """List reviews via ``GET /ratings/v1/reviews`` (paginated)."""
+class ListReviews(PageMethod[ReviewList]):
+    """List reviews via ``GET /ratings/v1/reviews`` (paginated).
+
+    ``ReviewList`` is a ``RootModel[list[Review]]`` — items live in ``.root``,
+    picked up by the default extractor.
+    """
 
     __http_method__: ClassVar[str] = "GET"
     __endpoint__: ClassVar[str] = "/ratings/v1/reviews"

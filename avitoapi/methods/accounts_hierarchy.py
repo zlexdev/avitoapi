@@ -16,6 +16,7 @@ from ..models.accounts_hierarchy import (
     LinkItemsResult,
     PhoneList,
 )
+from ..pagination import OffsetMethod
 from ._base import BaseMethod
 
 
@@ -59,7 +60,7 @@ class ListCompanyPhones(BaseMethod[PhoneList]):
     __endpoint__: ClassVar[str] = "/listCompanyPhonesV1"
 
 
-class ListItemsByEmployee(BaseMethod[ItemList]):
+class ListItemsByEmployee(OffsetMethod[ItemList]):
     """List items owned by an employee via ``POST /listItemsByEmployeeIdV1``.
 
     POST rather than GET because Avito accepts a bulk-filter body.

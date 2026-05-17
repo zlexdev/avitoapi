@@ -23,6 +23,7 @@ from ..models.autoload import (
     AutoloadUploadResult,
 )
 from ..models.common import Page
+from ..pagination import PageMethod
 from ._base import BaseMethod
 
 
@@ -37,7 +38,7 @@ class AutoloadItemStatus(BaseMethod[AutoloadItemReport]):
     ad_id: int = Field(..., ge=1)
 
 
-class ListAutoloadReports(BaseMethod[Page[AutoloadReport]]):
+class ListAutoloadReports(PageMethod[Page[AutoloadReport]]):
     """Paginated autoload-run reports via ``GET /autoload/v1/accounts/{user_id}/reports/``."""
 
     __http_method__: ClassVar[str] = "GET"

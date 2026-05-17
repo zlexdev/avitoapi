@@ -16,10 +16,11 @@ from pydantic import Field
 
 from ..models.common import Page
 from ..models.job import Resume, ResumeContact, ResumeSearchQuery
+from ..pagination import PageMethod
 from ._base import BaseMethod
 
 
-class SearchResumes(BaseMethod[Page[Resume]]):
+class SearchResumes(PageMethod[Page[Resume]]):
     """Full-text résumé search via ``POST /job/v1/resumes/search``.
 
     Embeds the query payload directly on the method-class rather than nesting

@@ -1,8 +1,18 @@
-"""Async paginators for index- and time-window-shaped Avito endpoints."""
+"""Declarative pagination — methods carry pagination fields, ``Client`` auto-dispatches.
+
+Inherit a list endpoint from :class:`OffsetMethod` (``limit`` + ``offset``) or
+:class:`PageMethod` (``page`` + ``per_page``). Awaiting through
+``await client(method)`` returns the first page's raw envelope;
+``async for item in client(method)`` walks every page.
+"""
 from __future__ import annotations
 
-from .base import BasePaginator
-from .index import IndexPaginator
-from .time_window import TimeWindowPaginator
+from .method import OffsetMethod, PageMethod, PaginatedMethod
+from .paginator import MethodPaginator
 
-__all__ = ["BasePaginator", "IndexPaginator", "TimeWindowPaginator"]
+__all__ = [
+    "MethodPaginator",
+    "OffsetMethod",
+    "PageMethod",
+    "PaginatedMethod",
+]
