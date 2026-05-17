@@ -4,6 +4,7 @@ from __future__ import annotations
 from . import events, exceptions, routers
 from .client import Client
 from .config import ClientConfig
+from .dispatcher import Dispatcher, make_dispatcher
 from .events import (
     AnnouncementTracked,
     AuthFailed,
@@ -78,19 +79,7 @@ from .pagination import (
     PageMethod,
     PaginatedMethod,
 )
-from .routers import (
-    AutoloadRouter,
-    BalanceRouter,
-    CalltrackingRouter,
-    DeliveryRouter,
-    EventObserver,
-    ItemsRouter,
-    LifecycleRouter,
-    MessengerRouter,
-    OrdersRouter,
-    ReviewsRouter,
-    Router,
-)
+from .routers import EventObserver, Router
 from .types import HealthState, HealthStatus, HostKey
 
 __version__ = "0.1.0"
@@ -102,13 +91,11 @@ __all__ = [
     "AuthFailed",
     "AutoloadFailed",
     "AutoloadReportReady",
-    "AutoloadRouter",
     "AvitoErrorBody",
     "Balance",
     "BalanceBonus",
     "BalanceChanged",
     "BalanceLow",
-    "BalanceRouter",
     "BalanceToppedUp",
     "BaseEvent",
     "BaseMethod",
@@ -116,13 +103,12 @@ __all__ = [
     "CallEnded",
     "CallReceived",
     "CallRecordingReady",
-    "CalltrackingRouter",
     "ChatArchived",
     "ChatBlacklisted",
     "Client",
     "ClientConfig",
     "Currency",
-    "DeliveryRouter",
+    "Dispatcher",
     "EventObserver",
     "ForbiddenError",
     "GetSelf",
@@ -138,10 +124,7 @@ __all__ = [
     "ItemStatus",
     "ItemStatusChanged",
     "ItemUnblocked",
-    "ItemsRouter",
-    "LifecycleRouter",
     "MessageRead",
-    "MessengerRouter",
     "MethodNotBoundError",
     "MethodPaginator",
     "Money",
@@ -158,7 +141,6 @@ __all__ = [
     "OrderRefunded",
     "OrderShipped",
     "OrderStatusChanged",
-    "OrdersRouter",
     "Page",
     "PageMethod",
     "PaginatedMethod",
@@ -170,7 +152,6 @@ __all__ = [
     "RateLimitedError",
     "ReviewAnswered",
     "ReviewReceived",
-    "ReviewsRouter",
     "Router",
     "RunawayPagination",
     "SDKError",
@@ -186,5 +167,6 @@ __all__ = [
     "__version__",
     "events",
     "exceptions",
+    "make_dispatcher",
     "routers",
 ]

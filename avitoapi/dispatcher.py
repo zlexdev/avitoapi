@@ -1,8 +1,13 @@
-"""Multi-account Dispatcher — thin subclass of ``evented.Dispatcher``.
+"""Multi-account Dispatcher — aiogram-style: inherits from :class:`Router`.
 
-Sits alongside :class:`Client`, fanning out inbound events. Requires
-``evented`` (private dep at ``github.com/zlexdev/evented``); install via
-``pip install 'git+https://${GH_TOKEN}@github.com/zlexdev/evented.git'``.
+Sits alongside :class:`Client`, fanning out inbound events. Because
+``Dispatcher`` itself is a :class:`Router`, every event observer
+(``dispatcher.new_message``, ``dispatcher.order_created``, ...) is
+attached directly on the dispatcher — handlers can register without an
+intermediate router unless they want plugin-style isolation.
+
+Requires ``evented`` (private dep at ``github.com/zlexdev/evented``); install
+via ``pip install 'git+https://${GH_TOKEN}@github.com/zlexdev/evented.git'``.
 """
 from __future__ import annotations
 
@@ -11,13 +16,33 @@ from typing import TYPE_CHECKING, Any
 
 import evented
 
+from .routers import Router
+from .routers._routers import install_observers
+
 if TYPE_CHECKING:
     from .client import Client
     from .storage.base import BaseStorage
 
 
-class Dispatcher(evented.Dispatcher):
-    """SDK-wide Dispatcher subclass — placeholder for future hooks."""
+class Dispatcher(Router, evented.Dispatcher):
+    """SDK-wide aiogram-style Dispatcher.
+
+    Multiple-inherits from :class:`Router` (observer surface) and
+    :class:`evented.Dispatcher` (event entry / in-flight task tracking /
+    workflow data). Because both ultimately share ``evented.Router``, the
+    MRO collapses cleanly to a single Router foundation.
+    """
+
+    def __init__(
+        self,
+        *,
+        name: str = "dispatcher",
+        **dispatcher_kw: Any,
+    ) -> None:
+        # Skip Router.__init__ on purpose — evented.Dispatcher handles base
+        # initialisation, and we attach observers explicitly afterwards.
+        evented.Dispatcher.__init__(self, name=name, **dispatcher_kw)
+        install_observers(self)
 
 
 def make_dispatcher(

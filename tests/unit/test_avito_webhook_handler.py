@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 
 from avitoapi.events.messenger import ChatArchived, MessageRead, NewMessage
-from avitoapi.routers import MessengerRouter
+from avitoapi.routers import Router
 from avitoapi.web.avito_webhook_handler import (
     AvitoWebhookHandler,
     AvitoWebhookParseError,
@@ -23,7 +23,7 @@ def _envelope(kind: str, value: dict) -> dict:
 class _DispatcherStub:
     def __init__(self) -> None:
         self.feed_calls: list[object] = []
-        self.router = MessengerRouter()
+        self.router = Router()
 
     async def feed_event(self, event) -> None:
         self.feed_calls.append(event)
@@ -115,7 +115,7 @@ async def test_handle_dispatches_to_feed_event():
 async def test_handle_falls_back_to_router_when_no_feed_event():
     class _NoFeedDispatcher:
         def __init__(self):
-            self.router = MessengerRouter()
+            self.router = Router()
 
     dispatcher = _NoFeedDispatcher()
     received: list[NewMessage] = []
