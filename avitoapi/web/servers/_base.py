@@ -12,6 +12,7 @@ The dispatcher is referenced only so subclasses can attach app-level
 hooks (e.g. startup log lines). Webhook handlers receive the parsed
 JSON body, never the dispatcher directly — they close over it.
 """
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod

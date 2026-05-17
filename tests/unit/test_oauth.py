@@ -7,6 +7,7 @@ Coverage:
 - 403 + ``token_expired`` body triggers re-auth + retry exactly once.
 - ``is_token_expired_403`` heuristic accepts known Avito body shapes.
 """
+
 from __future__ import annotations
 
 import json
@@ -19,6 +20,7 @@ from avitoapi.config import ClientConfig
 from tests._fake_session import FakeSession
 
 # ---- happy-path issuance ---------------------------------------------------
+
 
 async def test_issue_client_credentials_returns_token_when_endpoint_responds_200(
     oauth_client: OAuthClient,
@@ -54,6 +56,7 @@ async def test_issue_client_credentials_caches_token_when_called(
 
 
 # ---- caching / no second issue --------------------------------------------
+
 
 async def test_refresh_if_needed_returns_same_token_when_far_from_expiry(
     oauth_client: OAuthClient,
@@ -105,6 +108,7 @@ async def test_refresh_if_needed_issues_new_token_when_already_expired(
 
 # ---- token cache contract --------------------------------------------------
 
+
 async def test_token_cache_put_then_get_round_trips(
     token_cache: TokenCache,
     sample_token: Token,
@@ -133,6 +137,7 @@ async def test_token_cache_invalidate_removes_key(
 
 
 # ---- is_token_expired_403 heuristic ---------------------------------------
+
 
 def test_is_token_expired_403_accepts_body_with_token_expired_message() -> None:
     body = json.dumps({"error": {"code": 403, "message": "token_expired"}}).encode()
@@ -168,6 +173,7 @@ def test_is_token_expired_403_rejects_non_json_body() -> None:
 
 # ---- 403 + token_expired triggers re-auth + retry --------------------------
 
+
 async def test_oauth_injector_reauths_when_first_call_returns_token_expired_403(
     oauth_client: OAuthClient,
     oauth_injector: Any,
@@ -189,6 +195,7 @@ async def test_oauth_injector_reauths_when_first_call_returns_token_expired_403(
 
     def downstream_responder(prepared: Any) -> Any:
         from tests._fake_session import FakeResponse
+
         attempt["count"] += 1
         if attempt["count"] == 1:
             return FakeResponse(body=oauth_token_expired_payload, status=403)

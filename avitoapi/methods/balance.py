@@ -1,4 +1,5 @@
 """Balance-domain endpoints — real / bonus balance and operation history."""
+
 from __future__ import annotations
 
 from datetime import datetime

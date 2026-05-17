@@ -1,4 +1,5 @@
 """Autoload domain — method-class fixture round-trips + binary upload routing."""
+
 from __future__ import annotations
 
 import json
@@ -33,6 +34,7 @@ from tests._fake_session import FakeSession
 
 # ---- per-item status -------------------------------------------------------
 
+
 async def test_autoload_item_status_returns_typed_report(
     client: Client,
     fake_session: FakeSession,
@@ -60,6 +62,7 @@ async def test_autoload_item_status_uses_path_template(
 
 
 # ---- reports page ----------------------------------------------------------
+
 
 async def test_list_autoload_reports_returns_page_envelope(
     client: Client,
@@ -104,6 +107,7 @@ async def test_get_autoload_report_uses_report_id_in_path(
 
 # ---- category fields -------------------------------------------------------
 
+
 async def test_get_autoload_category_fields_returns_typed_schema(
     client: Client,
     fake_session: FakeSession,
@@ -118,6 +122,7 @@ async def test_get_autoload_category_fields_returns_typed_schema(
 
 
 # ---- profile get / update --------------------------------------------------
+
 
 async def test_get_autoload_profile_returns_dto(
     client: Client,
@@ -156,6 +161,7 @@ async def test_update_autoload_profile_emits_put_with_idempotency_key(
 
 # ---- upload ----------------------------------------------------------------
 
+
 async def test_upload_autoload_file_carries_bytes_in_body(
     client: Client,
     fake_session: FakeSession,
@@ -177,6 +183,7 @@ async def test_upload_autoload_file_carries_bytes_in_body(
 
 
 # ---- id conversion ---------------------------------------------------------
+
 
 async def test_convert_autoload_id_unpacks_top_level_mapping(
     client: Client,

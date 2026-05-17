@@ -1,4 +1,5 @@
 """``Protocol`` ABC — separates wire-encoding from method-class intent."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod

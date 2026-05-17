@@ -3,6 +3,7 @@
 Walks every pair in ``OrderStatus x OrderStatus`` and asserts the runtime
 guard matches the declared table. Then exercises strict / non-strict modes.
 """
+
 from __future__ import annotations
 
 import logging
@@ -17,6 +18,7 @@ from avitoapi.models.orders import (
 )
 
 # ---- table sanity ----------------------------------------------------------
+
 
 def test_transitions_table_covers_every_status() -> None:
     assert set(ORDER_TRANSITIONS.keys()) == set(OrderStatus)
@@ -45,6 +47,7 @@ def test_declared_transitions_match_spec() -> None:
 
 # ---- exhaustive pairwise ---------------------------------------------------
 
+
 @pytest.mark.parametrize("src", list(OrderStatus))
 @pytest.mark.parametrize("dst", list(OrderStatus))
 def test_every_pair_matches_table(src: OrderStatus, dst: OrderStatus) -> None:
@@ -60,6 +63,7 @@ def test_every_pair_matches_table(src: OrderStatus, dst: OrderStatus) -> None:
 
 
 # ---- happy path walk -------------------------------------------------------
+
 
 def test_full_happy_path_new_to_completed() -> None:
     walk = [
@@ -83,6 +87,7 @@ def test_cancel_branches_from_each_pre_delivery_state() -> None:
 
 
 # ---- illegal transitions ---------------------------------------------------
+
 
 def test_cannot_skip_states() -> None:
     with pytest.raises(InvalidStateTransition):
@@ -109,6 +114,7 @@ def test_cannot_cancel_after_delivery() -> None:
 
 
 # ---- strict=False degrades to a warning -----------------------------------
+
 
 def test_non_strict_logs_warning_instead_of_raising(
     caplog: pytest.LogCaptureFixture,

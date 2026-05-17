@@ -11,6 +11,7 @@ its class is touched. Pick one explicitly:
 * ``SanicWebApp`` / ``SanicWebhookRunner`` — ``pip install
   avitoapi[sanic]``.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any

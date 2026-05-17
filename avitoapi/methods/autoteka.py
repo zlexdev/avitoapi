@@ -14,6 +14,7 @@ Naming: the DTO is imported as ``AutotekaFullReportDoc`` here to keep the
 method-class name (``AutotekaFullReport``) aligned with the spec while
 avoiding a symbol collision with the same-named model.
 """
+
 from __future__ import annotations
 
 from typing import ClassVar, Self

@@ -3,6 +3,7 @@
 PII: ``ResumeContact.email`` and ``ResumeContact.phone`` must be redacted
 by any structured-log binding (see ``logging.py``).
 """
+
 from __future__ import annotations
 
 from datetime import datetime

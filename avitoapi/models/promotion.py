@@ -1,4 +1,5 @@
 """Promotion domain — active promotions, bids, BBIP orders + forecast."""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -25,7 +26,9 @@ class Bid(BaseModel):
 
     item_id: int = Field(..., ge=1, description="Item the bid is set for.")
     current_bid: Money = Field(..., description="Seller's current bid.")
-    recommended: Money | None = Field(default=None, description="Server-recommended bid, when surfaced.")
+    recommended: Money | None = Field(
+        default=None, description="Server-recommended bid, when surfaced."
+    )
 
 
 class BbipOrder(BaseModel):

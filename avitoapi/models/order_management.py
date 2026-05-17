@@ -8,6 +8,7 @@ labels). Each :class:`ManagedOrder` exposes bound actions so chains like
 Schema is fluid: ``ConfigDict(strict=False, extra="allow")`` everywhere so
 new fields don't break decoding.
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -59,8 +60,12 @@ class OrderMarking(BaseModel):
     model_config = _OM_CFG
 
     code: str = Field(..., min_length=1, description="Mark code (UIN / DataMatrix payload).")
-    item_id: int | None = Field(default=None, ge=1, description="Item the marking belongs to, when present.")
-    quantity: int | None = Field(default=None, ge=1, description="Quantity covered by this marking, when present.")
+    item_id: int | None = Field(
+        default=None, ge=1, description="Item the marking belongs to, when present."
+    )
+    quantity: int | None = Field(
+        default=None, ge=1, description="Quantity covered by this marking, when present."
+    )
 
 
 class CourierDeliveryRange(BoundModel):
@@ -78,9 +83,15 @@ class LabelTaskResult(BoundModel):
 
     model_config = _OM_CFG
 
-    task_id: str | None = Field(default=None, alias="taskID", description="Task id for polling / download.")
-    status: str | None = Field(default=None, description="Task status (queued / running / done / failed).")
-    order_ids: list[str] = Field(default_factory=list, description="Order ids included in the batch.")
+    task_id: str | None = Field(
+        default=None, alias="taskID", description="Task id for polling / download."
+    )
+    status: str | None = Field(
+        default=None, description="Task status (queued / running / done / failed)."
+    )
+    order_ids: list[str] = Field(
+        default_factory=list, description="Order ids included in the batch."
+    )
 
 
 class ManagedOrder(BoundModel):
@@ -102,7 +113,9 @@ class ManagedOrder(BoundModel):
     seller_id: int | None = Field(default=None, description="Seller's Avito user id.")
     created_at: datetime | None = Field(default=None, description="Creation timestamp (UTC).")
     updated_at: datetime | None = Field(default=None, description="Last update timestamp (UTC).")
-    markings: list[OrderMarking] = Field(default_factory=list, description="Marking codes attached to the order.")
+    markings: list[OrderMarking] = Field(
+        default_factory=list, description="Marking codes attached to the order."
+    )
 
     def accept_return(self) -> AcceptReturnOrder:
         """Build an ``AcceptReturnOrder`` method-class bound to this order."""
@@ -178,9 +191,15 @@ class MarkingResult(BoundModel):
     model_config = _OM_CFG
 
     ok: bool | None = Field(default=None, description="High-level success flag.")
-    accepted: list[str] = Field(default_factory=list, description="Mark codes accepted by the server.")
-    rejected: list[str] = Field(default_factory=list, description="Mark codes rejected; inspect ``reasons``.")
-    reasons: dict[str, str] = Field(default_factory=dict, description="Rejection reasons keyed by mark code.")
+    accepted: list[str] = Field(
+        default_factory=list, description="Mark codes accepted by the server."
+    )
+    rejected: list[str] = Field(
+        default_factory=list, description="Mark codes rejected; inspect ``reasons``."
+    )
+    reasons: dict[str, str] = Field(
+        default_factory=dict, description="Rejection reasons keyed by mark code."
+    )
 
 
 class OrderConfirmationCheck(BoundModel):

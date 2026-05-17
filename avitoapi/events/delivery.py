@@ -6,6 +6,7 @@ stable status vocabulary (`in_transit`, `delivered`, `returned`, ...) so
 handlers can switch on string status without depending on a single
 carrier's terminology.
 """
+
 from __future__ import annotations
 
 from datetime import datetime

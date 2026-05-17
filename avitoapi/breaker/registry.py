@@ -4,6 +4,7 @@ Self-contained in-package implementation. Stateless: every breaker lives
 inside :class:`BreakerRegistry`, keyed by ``(host, path)`` or
 ``(host, path, account_id)`` when ``ClientConfig.breaker_per_account`` is on.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -79,7 +80,10 @@ class CircuitBreaker:
         """Increment failures; open the breaker once the threshold is crossed."""
         async with self._lock:
             self._consecutive_failures += 1
-            if self._state is BreakerState.HALF_OPEN or self._consecutive_failures >= self.fail_threshold:
+            if (
+                self._state is BreakerState.HALF_OPEN
+                or self._consecutive_failures >= self.fail_threshold
+            ):
                 self._state = BreakerState.OPEN
                 self._opened_at = time.monotonic()
 

@@ -10,6 +10,7 @@ Owns the side-stores aiogram users expect: per-account :class:`Client`
 registry, FSM storage, idempotency store, dead-letter queue. All
 in-memory by default — pass real backends for multi-process deploys.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -18,7 +19,7 @@ from typing import TYPE_CHECKING, Any
 
 from .events._base import Event
 from .logging import get_logger
-from .persistent_queue import BaseEventQueue, EventQueue, QueuedEvent
+from .queue import BaseEventQueue, EventQueue, QueuedEvent
 from .routers import CtxQueue, EventContext, Router
 from .storage.memory import MemoryStorage
 

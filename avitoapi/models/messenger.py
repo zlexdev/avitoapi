@@ -6,6 +6,7 @@ Pydantic v2 *discriminated union* on the ``type`` field so each variant has
 its own typed ``content`` shape, and an :class:`UnknownMessage` fallback
 absorbs forward-compat ``type`` values from future Avito rollouts.
 """
+
 from __future__ import annotations
 
 import logging
@@ -270,7 +271,18 @@ class UnknownMessage(_MessageBase):
 
 
 Message = Annotated[
-    TextMessage | ImageMessage | LinkMessage | ItemMessage | LocationMessage | VoiceMessage | CallMessage | FileMessage | SystemMessage | AppCallMessage | DeletedMessage | UnknownMessage,
+    TextMessage
+    | ImageMessage
+    | LinkMessage
+    | ItemMessage
+    | LocationMessage
+    | VoiceMessage
+    | CallMessage
+    | FileMessage
+    | SystemMessage
+    | AppCallMessage
+    | DeletedMessage
+    | UnknownMessage,
     Field(discriminator="type"),
 ]
 
@@ -429,7 +441,10 @@ class MessageList(BoundModel):
             return value
         raw = value.get("messages")
         if isinstance(raw, list):
-            return {**value, "messages": [_normalise_unknown(m) if isinstance(m, dict) else m for m in raw]}
+            return {
+                **value,
+                "messages": [_normalise_unknown(m) if isinstance(m, dict) else m for m in raw],
+            }
         return value
 
 

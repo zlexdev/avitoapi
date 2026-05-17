@@ -1,4 +1,5 @@
 """Unit tests for the auction (CPA bids) domain."""
+
 from __future__ import annotations
 
 import json
@@ -63,7 +64,9 @@ async def test_get_auction_bids_returns_envelope(auc_client: tuple[Client, FakeS
     assert sent.url.endswith("/auction/1/bids")
 
 
-async def test_set_auction_bids_posts_and_is_idempotent(auc_client: tuple[Client, FakeSession]) -> None:
+async def test_set_auction_bids_posts_and_is_idempotent(
+    auc_client: tuple[Client, FakeSession],
+) -> None:
     client, session = auc_client
     session.register(SetAuctionBids, body=_load("bids_set.json"))
 

@@ -12,6 +12,7 @@ no extra dep). For other frameworks import from
 :mod:`avitoapi.web.servers`: ``FastAPIWebhookRunner``,
 ``LitestarWebhookRunner``, ``SanicWebhookRunner``, etc.
 """
+
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
@@ -47,7 +48,7 @@ class Webhook:
 class WebhookConfig:
     """Bundle of :class:`Webhook` descriptors used by any backend runner."""
 
-    host: str = "0.0.0.0"
+    host: str = "0.0.0.0"  # nosec B104 — webhooks must be reachable from outside
     port: int = 8080
     webhooks: list[Webhook] = field(default_factory=list)
 

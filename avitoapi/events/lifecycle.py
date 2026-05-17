@@ -5,6 +5,7 @@ handlers usually want: bootstrap, graceful shutdown, OAuth refresh,
 auth failures, webhook decode errors, poller errors. Anything a
 running multi-account deployment wants in Sentry/Grafana.
 """
+
 from __future__ import annotations
 
 from datetime import datetime

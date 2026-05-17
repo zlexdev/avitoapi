@@ -3,6 +3,7 @@
 Five endpoints. Four are read-only; ``LinkItems`` is the lone mutation
 and declares ``__idempotent_mutation__ = True`` so retries are safe.
 """
+
 from __future__ import annotations
 
 from typing import ClassVar

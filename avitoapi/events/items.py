@@ -4,6 +4,7 @@ Diffs ``GET /core/v1/items`` snapshots: status transitions become
 specialised events (`ItemPublished`, `ItemBlocked`, ...) plus a coarse
 :class:`ItemStatusChanged` so handlers can subscribe at either grain.
 """
+
 from __future__ import annotations
 
 from datetime import datetime

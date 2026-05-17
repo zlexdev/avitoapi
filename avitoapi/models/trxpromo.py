@@ -7,6 +7,7 @@ commission-rules listing plus the apply / cancel actions.
 Response DTOs use ``ConfigDict(strict=False, extra="allow")`` — schemas are
 sparsely documented and Avito ships fields on its own schedule.
 """
+
 from __future__ import annotations
 
 from collections.abc import Iterator
@@ -59,7 +60,9 @@ class TrxApplyResult(BaseModel):
     model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
     promo_id: str | None = Field(default=None, description="Identifier of the activated promo.")
-    applied_at: datetime | None = Field(default=None, description="Server-side activation timestamp.")
+    applied_at: datetime | None = Field(
+        default=None, description="Server-side activation timestamp."
+    )
     expires_at: datetime | None = Field(
         default=None,
         description="When the discount window closes; absent for open-ended promos.",
@@ -73,5 +76,7 @@ class TrxCancelResult(BaseModel):
     model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
     promo_id: str | None = Field(default=None, description="Identifier of the cancelled promo.")
-    cancelled_at: datetime | None = Field(default=None, description="Server-side cancellation timestamp.")
+    cancelled_at: datetime | None = Field(
+        default=None, description="Server-side cancellation timestamp."
+    )
     ok: bool | None = Field(default=None, description="Aggregate success flag, when surfaced.")

@@ -1,4 +1,5 @@
 """``BaseSession`` — the funnel every HTTP call goes through."""
+
 from __future__ import annotations
 
 import asyncio

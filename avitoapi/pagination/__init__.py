@@ -5,6 +5,7 @@ Inherit a list endpoint from :class:`OffsetMethod` (``limit`` + ``offset``) or
 ``await client(method)`` returns the first page's raw envelope;
 ``async for item in client(method)`` walks every page.
 """
+
 from __future__ import annotations
 
 from .method import OffsetMethod, PageMethod, PaginatedMethod

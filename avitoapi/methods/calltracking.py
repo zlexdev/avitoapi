@@ -5,6 +5,7 @@ it sets ``__binary_response__ = True`` so :class:`RestProtocol.decode_response`
 short-circuits the JSON decode path and returns ``raw.body`` (``bytes``)
 directly — the awaited result is plain ``bytes``, not a Pydantic model.
 """
+
 from __future__ import annotations
 
 from datetime import datetime

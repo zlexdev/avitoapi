@@ -9,6 +9,7 @@ The handler intentionally accepts a plain ``dict`` instead of an
 ``aiohttp.web.Request`` so it can be unit-tested without aiohttp. The
 production aiohttp wiring lives in ``examples/echo_bot/``.
 """
+
 from __future__ import annotations
 
 import json

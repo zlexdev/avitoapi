@@ -1,4 +1,5 @@
 """Unit tests for the in-package CircuitBreaker + BreakerRegistry."""
+
 from __future__ import annotations
 
 import asyncio

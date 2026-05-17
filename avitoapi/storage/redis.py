@@ -1,4 +1,5 @@
 """``RedisStorage`` — :class:`BaseStorage` over ``redis.asyncio`` (lazy import)."""
+
 from __future__ import annotations
 
 import json
@@ -46,8 +47,7 @@ class RedisStorage(BaseStorage[Any, str]):
             from redis.asyncio import Redis as _Redis
         except ImportError as exc:
             raise ImportError(
-                "install avitoapi[redis] to use RedisStorage "
-                "(missing redis.asyncio)",
+                "install avitoapi[redis] to use RedisStorage (missing redis.asyncio)",
             ) from exc
         if self._url is None:
             raise RuntimeError("RedisStorage: no URL and no client provided")

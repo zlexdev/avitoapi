@@ -1,4 +1,5 @@
 """Promotion v1 — list / drop / bids / BBIP order / forecast round-trips."""
+
 from __future__ import annotations
 
 import json

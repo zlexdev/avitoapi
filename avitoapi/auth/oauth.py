@@ -1,4 +1,5 @@
 """OAuth2 client for the Avito Partner API + bearer-token injector middleware."""
+
 from __future__ import annotations
 
 import asyncio
@@ -194,9 +195,7 @@ class OAuthClient:
                 query=dict(payload),
                 timeout_s=self.config.request_timeout_s,
             )
-        body = "&".join(
-            f"{k}={_form_quote(v)}" for k, v in payload.items()
-        )
+        body = "&".join(f"{k}={_form_quote(v)}" for k, v in payload.items())
         return PreparedRequest(
             host="www",
             http_method="POST",

@@ -5,6 +5,7 @@ so an upstream rename or extra payload key doesn't crash decoding. List
 responses are wrapped in :class:`pydantic.RootModel` envelopes to satisfy the
 funnel's "returning must be a ``BaseModel``" contract.
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -37,10 +38,16 @@ class Parcel(BoundModel):
     model_config = _DELIVERY_CFG
 
     id: str | None = Field(default=None, description="Parcel id (Avito-side).")
-    external_id: str | None = Field(default=None, description="Seller-supplied external id, when surfaced.")
-    status: ParcelStatus | str | None = Field(default=None, description="Coarse status (string fallback for unknowns).")
+    external_id: str | None = Field(
+        default=None, description="Seller-supplied external id, when surfaced."
+    )
+    status: ParcelStatus | str | None = Field(
+        default=None, description="Coarse status (string fallback for unknowns)."
+    )
     tariff_id: str | None = Field(default=None, description="Tariff applied at registration.")
-    created_at: datetime | None = Field(default=None, description="When the parcel was registered (UTC).")
+    created_at: datetime | None = Field(
+        default=None, description="When the parcel was registered (UTC)."
+    )
     updated_at: datetime | None = Field(default=None, description="Last server-side update (UTC).")
 
 
@@ -99,8 +106,12 @@ class TariffTerm(BoundModel):
     model_config = _DELIVERY_CFG
 
     id: str | None = Field(default=None, description="Term id, when surfaced.")
-    min_days: int | None = Field(default=None, ge=0, description="Lower bound of the shipping window (days).")
-    max_days: int | None = Field(default=None, ge=0, description="Upper bound of the shipping window (days).")
+    min_days: int | None = Field(
+        default=None, ge=0, description="Lower bound of the shipping window (days)."
+    )
+    max_days: int | None = Field(
+        default=None, ge=0, description="Upper bound of the shipping window (days)."
+    )
 
 
 class Terminal(BoundModel):
@@ -129,8 +140,12 @@ class Announcement(BoundModel):
     model_config = _DELIVERY_CFG
 
     id: str | None = Field(default=None, description="Announcement id.")
-    status: str | None = Field(default=None, description="Announcement status, free-form (status set is volatile).")
-    parcel_ids: list[str] = Field(default_factory=list, description="Parcels covered by the announcement.")
+    status: str | None = Field(
+        default=None, description="Announcement status, free-form (status set is volatile)."
+    )
+    parcel_ids: list[str] = Field(
+        default_factory=list, description="Parcels covered by the announcement."
+    )
 
 
 class AnnouncementEvent(BoundModel):
@@ -149,8 +164,12 @@ class DeliveryTask(BoundModel):
     model_config = _DELIVERY_CFG
 
     id: str | None = Field(default=None, description="Task id.")
-    status: str | None = Field(default=None, description="Task status (queued / running / succeeded / failed).")
-    result: dict[str, object] | None = Field(default=None, description="Result payload, when ready.")
+    status: str | None = Field(
+        default=None, description="Task status (queued / running / succeeded / failed)."
+    )
+    result: dict[str, object] | None = Field(
+        default=None, description="Result payload, when ready."
+    )
     error: str | None = Field(default=None, description="Failure description, when present.")
 
 
@@ -169,7 +188,9 @@ class RealAddress(BoundModel):
     model_config = _DELIVERY_CFG
 
     address: str | None = Field(default=None, description="Resolved postal address string.")
-    components: dict[str, object] = Field(default_factory=dict, description="Structured address parts.")
+    components: dict[str, object] = Field(
+        default_factory=dict, description="Structured address parts."
+    )
 
 
 class OrderProperties(BoundModel):
@@ -177,7 +198,9 @@ class OrderProperties(BoundModel):
 
     model_config = _DELIVERY_CFG
 
-    properties: dict[str, object] = Field(default_factory=dict, description="Free-form property bag.")
+    properties: dict[str, object] = Field(
+        default_factory=dict, description="Free-form property bag."
+    )
 
 
 class AnnouncementId(BoundModel):
@@ -205,7 +228,9 @@ class ChangeParcelInfo(BoundModel):
     model_config = _DELIVERY_CFG
 
     parcel_id: str | None = Field(default=None, description="Parcel id.")
-    change: dict[str, object] = Field(default_factory=dict, description="Change descriptor returned by Avito.")
+    change: dict[str, object] = Field(
+        default_factory=dict, description="Change descriptor returned by Avito."
+    )
 
 
 class RegisteredParcelId(BoundModel):

@@ -1,4 +1,5 @@
 """Stock-management domain — per-item inventory rows + bulk update result."""
+
 from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field, RootModel

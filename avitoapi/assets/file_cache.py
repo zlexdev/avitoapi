@@ -5,6 +5,7 @@ the underlying storage doesn't speak TTLs natively (e.g. naive S3 bucket
 without a lifecycle rule) or when callers want a coarser cache horizon than
 per-call decisions.
 """
+
 from __future__ import annotations
 
 from datetime import timedelta

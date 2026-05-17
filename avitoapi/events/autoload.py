@@ -4,6 +4,7 @@ Emitted by the autoload poller around ``GET /autoload/v2/reports``: each
 new report id produces :class:`AutoloadReportReady` once parsing finishes,
 and :class:`AutoloadFailed` when the report carries fatal errors.
 """
+
 from __future__ import annotations
 
 from datetime import datetime

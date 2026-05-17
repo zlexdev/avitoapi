@@ -1,4 +1,5 @@
 """Structlog setup + redaction processor for secrets/tokens."""
+
 from __future__ import annotations
 
 import logging

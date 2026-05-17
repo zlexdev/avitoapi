@@ -8,6 +8,7 @@ auto-injects an ``Idempotency-Key`` header. The label-download endpoint
 declares ``__binary_response__ = True`` because the wire returns raw bytes
 (PDF / ZIP), not JSON.
 """
+
 from __future__ import annotations
 
 from typing import Any, ClassVar
@@ -96,7 +97,9 @@ class CncSetOrderDetails(BaseMethod[CncDetailsResult]):
     __idempotent_mutation__: ClassVar[bool] = True
 
     order_id: str = Field(..., min_length=1)
-    details: dict[str, Any] = Field(default_factory=dict, description="CnC details payload (free-form).")
+    details: dict[str, Any] = Field(
+        default_factory=dict, description="CnC details payload (free-form)."
+    )
 
 
 class GetCourierDeliveryRange(BaseMethod[CourierDeliveryRange]):
@@ -116,8 +119,12 @@ class SetCourierDeliveryRange(BaseMethod[CourierDeliveryRange]):
     __idempotent_mutation__: ClassVar[bool] = True
 
     order_id: str = Field(..., min_length=1)
-    date_from: str = Field(..., min_length=1, description="ISO datetime — lower bound of courier window.")
-    date_to: str = Field(..., min_length=1, description="ISO datetime — upper bound of courier window.")
+    date_from: str = Field(
+        ..., min_length=1, description="ISO datetime — lower bound of courier window."
+    )
+    date_to: str = Field(
+        ..., min_length=1, description="ISO datetime — upper bound of courier window."
+    )
     comment: str | None = Field(default=None, description="Optional buyer-facing note.")
 
 
@@ -141,7 +148,9 @@ class ListManagedOrders(BaseMethod[ManagedOrderList]):
 
     page: int = Field(default=1, ge=1)
     per_page: int = Field(default=25, ge=1, le=100)
-    status: str | None = Field(default=None, description="Optional status filter (free-form string).")
+    status: str | None = Field(
+        default=None, description="Optional status filter (free-form string)."
+    )
 
 
 class CreateOrderLabels(BaseMethod[LabelTaskResult]):
@@ -151,7 +160,9 @@ class CreateOrderLabels(BaseMethod[LabelTaskResult]):
     __endpoint__: ClassVar[str] = "/order-management/1/orders/labels"
     __idempotent_mutation__: ClassVar[bool] = True
 
-    order_ids: list[str] = Field(..., min_length=1, description="Orders to include in the label batch.")
+    order_ids: list[str] = Field(
+        ..., min_length=1, description="Orders to include in the label batch."
+    )
 
 
 class CreateOrderLabelsExtended(BaseMethod[LabelTaskResult]):
@@ -161,7 +172,9 @@ class CreateOrderLabelsExtended(BaseMethod[LabelTaskResult]):
     __endpoint__: ClassVar[str] = "/order-management/1/orders/labels/extended"
     __idempotent_mutation__: ClassVar[bool] = True
 
-    order_ids: list[str] = Field(..., min_length=1, description="Orders to include in the extended-label batch.")
+    order_ids: list[str] = Field(
+        ..., min_length=1, description="Orders to include in the extended-label batch."
+    )
     options: dict[str, Any] = Field(
         default_factory=dict,
         description="Extended label options (format, size, …).",

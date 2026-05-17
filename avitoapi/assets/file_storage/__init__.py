@@ -1,4 +1,5 @@
 """Binary K/V storage backends for downloaded assets."""
+
 from __future__ import annotations
 
 from .base import FileStorage

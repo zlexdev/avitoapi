@@ -1,11 +1,11 @@
 """Unit tests for the pipeline subsystem (resumable stages + auto ack)."""
+
 from __future__ import annotations
 
 import pytest
 from avitoapi import (
     BaseEvent,
     BaseMiddleware,
-    BaseStage,
     Dispatcher,
     EventContext,
     EventQueue,
@@ -169,6 +169,7 @@ async def test_base_stage_subclassing_registers_in_declaration_order():
 
     class Charge(ShipStage):
         name = "charge-card"
+
         async def __call__(self, event, ctx: EventContext):
             fired.append("charge")
 

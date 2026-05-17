@@ -1,4 +1,5 @@
 """Orders domain — DBS lifecycle endpoints (list, get, status, terms, track, refund)."""
+
 from __future__ import annotations
 
 from typing import ClassVar

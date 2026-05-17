@@ -5,6 +5,7 @@ identity. :class:`AvitoStorageKeyBuilder` wraps that pair into a
 :class:`StorageKey` instance and renders the on-disk key so two different
 accounts talking about the same ``chat_id`` never collide in storage.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass

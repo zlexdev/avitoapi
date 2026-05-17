@@ -5,6 +5,7 @@ chat history. The five endpoints surface the lifecycle: enumerate
 :class:`AvailableOffer` slots → :class:`MultiCreateOffers` to draft →
 :class:`MultiConfirmOffers` to commit → stats + tariff probes.
 """
+
 from __future__ import annotations
 
 from datetime import datetime

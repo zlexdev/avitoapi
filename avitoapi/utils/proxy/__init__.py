@@ -1,4 +1,5 @@
 """Proxy transport seam. See ``_MODULE.md``."""
+
 from __future__ import annotations
 
 from ._base import BaseProxyTransport, InvalidHook, NoProxyTransport, Proxy, ProxyAcquireContext

@@ -5,6 +5,7 @@ Conventions:
 - No real HTTP — every test gets a :class:`FakeSession` instance.
 - Sample loaders read JSON from ``tests/fixtures/``.
 """
+
 from __future__ import annotations
 
 import json
@@ -43,6 +44,7 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item
 
 # ---- sample / fixture loaders ----------------------------------------------
 
+
 @pytest.fixture(scope="session")
 def fixtures_dir() -> Path:
     return FIXTURE_DIR
@@ -53,6 +55,7 @@ def load_fixture() -> Callable[[str], dict[str, Any]]:
     def _load(name: str) -> dict[str, Any]:
         path = FIXTURE_DIR / name
         return json.loads(path.read_bytes().decode())
+
     return _load
 
 
@@ -73,6 +76,7 @@ def accounts_self_payload(load_fixture: Callable[[str], dict[str, Any]]) -> dict
 
 # ---- config ----------------------------------------------------------------
 
+
 @pytest.fixture
 def client_config() -> ClientConfig:
     """Minimal valid config — no live secrets, just enough for the builder to construct."""
@@ -86,6 +90,7 @@ def client_config() -> ClientConfig:
 
 
 # ---- session / storage / oauth wiring --------------------------------------
+
 
 @pytest.fixture
 def storage() -> MemoryStorage:
@@ -115,6 +120,7 @@ def oauth_client(
 def oauth_injector(oauth_client: OAuthClient) -> OAuthInjectorMiddleware:
     def cache_key_builder(client: Any) -> str:
         return f"oauth:{client.config.client_id}"
+
     return OAuthInjectorMiddleware(oauth=oauth_client, cache_key_builder=cache_key_builder)
 
 
@@ -150,6 +156,7 @@ async def client(
 def sample_token(oauth_token_payload: dict[str, Any]) -> Token:
     """A ready-to-use Token built from the canned OAuth fixture."""
     from datetime import datetime, timedelta
+
     expires_at = datetime.now(UTC) + timedelta(seconds=oauth_token_payload["expires_in"])
     return Token(
         access_token=oauth_token_payload["access_token"],

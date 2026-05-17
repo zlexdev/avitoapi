@@ -8,6 +8,7 @@ Two endpoints:
   /realty/v1/report/create/{itemId}`` (real report shipped via a follow-up
   task-status surface that Avito doesn't yet expose).
 """
+
 from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field

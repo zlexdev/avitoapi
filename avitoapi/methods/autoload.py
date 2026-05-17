@@ -8,6 +8,7 @@ auto-injects an ``Idempotency-Key`` header.
 body. ``__multipart__ = True`` is declared for the future multipart-aware
 Protocol/Session pair.
 """
+
 from __future__ import annotations
 
 from typing import ClassVar
@@ -54,9 +55,7 @@ class GetLastAutoloadReport(BaseMethod[AutoloadReport]):
     """Most recent autoload-run report via ``GET .../reports/last_report/``."""
 
     __http_method__: ClassVar[str] = "GET"
-    __endpoint__: ClassVar[str] = (
-        "/autoload/v1/accounts/{user_id}/reports/last_report/"
-    )
+    __endpoint__: ClassVar[str] = "/autoload/v1/accounts/{user_id}/reports/last_report/"
     __path_fields__: ClassVar[frozenset[str]] = frozenset({"user_id"})
 
     user_id: int = Field(..., ge=1)
@@ -66,9 +65,7 @@ class GetAutoloadReport(BaseMethod[AutoloadReport]):
     """One autoload-run report by id via ``GET .../reports/{report_id}/``."""
 
     __http_method__: ClassVar[str] = "GET"
-    __endpoint__: ClassVar[str] = (
-        "/autoload/v1/accounts/{user_id}/reports/{report_id}/"
-    )
+    __endpoint__: ClassVar[str] = "/autoload/v1/accounts/{user_id}/reports/{report_id}/"
     __path_fields__: ClassVar[frozenset[str]] = frozenset({"user_id", "report_id"})
 
     user_id: int = Field(..., ge=1)

@@ -4,6 +4,7 @@ Avito's CPA auction lets sellers bid per category/region for higher
 placement. The two endpoints (``GET`` + ``POST`` on ``/auction/1/bids``)
 both deal with the same :class:`AuctionBid` shape.
 """
+
 from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field, RootModel

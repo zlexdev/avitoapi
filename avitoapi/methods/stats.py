@@ -1,4 +1,5 @@
 """Stats-domain endpoints — shallow / deep item stats, call stats, spendings."""
+
 from __future__ import annotations
 
 from datetime import date, datetime

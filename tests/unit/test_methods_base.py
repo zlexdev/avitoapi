@@ -8,6 +8,7 @@ Coverage:
 - Awaiting a bare (unbound) method raises ``MethodNotBoundError``.
 - ``method.as_(client).emit(client)`` works end-to-end via the funnel.
 """
+
 from __future__ import annotations
 
 from typing import Any, ClassVar
@@ -26,8 +27,10 @@ class _Stub(BaseModel):
 
 # ---- __path__ rejection ----------------------------------------------------
 
+
 def test_subclass_with_path_attribute_raises_method_declaration_error() -> None:
     with pytest.raises(MethodDeclarationError):
+
         class _Broken(BaseMethod[_Stub]):
             __http_method__: ClassVar[str] = "GET"
             __endpoint__: ClassVar[str] = "/x"
@@ -35,6 +38,7 @@ def test_subclass_with_path_attribute_raises_method_declaration_error() -> None:
 
 
 # ---- generic / returning reconciliation -----------------------------------
+
 
 def test_subclass_with_generic_only_auto_binds_returning() -> None:
     class _Auto(BaseMethod[_Stub]):
@@ -58,6 +62,7 @@ def test_subclass_with_contradictory_generic_and_returning_raises() -> None:
         id: int = 1
 
     with pytest.raises(MethodDeclarationError):
+
         class _Contradiction(BaseMethod[_Stub]):
             __http_method__: ClassVar[str] = "GET"
             __endpoint__: ClassVar[str] = "/contradict"
@@ -65,6 +70,7 @@ def test_subclass_with_contradictory_generic_and_returning_raises() -> None:
 
 
 # ---- naked await raises ---------------------------------------------------
+
 
 async def test_bare_method_await_raises_method_not_bound_error() -> None:
     method = GetSelf()
@@ -74,6 +80,7 @@ async def test_bare_method_await_raises_method_not_bound_error() -> None:
 
 
 # ---- as_(client).emit(client) round-trip ----------------------------------
+
 
 async def test_as_attaches_client_and_returns_self() -> None:
     method = GetSelf()

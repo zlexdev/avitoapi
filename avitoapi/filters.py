@@ -18,6 +18,7 @@ the named helpers ``F.x.in_({1, 2})`` / ``F.x.contains("foo")`` /
 Each operation returns a new :class:`MagicFilter`; the leaf is a callable
 that takes one event and returns ``bool``.
 """
+
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable

@@ -1,4 +1,5 @@
 """Realty / short-term-rent — bookings, calendar, period prices."""
+
 from __future__ import annotations
 
 from datetime import date

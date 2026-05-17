@@ -1,4 +1,5 @@
 """Frozen :class:`RetryPolicy` with exponential backoff + jitter."""
+
 from __future__ import annotations
 
 import random

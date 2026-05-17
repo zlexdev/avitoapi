@@ -5,6 +5,7 @@ dispatchers can route to per-account handlers. ``NewMessage.message`` is
 typed as the :data:`avitoapi.models.messenger.Message` discriminated union
 so handlers get full IDE completion + type narrowing on ``message.type``.
 """
+
 from __future__ import annotations
 
 from typing import Any

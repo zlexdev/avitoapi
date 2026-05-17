@@ -8,6 +8,7 @@ Covers:
 - :class:`AssetDownloader` cache-hit behaviour (second call → zero new
   fetches) and bounded concurrency via ``download_many``.
 """
+
 from __future__ import annotations
 
 import asyncio

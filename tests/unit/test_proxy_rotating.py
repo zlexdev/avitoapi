@@ -1,7 +1,9 @@
 """Unit tests for :class:`ListProxyTransport` rotation + ban logic."""
+
 from __future__ import annotations
 
 import asyncio
+import itertools
 import random
 
 import pytest
@@ -25,7 +27,7 @@ async def test_round_robin_cycles_through_pool():
     # Two full laps means we should have seen every entry twice.
     assert len(set(picked)) == 3
     # Cursor advances strictly — no proxy is repeated back-to-back.
-    for prev, curr in zip(picked, picked[1:], strict=False):
+    for prev, curr in itertools.pairwise(picked):
         assert prev != curr
 
 
@@ -144,7 +146,8 @@ async def test_invalid_hook_fires_on_failure():
     acquire = transport.acquire()
     async with acquire:
         acquire.mark_invalid(ProxyConnectionError("boom"))
-    assert seen and "ProxyConnectionError" in seen[0][1]
+    assert seen
+    assert "ProxyConnectionError" in seen[0][1]
 
 
 def _only_key(transport: ListProxyTransport) -> str:

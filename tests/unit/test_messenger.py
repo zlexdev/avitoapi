@@ -8,6 +8,7 @@ canned responses. Tests assert:
 - query / body routing matches the verb,
 - the decoded response is the right typed DTO with the client pre-bound.
 """
+
 from __future__ import annotations
 
 import json
@@ -92,7 +93,9 @@ async def msgr_client(msgr_config: ClientConfig) -> Any:
 # ---- ListChats -------------------------------------------------------------
 
 
-async def test_list_chats_decodes_chat_list_and_renders_path(msgr_client: tuple[Client, FakeSession]) -> None:
+async def test_list_chats_decodes_chat_list_and_renders_path(
+    msgr_client: tuple[Client, FakeSession],
+) -> None:
     client, session = msgr_client
     session.register(ListChats, body=_load("chats_list.json"))
 
@@ -111,7 +114,9 @@ async def test_list_chats_decodes_chat_list_and_renders_path(msgr_client: tuple[
 # ---- GetChat ---------------------------------------------------------------
 
 
-async def test_get_chat_renders_path_and_decodes_chat(msgr_client: tuple[Client, FakeSession]) -> None:
+async def test_get_chat_renders_path_and_decodes_chat(
+    msgr_client: tuple[Client, FakeSession],
+) -> None:
     client, session = msgr_client
     session.register(GetChat, body=_load("chat_detail.json"))
 
@@ -128,7 +133,9 @@ async def test_get_chat_renders_path_and_decodes_chat(msgr_client: tuple[Client,
 # ---- ListMessages ----------------------------------------------------------
 
 
-async def test_list_messages_renders_v3_path_and_decodes(msgr_client: tuple[Client, FakeSession]) -> None:
+async def test_list_messages_renders_v3_path_and_decodes(
+    msgr_client: tuple[Client, FakeSession],
+) -> None:
     client, session = msgr_client
     session.register(ListMessages, body=_load("messages_p1.json"))
 
@@ -144,7 +151,9 @@ async def test_list_messages_renders_v3_path_and_decodes(msgr_client: tuple[Clie
 # ---- SendTextMessage -------------------------------------------------------
 
 
-async def test_send_text_message_posts_body_and_idempotency_header(msgr_client: tuple[Client, FakeSession]) -> None:
+async def test_send_text_message_posts_body_and_idempotency_header(
+    msgr_client: tuple[Client, FakeSession],
+) -> None:
     client, session = msgr_client
     session.register(
         SendTextMessage,
@@ -202,7 +211,9 @@ async def test_send_image_posts_image_id_in_body(msgr_client: tuple[Client, Fake
 # ---- MarkChatRead ----------------------------------------------------------
 
 
-async def test_mark_chat_read_posts_to_read_endpoint(msgr_client: tuple[Client, FakeSession]) -> None:
+async def test_mark_chat_read_posts_to_read_endpoint(
+    msgr_client: tuple[Client, FakeSession],
+) -> None:
     client, session = msgr_client
     session.register(MarkChatRead, body={"success": True})
 
@@ -219,7 +230,9 @@ async def test_mark_chat_read_posts_to_read_endpoint(msgr_client: tuple[Client, 
 # ---- DeleteMessage ---------------------------------------------------------
 
 
-async def test_delete_message_renders_three_path_fields(msgr_client: tuple[Client, FakeSession]) -> None:
+async def test_delete_message_renders_three_path_fields(
+    msgr_client: tuple[Client, FakeSession],
+) -> None:
     client, session = msgr_client
     session.register(DeleteMessage, body={"success": True})
 
@@ -234,7 +247,9 @@ async def test_delete_message_renders_three_path_fields(msgr_client: tuple[Clien
 # ---- UploadImage -----------------------------------------------------------
 
 
-async def test_upload_image_collapses_random_key_response(msgr_client: tuple[Client, FakeSession]) -> None:
+async def test_upload_image_collapses_random_key_response(
+    msgr_client: tuple[Client, FakeSession],
+) -> None:
     client, session = msgr_client
     session.register(UploadImage, body=_load("upload_image_response.json"))
 
@@ -252,7 +267,9 @@ async def test_upload_image_collapses_random_key_response(msgr_client: tuple[Cli
 # ---- ListBlacklist ---------------------------------------------------------
 
 
-async def test_list_blacklist_decodes_blacklist_envelope(msgr_client: tuple[Client, FakeSession]) -> None:
+async def test_list_blacklist_decodes_blacklist_envelope(
+    msgr_client: tuple[Client, FakeSession],
+) -> None:
     client, session = msgr_client
     session.register(ListBlacklist, body={"users": [{"user_id": 99}, {"user_id": 100}]})
 
@@ -285,7 +302,9 @@ async def test_add_blacklist_posts_user_ids(msgr_client: tuple[Client, FakeSessi
 # ---- RemoveBlacklist -------------------------------------------------------
 
 
-async def test_remove_blacklist_uses_delete_verb_with_target(msgr_client: tuple[Client, FakeSession]) -> None:
+async def test_remove_blacklist_uses_delete_verb_with_target(
+    msgr_client: tuple[Client, FakeSession],
+) -> None:
     client, session = msgr_client
     session.register(RemoveBlacklist, body={"success": True})
 
@@ -300,7 +319,9 @@ async def test_remove_blacklist_uses_delete_verb_with_target(msgr_client: tuple[
 # ---- GetVoiceFiles ---------------------------------------------------------
 
 
-async def test_get_voice_files_renders_query_and_decodes(msgr_client: tuple[Client, FakeSession]) -> None:
+async def test_get_voice_files_renders_query_and_decodes(
+    msgr_client: tuple[Client, FakeSession],
+) -> None:
     client, session = msgr_client
     session.register(
         GetVoiceFiles,
@@ -325,7 +346,9 @@ async def test_get_voice_files_renders_query_and_decodes(msgr_client: tuple[Clie
 # ---- Bound actions on Chat / Message --------------------------------------
 
 
-async def test_chat_send_text_builds_bound_send_text_message(msgr_client: tuple[Client, FakeSession]) -> None:
+async def test_chat_send_text_builds_bound_send_text_message(
+    msgr_client: tuple[Client, FakeSession],
+) -> None:
     client, session = msgr_client
     session.register(GetChat, body=_load("chat_detail.json"))
 
@@ -338,7 +361,9 @@ async def test_chat_send_text_builds_bound_send_text_message(msgr_client: tuple[
     assert method._client is client
 
 
-async def test_message_reply_uses_send_text_regardless_of_source(msgr_client: tuple[Client, FakeSession]) -> None:
+async def test_message_reply_uses_send_text_regardless_of_source(
+    msgr_client: tuple[Client, FakeSession],
+) -> None:
     """Reply is always a SendTextMessage even when source variant is image / voice."""
 
     client, session = msgr_client
@@ -355,7 +380,9 @@ async def test_message_reply_uses_send_text_regardless_of_source(msgr_client: tu
 # ---- webhook lifecycle (W7-A) ---------------------------------------------
 
 
-async def test_subscribe_webhook_posts_url_and_secret(msgr_client: tuple[Client, FakeSession]) -> None:
+async def test_subscribe_webhook_posts_url_and_secret(
+    msgr_client: tuple[Client, FakeSession],
+) -> None:
     client, session = msgr_client
     session.register(SubscribeWebhook, body={"success": True, "message": "subscribed"})
 

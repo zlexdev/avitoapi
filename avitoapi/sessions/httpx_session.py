@@ -1,4 +1,5 @@
 """``HttpxSession`` — fallback backend when ``curl_cffi`` is not installable."""
+
 from __future__ import annotations
 
 import json

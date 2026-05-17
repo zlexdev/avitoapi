@@ -1,4 +1,5 @@
 """Generic K/V storage layer. See ``_MODULE.md`` for the contract."""
+
 from __future__ import annotations
 
 from .base import BaseStorage

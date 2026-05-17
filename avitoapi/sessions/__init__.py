@@ -1,4 +1,5 @@
 """Session funnel + concrete backends. See ``_MODULE.md``."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

@@ -1,4 +1,5 @@
 """SDK exception hierarchy. Everything inherits from :class:`SDKError`."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -330,6 +331,7 @@ class RunawayPagination(PaginationError, RuntimeError):
     """Raised when a paginator exceeds the configured ``max_pages`` guard."""
 
     default_message = "Paginator exceeded max_pages — runaway loop guard tripped"
+
 
 _STATUS_MAP: dict[int, type[HTTPError]] = {
     400: BadRequest,

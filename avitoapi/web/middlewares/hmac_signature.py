@@ -5,6 +5,7 @@ Avito signs each delivery with the per-webhook secret stored under
 caller-supplied async `SecretProvider` and uses :func:`hmac.compare_digest`
 for constant-time comparison.
 """
+
 from __future__ import annotations
 
 import hashlib

@@ -14,6 +14,7 @@
   away from the failing proxy automatically. Independent of the session's
   built-in retry loop — stack it for harder guarantees.
 """
+
 from __future__ import annotations
 
 import asyncio

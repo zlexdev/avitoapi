@@ -6,6 +6,7 @@ that the calendar endpoint returns a ``date -> status`` map keyed by
 ``YYYY-MM-DD`` strings, which we eagerly coerce into ``date`` keys on the
 :class:`Calendar` model.
 """
+
 from __future__ import annotations
 
 from collections.abc import Iterator

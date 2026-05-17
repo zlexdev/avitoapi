@@ -1,4 +1,5 @@
 """Tariff domain — current subscription plan, quotas, expiry."""
+
 from __future__ import annotations
 
 from datetime import datetime

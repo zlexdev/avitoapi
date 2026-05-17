@@ -1,4 +1,5 @@
 """Proxy transport seam. ``NoProxyTransport`` is the default; rotators live in :mod:`.rotating`."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod

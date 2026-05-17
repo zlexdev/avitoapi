@@ -1,4 +1,5 @@
 """Unit tests for :func:`parse_proxy` / :func:`parse_proxy_list`."""
+
 from __future__ import annotations
 
 import pytest

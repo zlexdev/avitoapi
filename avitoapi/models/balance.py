@@ -1,4 +1,5 @@
 """Balance domain — real / bonus balance + operation history rows."""
+
 from __future__ import annotations
 
 from datetime import UTC, datetime

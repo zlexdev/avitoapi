@@ -3,6 +3,7 @@
 Avito's calltracking surface delivers call records on a delay; the poller
 diffs successive pages and emits one event per new row.
 """
+
 from __future__ import annotations
 
 from datetime import datetime

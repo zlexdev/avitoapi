@@ -1,4 +1,5 @@
 """TrxPromo v1 — apply / cancel / commissions round-trips."""
+
 from __future__ import annotations
 
 import json

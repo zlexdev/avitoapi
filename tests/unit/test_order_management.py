@@ -1,4 +1,5 @@
 """Order-management domain — representative round-trips + bound actions + binary download."""
+
 from __future__ import annotations
 
 import json
@@ -153,7 +154,8 @@ async def test_check_order_confirmation_code_returns_check(
     fake_session: FakeSession,
 ) -> None:
     fake_session.bind_fixture(
-        CheckOrderConfirmationCode, "order_management/confirmation_check.json",
+        CheckOrderConfirmationCode,
+        "order_management/confirmation_check.json",
     )
 
     check = await client(CheckOrderConfirmationCode(order_id="om_001", code="1234"))

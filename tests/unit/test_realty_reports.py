@@ -1,4 +1,5 @@
 """Unit tests for the realty-reports domain."""
+
 from __future__ import annotations
 
 import json

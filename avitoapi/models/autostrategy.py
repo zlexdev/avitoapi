@@ -9,6 +9,7 @@ Response DTOs use ``ConfigDict(strict=False, extra="allow")`` — Avito's
 schemas drift faster than this module can be refreshed, matching the W5/W6
 forward-compat stance.
 """
+
 from __future__ import annotations
 
 from collections.abc import Iterator
@@ -194,7 +195,9 @@ class CampaignActionResult(BaseModel):
     model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
     campaign_id: str | None = Field(default=None, description="Affected campaign id.")
-    status: CampaignStatus | None = Field(default=None, description="Resulting status, when surfaced.")
+    status: CampaignStatus | None = Field(
+        default=None, description="Resulting status, when surfaced."
+    )
     ok: bool | None = Field(default=None, description="Server-side success flag, when surfaced.")
 
 

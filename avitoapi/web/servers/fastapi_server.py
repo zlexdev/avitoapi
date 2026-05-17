@@ -5,6 +5,7 @@ The server is driven by ``uvicorn.Server`` programmatically so
 ``start()``/``stop()`` remain coroutine-friendly (no blocking
 ``uvicorn.run`` call). ``fastapi`` and ``uvicorn`` are both lazy-imported.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -66,8 +67,7 @@ class FastAPIWebhookRunner(BaseWebhookRunner):
     async def start(self) -> None:
         import uvicorn  # noqa: PLC0415 — lazy
 
-        app = self.app
-        assert isinstance(app, FastAPIWebApp)
+        app: FastAPIWebApp = self.app  # type: ignore[assignment]
         config = uvicorn.Config(
             app.app,
             host=self.config.host,

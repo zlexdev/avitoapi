@@ -1,4 +1,5 @@
 """Stats domain — per-item view / contact / call analytics rows."""
+
 from __future__ import annotations
 
 from datetime import date as _Date

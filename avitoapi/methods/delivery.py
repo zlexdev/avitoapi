@@ -8,6 +8,7 @@ of payloads into the endpoint string via ``__path_fields__``.
 Naming convention: PascalCase from the path tail with ``V1``/``V2``
 suffixes where the upstream surface is explicitly versioned.
 """
+
 from __future__ import annotations
 
 from typing import Any, ClassVar
@@ -99,7 +100,9 @@ class SetAreaCustomSchedule(BaseMethod[GenericDeliveryResult]):
     __idempotent_mutation__: ClassVar[bool] = True
 
     area_id: str = Field(..., min_length=1)
-    schedule: dict[str, Any] = Field(default_factory=dict, description="Schedule payload (free-form).")
+    schedule: dict[str, Any] = Field(
+        default_factory=dict, description="Schedule payload (free-form)."
+    )
 
 
 class ListTariffTerminals(BaseMethod[TerminalList]):
@@ -242,7 +245,9 @@ class CreateAnnouncementV1(BaseMethod[Announcement]):
     __endpoint__: ClassVar[str] = "/delivery-sandbox/announcements/create"
     __idempotent_mutation__: ClassVar[bool] = True
 
-    payload: dict[str, Any] = Field(default_factory=dict, description="Free-form announcement payload.")
+    payload: dict[str, Any] = Field(
+        default_factory=dict, description="Free-form announcement payload."
+    )
 
 
 class TrackAnnouncementV1(BaseMethod[AnnouncementEvent]):
@@ -334,7 +339,9 @@ class CreateAnnouncementV1Alt(BaseMethod[Announcement]):
     __endpoint__: ClassVar[str] = "/delivery-sandbox/v1/createAnnouncement"
     __idempotent_mutation__: ClassVar[bool] = True
 
-    payload: dict[str, Any] = Field(default_factory=dict, description="Free-form announcement payload.")
+    payload: dict[str, Any] = Field(
+        default_factory=dict, description="Free-form announcement payload."
+    )
 
 
 class GetAnnouncementEventV1(BaseMethod[AnnouncementEvent]):

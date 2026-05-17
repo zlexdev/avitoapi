@@ -9,6 +9,7 @@ The paginator is *both* awaitable and async-iterable:
 The runaway guard caps the page-count (``ClientConfig.pagination_max_pages``,
 overridable per-paginator).
 """
+
 from __future__ import annotations
 
 from collections.abc import AsyncIterator, Generator

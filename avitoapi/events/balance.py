@@ -5,6 +5,7 @@ two snapshots. ``BalanceLow`` fires once per crossing of the threshold
 configured on the poller (debounced — does not re-fire while balance
 stays below the line).
 """
+
 from __future__ import annotations
 
 from datetime import datetime

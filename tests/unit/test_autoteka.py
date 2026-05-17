@@ -1,4 +1,5 @@
 """Autoteka — VIN/regnum previews + paid full report (offline fixtures only)."""
+
 from __future__ import annotations
 
 import json

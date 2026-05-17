@@ -4,6 +4,7 @@ Two methods. Both are POST/PUT — :class:`GetStockInfo` is POST despite
 being a read because Avito accepts a bulk list of item ids in the body;
 :class:`UpdateStocks` is a PUT idempotent mutation.
 """
+
 from __future__ import annotations
 
 from typing import ClassVar

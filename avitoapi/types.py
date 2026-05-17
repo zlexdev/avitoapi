@@ -1,4 +1,5 @@
 """Cross-cutting NewType / Enum / lightweight view types used by every layer."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

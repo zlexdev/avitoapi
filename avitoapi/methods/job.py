@@ -8,6 +8,7 @@ Three method-classes:
   idempotent so retries don't cost an extra "contact reveal" (Avito
   monetises these on some plans).
 """
+
 from __future__ import annotations
 
 from typing import ClassVar

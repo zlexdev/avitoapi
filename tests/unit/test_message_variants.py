@@ -9,6 +9,7 @@ that:
 - exactly one WARNING log line is emitted per first-seen unknown type
   (process-lifetime dedup).
 """
+
 from __future__ import annotations
 
 import json
@@ -117,7 +118,9 @@ def test_unknown_message_decodes_into_unknown_fallback_with_raw_type() -> None:
     assert msg.raw_type == "future_type_xyz"
 
 
-def test_unknown_message_emits_exactly_one_warning_per_type(caplog: pytest.LogCaptureFixture) -> None:
+def test_unknown_message_emits_exactly_one_warning_per_type(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     with caplog.at_level(logging.WARNING, logger="avitoapi.models.messenger"):
         decode_message(_load("unknown.json"))
 

@@ -1,4 +1,5 @@
 """Orders domain — method-class fixture round-trips + bound action wiring."""
+
 from __future__ import annotations
 
 import json
@@ -21,6 +22,7 @@ from tests._fake_session import FakeSession
 
 # ---- get_order round-trip --------------------------------------------------
 
+
 async def test_get_order_returns_typed_order(
     client: Client,
     fake_session: FakeSession,
@@ -40,6 +42,7 @@ async def test_get_order_returns_typed_order(
 
 # ---- list_orders -----------------------------------------------------------
 
+
 async def test_list_orders_returns_envelope_with_two_rows(
     client: Client,
     fake_session: FakeSession,
@@ -58,6 +61,7 @@ async def test_list_orders_returns_envelope_with_two_rows(
 
 
 # ---- change_order_status mutation -----------------------------------------
+
 
 async def test_change_order_status_round_trip(
     client: Client,
@@ -88,6 +92,7 @@ async def test_change_order_status_emits_post_with_idempotency_key(
 
 
 # ---- delivery / track / refund -------------------------------------------
+
 
 async def test_transfer_delivery_terms_carries_body_fields(
     client: Client,
@@ -138,6 +143,7 @@ async def test_refund_order_round_trip(
 
 
 # ---- bound methods ---------------------------------------------------------
+
 
 async def test_order_bound_change_status_builds_method_with_client(
     client: Client,

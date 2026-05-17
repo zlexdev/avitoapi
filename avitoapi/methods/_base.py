@@ -1,4 +1,5 @@
 """``BaseMethod[T]`` — aiogram-style typed endpoint declaration."""
+
 from __future__ import annotations
 
 from typing import Any, ClassVar, Generic, Self, TypeVar, get_args
@@ -104,11 +105,7 @@ class BaseMethod(BaseModel, Generic[T]):
                     break
 
         explicit = cls.__dict__.get("__returning__", None)
-        if (
-            explicit is not None
-            and from_generic is not None
-            and explicit is not from_generic
-        ):
+        if explicit is not None and from_generic is not None and explicit is not from_generic:
             raise MethodDeclarationError(
                 f"{cls.__name__}: __returning__={explicit.__name__} contradicts "
                 f"Generic parameter T={from_generic.__name__}. Pick one.",

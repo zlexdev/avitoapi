@@ -23,6 +23,7 @@ Observers are *named managers* under the router, pre-filtered on the
 event class (and, for messenger sub-types, on the message's
 :class:`MessageType`). Filter evaluation happens inside :meth:`Router.propagate`.
 """
+
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
@@ -125,7 +126,8 @@ def install_observers(router_like: Router) -> None:  # noqa: PLR0915 — flat by
     r.chat_archived = r._manager("messenger.chat_archived", _isinst(ChatArchived))
     r.chat_blacklisted = r._manager("messenger.chat_blacklisted", _isinst(ChatBlacklisted))
     r.voice_file_resolved = r._manager(
-        "messenger.voice_file_resolved", _isinst(VoiceFileResolved),
+        "messenger.voice_file_resolved",
+        _isinst(VoiceFileResolved),
     )
 
     r.order_status_changed = r._manager("orders.status_changed", _isinst(OrderStatusChanged))
@@ -138,29 +140,34 @@ def install_observers(router_like: Router) -> None:  # noqa: PLR0915 — flat by
     r.order_refunded = r._manager("orders.refunded", _isinst(OrderRefunded))
 
     r.parcel_status_changed = r._manager(
-        "delivery.parcel_status_changed", _isinst(ParcelStatusChanged),
+        "delivery.parcel_status_changed",
+        _isinst(ParcelStatusChanged),
     )
     r.parcel_handed_over = r._manager(
-        "delivery.parcel_handed_over", _isinst(ParcelHandedOver),
+        "delivery.parcel_handed_over",
+        _isinst(ParcelHandedOver),
     )
     r.parcel_delivered = r._manager("delivery.parcel_delivered", _isinst(ParcelDelivered))
     r.parcel_returned = r._manager("delivery.parcel_returned", _isinst(ParcelReturned))
     r.announcement_tracked = r._manager(
-        "delivery.announcement_tracked", _isinst(AnnouncementTracked),
+        "delivery.announcement_tracked",
+        _isinst(AnnouncementTracked),
     )
 
     r.review_received = r._manager("reviews.received", _isinst(ReviewReceived))
     r.review_answered = r._manager("reviews.answered", _isinst(ReviewAnswered))
 
     r.autoload_report_ready = r._manager(
-        "autoload.report_ready", _isinst(AutoloadReportReady),
+        "autoload.report_ready",
+        _isinst(AutoloadReportReady),
     )
     r.autoload_failed = r._manager("autoload.failed", _isinst(AutoloadFailed))
 
     r.call_received = r._manager("calltracking.received", _isinst(CallReceived))
     r.call_ended = r._manager("calltracking.ended", _isinst(CallEnded))
     r.call_recording_ready = r._manager(
-        "calltracking.recording_ready", _isinst(CallRecordingReady),
+        "calltracking.recording_ready",
+        _isinst(CallRecordingReady),
     )
 
     r.balance_changed = r._manager("balance.changed", _isinst(BalanceChanged))
@@ -337,6 +344,7 @@ class Router:
     def _call_one(manager: HandlerManager):  # noqa: ANN205 — closure helper
         async def _terminal(event: Any, ctx: EventContext) -> bool:
             return await manager.trigger(event, ctx)
+
         return _terminal
 
 

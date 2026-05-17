@@ -5,6 +5,7 @@
 in *where* the bytes live (memory dict, sha256-named files on disk, S3,
 Redis bytes).
 """
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod

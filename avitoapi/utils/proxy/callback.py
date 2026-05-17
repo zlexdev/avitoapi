@@ -13,6 +13,7 @@ last-error timestamp, total errors, ...) and returns either:
 The same callable is invoked on proxy errors (failure path), so users can
 implement the rotation policy in one place without subclassing.
 """
+
 from __future__ import annotations
 
 import time
@@ -158,7 +159,9 @@ class CallbackProxyTransport(BaseProxyTransport):
         host: str | None,
         last_error: ProxyError | None,
     ) -> Proxy | None:
-        ctx = self._build_ctx(reason=reason, account_id=account_id, host=host, last_error=last_error)
+        ctx = self._build_ctx(
+            reason=reason, account_id=account_id, host=host, last_error=last_error
+        )
         result = self._callback(ctx)
         if _is_awaitable(result):
             # User passed an async callback. We can't await here — acquire is

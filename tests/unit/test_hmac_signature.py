@@ -1,4 +1,5 @@
 """Unit tests for :class:`HMACSignatureMiddleware`."""
+
 from __future__ import annotations
 
 import hashlib
@@ -72,6 +73,7 @@ async def test_constant_time_compare_used():
     We can't directly measure timing, but we can verify two equal-length wrong
     sigs are uniformly rejected.
     """
+
     async def provider(_id: str) -> str:
         return "secret"
 

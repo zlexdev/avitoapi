@@ -1,4 +1,5 @@
 """``AssetDownloader`` — bounded-concurrency CDN fetch with caching."""
+
 from __future__ import annotations
 
 import asyncio
@@ -82,7 +83,9 @@ class AssetDownloader:
             return bytes(content)
         if isinstance(content, str):
             return content.encode()
-        raise RuntimeError(f"asset fetch returned unrecognised content type: {type(content).__name__}")
+        raise RuntimeError(
+            f"asset fetch returned unrecognised content type: {type(content).__name__}"
+        )
 
     @staticmethod
     def _cache_key(url: str) -> str:

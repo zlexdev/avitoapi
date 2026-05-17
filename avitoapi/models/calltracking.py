@@ -8,6 +8,7 @@ Two surfaces:
   sets ``__binary_response__ = True`` so :class:`RestProtocol.decode_response`
   short-circuits and returns ``raw.body`` (``bytes``) verbatim.
 """
+
 from __future__ import annotations
 
 from collections.abc import Iterator

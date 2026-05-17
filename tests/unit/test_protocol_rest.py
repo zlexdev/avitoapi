@@ -7,6 +7,7 @@ Coverage:
 - Idempotency-Key is deduplicated across retries via storage (same key reused).
 - Non-idempotent mutation (``__idempotent_mutation__`` unset) gets no header.
 """
+
 from __future__ import annotations
 
 from typing import Any, ClassVar
@@ -22,12 +23,14 @@ from pydantic import BaseModel
 
 # ---- helper method-classes used only for this test module -----------------
 
+
 class _EchoResponse(BaseModel):
     ok: bool = True
 
 
 class _PostThing(BaseMethod[_EchoResponse]):
     """POST /core/v1/things — body fields go in JSON body."""
+
     __http_method__: ClassVar[str] = "POST"
     __endpoint__: ClassVar[str] = "/core/v1/things"
     __returning__: ClassVar[type[BaseModel]] = _EchoResponse
@@ -39,6 +42,7 @@ class _PostThing(BaseMethod[_EchoResponse]):
 
 class _GetThing(BaseMethod[_EchoResponse]):
     """GET /core/v1/things/{thing_id} — path field + query field."""
+
     __http_method__: ClassVar[str] = "GET"
     __endpoint__: ClassVar[str] = "/core/v1/things/{thing_id}"
     __returning__: ClassVar[type[BaseModel]] = _EchoResponse
@@ -50,6 +54,7 @@ class _GetThing(BaseMethod[_EchoResponse]):
 
 class _UnsafePost(BaseMethod[_EchoResponse]):
     """POST without idempotent_mutation — should NOT get an Idempotency-Key."""
+
     __http_method__: ClassVar[str] = "POST"
     __endpoint__: ClassVar[str] = "/core/v1/unsafe"
     __returning__: ClassVar[type[BaseModel]] = _EchoResponse
@@ -59,6 +64,7 @@ class _UnsafePost(BaseMethod[_EchoResponse]):
 
 # ---- shared helpers --------------------------------------------------------
 
+
 class _StubClient:
     """Tiny stub with the attributes RestProtocol expects on ``ctx.client``."""
 
@@ -67,7 +73,9 @@ class _StubClient:
         self.storage = storage
 
 
-def _ctx(client_config: ClientConfig, storage: MemoryStorage, method: BaseMethod[Any]) -> RequestContext:
+def _ctx(
+    client_config: ClientConfig, storage: MemoryStorage, method: BaseMethod[Any]
+) -> RequestContext:
     return RequestContext(
         client=_StubClient(config=client_config, storage=storage),
         method=method,
@@ -75,6 +83,7 @@ def _ctx(client_config: ClientConfig, storage: MemoryStorage, method: BaseMethod
 
 
 # ---- verb routing ----------------------------------------------------------
+
 
 async def test_build_request_routes_get_fields_into_query(
     client_config: ClientConfig,
@@ -106,7 +115,10 @@ async def test_build_request_routes_post_fields_into_body(
     assert prepared.body is not None
     if isinstance(prepared.body, (bytes, str)):
         import json
-        decoded = json.loads(prepared.body if isinstance(prepared.body, str) else prepared.body.decode())
+
+        decoded = json.loads(
+            prepared.body if isinstance(prepared.body, str) else prepared.body.decode()
+        )
     else:
         decoded = prepared.body
     assert decoded.get("name") == "widget"
@@ -114,6 +126,7 @@ async def test_build_request_routes_post_fields_into_body(
 
 
 # ---- path templating -------------------------------------------------------
+
 
 async def test_build_request_substitutes_path_placeholders(
     client_config: ClientConfig,
@@ -144,6 +157,7 @@ async def test_build_request_leaves_path_field_out_of_query(
 
 # ---- is_idempotent ---------------------------------------------------------
 
+
 def test_is_idempotent_true_for_get_methods() -> None:
     assert RestProtocol().is_idempotent(GetSelf()) is True
 
@@ -153,6 +167,7 @@ def test_is_idempotent_false_for_non_retry_safe_post() -> None:
 
 
 # ---- Idempotency-Key injection ---------------------------------------------
+
 
 async def test_build_request_injects_idempotency_key_when_method_opts_in(
     client_config: ClientConfig,
@@ -221,6 +236,7 @@ async def test_build_request_uses_different_idempotency_key_for_different_body(
 
 
 # ---- decode_response -------------------------------------------------------
+
 
 def test_decode_response_validates_into_returning_model(
     accounts_self_payload: dict[str, Any],

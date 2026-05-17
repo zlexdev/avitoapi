@@ -4,6 +4,7 @@ Subclasses optionally declare an ``event_name`` class-kwarg to register
 themselves in :data:`Event.registry` (used by the router for textual
 routes and by debug tooling).
 """
+
 from __future__ import annotations
 
 from typing import Any, ClassVar
@@ -33,9 +34,7 @@ class Event:
             setattr(self, k, v)
 
     def __repr__(self) -> str:
-        attrs = ", ".join(
-            f"{k}={v!r}" for k, v in vars(self).items() if not k.startswith("_")
-        )
+        attrs = ", ".join(f"{k}={v!r}" for k, v in vars(self).items() if not k.startswith("_"))
         return f"{type(self).__name__}({attrs})"
 
 

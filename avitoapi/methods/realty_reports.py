@@ -1,4 +1,5 @@
 """Realty-reports endpoints — market-price probe + async report creation."""
+
 from __future__ import annotations
 
 from typing import ClassVar

@@ -8,6 +8,7 @@ Aiogram-style usage::
 The observer can be called with zero or more *predicates* (filters); the
 decorated handler is invoked only when every predicate matches the event.
 """
+
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable

@@ -1,4 +1,5 @@
 """Unit tests for :class:`CallbackProxyTransport`."""
+
 from __future__ import annotations
 
 import pytest

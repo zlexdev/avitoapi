@@ -1,4 +1,5 @@
 """Orders domain — DBS order lifecycle, transition table, bound actions."""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -100,7 +101,9 @@ class TrackInfo(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True, strict=True, extra="allow")
 
-    carrier: str = Field(..., min_length=1, description="Carrier slug (Avito Доставка, CDEK, Pochta…).")
+    carrier: str = Field(
+        ..., min_length=1, description="Carrier slug (Avito Доставка, CDEK, Pochta…)."
+    )
     code: str = Field(..., min_length=1, description="Carrier tracking code.")
     updated_at: datetime | None = Field(
         default=None,
@@ -124,10 +127,18 @@ class Order(BoundModel):
     status: OrderStatus = Field(..., description="Current lifecycle status.")
     item_id: int | None = Field(default=None, description="Item the order was placed against.")
     buyer_id: int | None = Field(default=None, description="Buyer's Avito user id, when surfaced.")
-    seller_id: int | None = Field(default=None, description="Seller's Avito user id, when surfaced.")
-    total: Money | None = Field(default=None, description="Order total; absent on some DBS responses.")
-    delivery: DeliveryTerm | None = Field(default=None, description="Seller-supplied delivery terms.")
-    track: TrackInfo | None = Field(default=None, description="Carrier tracking info, when shipped.")
+    seller_id: int | None = Field(
+        default=None, description="Seller's Avito user id, when surfaced."
+    )
+    total: Money | None = Field(
+        default=None, description="Order total; absent on some DBS responses."
+    )
+    delivery: DeliveryTerm | None = Field(
+        default=None, description="Seller-supplied delivery terms."
+    )
+    track: TrackInfo | None = Field(
+        default=None, description="Carrier tracking info, when shipped."
+    )
     created_at: datetime | None = Field(default=None, description="Creation timestamp (UTC).")
     updated_at: datetime | None = Field(default=None, description="Last update timestamp (UTC).")
 
@@ -210,4 +221,6 @@ class OrderList(BoundModel):
     model_config = ConfigDict(populate_by_name=True, strict=True, extra="allow")
 
     orders: list[Order] = Field(default_factory=list, description="Order rows in the current page.")
-    total: int | None = Field(default=None, ge=0, description="Server-reported total count, when present.")
+    total: int | None = Field(
+        default=None, ge=0, description="Server-reported total count, when present."
+    )

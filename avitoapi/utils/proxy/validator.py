@@ -1,4 +1,5 @@
 """Proxy checker — runs a tiny live request through each proxy and reports the outcome."""
+
 from __future__ import annotations
 
 import asyncio

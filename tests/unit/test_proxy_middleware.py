@@ -1,4 +1,5 @@
 """Unit tests for ``ProxyErrorMiddleware`` and ``RetryMiddleware``."""
+
 from __future__ import annotations
 
 import pytest

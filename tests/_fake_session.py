@@ -16,6 +16,7 @@ what the funnel emitted (URL, headers, body).
 Record mode (``AVITOAPI_RECORD=1``) is reserved for later waves — W1 ships
 playback only.
 """
+
 from __future__ import annotations
 
 import json
@@ -78,8 +79,12 @@ class FakeSession(BaseSession):
         super().__init__(config=config, proxy_transport=NoProxyTransport())
         self._record = record or os.getenv("AVITOAPI_RECORD") == "1"
         self.sent: list[PreparedRequest] = []
-        self._by_route: dict[tuple[str, str], FakeResponse | Callable[[PreparedRequest], FakeResponse]] = {}
-        self._by_method_name: dict[str, FakeResponse | Callable[[PreparedRequest], FakeResponse]] = {}
+        self._by_route: dict[
+            tuple[str, str], FakeResponse | Callable[[PreparedRequest], FakeResponse]
+        ] = {}
+        self._by_method_name: dict[
+            str, FakeResponse | Callable[[PreparedRequest], FakeResponse]
+        ] = {}
         self._call_counts: dict[str, int] = defaultdict(int)
         self._default: FakeResponse | Callable[[PreparedRequest], FakeResponse] | None = None
 
@@ -93,7 +98,9 @@ class FakeSession(BaseSession):
         headers: dict[str, str] | None = None,
     ) -> None:
         """Register a canned response for one method-class. Latest wins."""
-        self._by_method_name[method_cls.__name__] = FakeResponse(body=body, status=status, headers=headers)
+        self._by_method_name[method_cls.__name__] = FakeResponse(
+            body=body, status=status, headers=headers
+        )
 
     def register_responder(
         self,
@@ -112,7 +119,9 @@ class FakeSession(BaseSession):
         headers: dict[str, str] | None = None,
     ) -> None:
         """Register a canned response keyed by ``(http_method, url_path)``."""
-        self._by_route[(http_method.upper(), url_path)] = FakeResponse(body=body, status=status, headers=headers)
+        self._by_route[(http_method.upper(), url_path)] = FakeResponse(
+            body=body, status=status, headers=headers
+        )
 
     def register_route_responder(
         self,
@@ -133,7 +142,9 @@ class FakeSession(BaseSession):
         body = path.read_bytes()
         self._by_method_name[method_cls.__name__] = FakeResponse(body=body, status=status)
 
-    def set_default(self, body: bytes | str | dict[str, Any] | list[Any], status: int = 200) -> None:
+    def set_default(
+        self, body: bytes | str | dict[str, Any] | list[Any], status: int = 200
+    ) -> None:
         self._default = FakeResponse(body=body, status=status)
 
     # ---- introspection -----------------------------------------------------
@@ -181,6 +192,7 @@ class FakeSession(BaseSession):
     @staticmethod
     def _strip_query(url: str) -> str:
         from urllib.parse import urlsplit
+
         parts = urlsplit(url)
         return parts.path or url.split("?", 1)[0]
 

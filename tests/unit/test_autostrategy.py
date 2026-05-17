@@ -1,4 +1,5 @@
 """Autostrategy v1 — budget, campaign CRUD, info, stats round-trips."""
+
 from __future__ import annotations
 
 import json

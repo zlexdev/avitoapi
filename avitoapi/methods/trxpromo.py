@@ -1,4 +1,5 @@
 """TrxPromo v1 — apply / cancel transaction-commission discounts + list rules."""
+
 from __future__ import annotations
 
 from typing import ClassVar

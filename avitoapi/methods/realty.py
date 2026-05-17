@@ -9,6 +9,7 @@ Avito's wire (one under ``/realty``, one under ``/core``); the SDK exposes
 both because callers consume them on different surfaces (admin dashboards vs
 per-item drilldowns).
 """
+
 from __future__ import annotations
 
 from datetime import date
@@ -89,9 +90,7 @@ class ItemBookings(BaseMethod[BookingList]):
     """Bookings for one item via ``GET /core/v1/accounts/{user_id}/items/{item_id}/bookings``."""
 
     __http_method__: ClassVar[str] = "GET"
-    __endpoint__: ClassVar[str] = (
-        "/core/v1/accounts/{user_id}/items/{item_id}/bookings"
-    )
+    __endpoint__: ClassVar[str] = "/core/v1/accounts/{user_id}/items/{item_id}/bookings"
     __path_fields__: ClassVar[frozenset[str]] = frozenset({"user_id", "item_id"})
 
     user_id: int = Field(..., ge=1)

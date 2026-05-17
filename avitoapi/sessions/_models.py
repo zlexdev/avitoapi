@@ -1,4 +1,5 @@
 """Wire-level dataclasses passed through the session funnel."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

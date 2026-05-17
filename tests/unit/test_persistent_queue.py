@@ -1,9 +1,7 @@
 """Unit tests for :class:`EventQueue` and the dispatcher ack/replay loop."""
+
 from __future__ import annotations
 
-from typing import Any
-
-import pytest
 from avitoapi import (
     BaseEvent,
     CtxQueue,
@@ -11,7 +9,6 @@ from avitoapi import (
     EventContext,
     EventQueue,
     HandlerType,
-    NewMessage,
 )
 from avitoapi.storage.memory import MemoryStorage
 
@@ -61,7 +58,8 @@ async def test_dispatcher_calls_atomic_completed_to_drop_event():
 
     dispatcher._manager("test.pinged", lambda ev: isinstance(ev, _Pinged)).register(_handler)
     await dispatcher.feed_event(_Pinged(value=7))
-    assert triggered and triggered[0][0] == 7
+    assert triggered
+    assert triggered[0][0] == 7
     assert triggered[0][2] is HandlerType.HANDLER
     assert await dispatcher.event_queue.pending_count() == 0
 
@@ -93,7 +91,8 @@ async def test_unacked_event_replayed_after_restart():
     new_dispatcher._manager("test.pinged", lambda ev: isinstance(ev, _Pinged)).register(_ack_now)
     count = await new_dispatcher.replay_pending()
     assert count == 1
-    assert replayed and replayed[0][0] == 99
+    assert replayed
+    assert replayed[0][0] == 99
     assert replayed[0][1] >= 1
     assert await new_dispatcher.event_queue.pending_count() == 0
 

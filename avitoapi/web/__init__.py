@@ -8,6 +8,7 @@ importing :mod:`avitoapi.web` never pulls a transitive HTTP framework.
 The Avito-specific handler + middlewares (no extra deps) are always
 available eagerly.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any

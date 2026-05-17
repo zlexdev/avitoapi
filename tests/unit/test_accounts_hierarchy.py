@@ -1,4 +1,5 @@
 """Unit tests for the accounts-hierarchy domain."""
+
 from __future__ import annotations
 
 import json

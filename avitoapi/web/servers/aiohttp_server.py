@@ -5,6 +5,7 @@ Default backend — used by the bare :class:`~avitoapi.web.WebApp` /
 contract: lazy-imports ``aiohttp``, mounts routes via
 ``aiohttp.web.Application.router.add_route``.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
@@ -53,8 +54,8 @@ class AiohttpWebhookRunner(BaseWebhookRunner):
     async def start(self) -> None:
         from aiohttp import web  # noqa: PLC0415 — lazy
 
-        app = self.app
-        assert isinstance(app, AiohttpWebApp)
+        # _build_app returns AiohttpWebApp — narrow for the type checker.
+        app: AiohttpWebApp = self.app  # type: ignore[assignment]
         self._runner = web.AppRunner(app.app)
         await self._runner.setup()
         self._site = web.TCPSite(self._runner, host=self.config.host, port=self.config.port)

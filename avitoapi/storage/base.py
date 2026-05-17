@@ -1,4 +1,5 @@
 """Generic async key/value storage contract used everywhere (tokens, FSM, idempotency)."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod

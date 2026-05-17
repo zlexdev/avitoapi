@@ -5,6 +5,7 @@ Covers the subset handlers actually call: ``get_state``, ``set_state``,
 that auto-prefixes ``State`` names with their owning group so
 ``ChatStates.idle.state == "ChatStates:idle"``.
 """
+
 from __future__ import annotations
 
 import asyncio

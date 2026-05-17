@@ -1,4 +1,5 @@
 """Typed Avito events flowing through the Dispatcher."""
+
 from __future__ import annotations
 
 from .autoload import AutoloadEvent, AutoloadFailed, AutoloadReportReady

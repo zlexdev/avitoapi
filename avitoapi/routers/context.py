@@ -1,4 +1,5 @@
 """``EventContext`` — per-event mutable bag passed to every handler."""
+
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
@@ -140,6 +141,10 @@ class EventContext:
       (e.g. ``ctx.workflow_data['fsm']`` or stash a parsed model).
     * ``handled`` — flips to ``True`` when at least one handler ran for this event.
     * ``queue`` — :class:`CtxQueue` exposing persistent-queue ack + checkpoint helpers.
+    * ``outputs`` — typed scratch space for declarative stage data flow.
+      Stages that declare ``output="key"`` deposit their return value
+      under ``ctx.outputs["key"]`` so downstream stages can consume it
+      without rummaging through ``workflow_data``.
     """
 
     event: Event
@@ -149,6 +154,7 @@ class EventContext:
     queue: CtxQueue = field(default_factory=CtxQueue)
     handler_type: HandlerType = HandlerType.HANDLER
     pipeline: CtxPipeline = field(default_factory=CtxPipeline)
+    outputs: dict[str, Any] = field(default_factory=dict)
 
     async def atomic_completed(self) -> bool:
         """Convenience shortcut to :meth:`CtxQueue.atomic_completed`."""

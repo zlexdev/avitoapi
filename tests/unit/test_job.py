@@ -1,4 +1,5 @@
 """Job domain — résumé search, detail, contacts (PII)."""
+
 from __future__ import annotations
 
 import json

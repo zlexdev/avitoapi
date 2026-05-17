@@ -1,4 +1,5 @@
 """Items domain — listing DTOs, statuses, VAS service catalogue, bound actions."""
+
 from __future__ import annotations
 
 from datetime import datetime

@@ -1,4 +1,5 @@
 """Challenge solver seam (captcha / WAF). Avito Partner API does not need one."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -29,8 +30,7 @@ class ChallengeSolver(ABC):
     """Pluggable solver for captcha / browser-challenge surfaces."""
 
     @abstractmethod
-    async def solve(self, request: ChallengeRequest) -> ChallengeSolution:
-        ...
+    async def solve(self, request: ChallengeRequest) -> ChallengeSolution: ...
 
 
 class NullSolver(ChallengeSolver):

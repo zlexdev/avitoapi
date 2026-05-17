@@ -6,6 +6,7 @@ Snapshot: 2026-05-16. Source: https://developers.avito.ru/api-catalog/item/categ
 Avito occasionally rotates ids; consumers can override per-instance when
 they hit a new tree.
 """
+
 from __future__ import annotations
 
 from enum import IntEnum

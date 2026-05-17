@@ -1,4 +1,5 @@
 """Unit tests for :class:`AvitoWebhookHandler`."""
+
 from __future__ import annotations
 
 import json

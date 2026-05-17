@@ -1,4 +1,5 @@
 """``BaseMiddleware`` — outer/inner middleware ABC for event propagation."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -33,8 +34,7 @@ class BaseMiddleware(ABC):
         handler: NextHandler,
         event: Any,
         ctx: EventContext,
-    ) -> Any:
-        ...
+    ) -> Any: ...
 
 
 class MiddlewareChain:
@@ -74,6 +74,7 @@ class MiddlewareChain:
 def _bind(mw: BaseMiddleware, nxt: NextHandler) -> NextHandler:
     async def _call(event: Any, ctx: EventContext) -> Any:
         return await mw(nxt, event, ctx)
+
     return _call
 
 

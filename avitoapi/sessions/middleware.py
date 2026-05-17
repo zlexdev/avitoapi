@@ -1,4 +1,5 @@
 """Request-side middleware ABC + manager. Shared shape between request and dispatch sides."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -29,8 +30,7 @@ class RequestMiddleware(ABC):
         handler: RequestHandler,
         prepared: PreparedRequest,
         ctx: RequestContext,
-    ) -> RawResponse:
-        ...
+    ) -> RawResponse: ...
 
 
 class RequestMiddlewareManager:

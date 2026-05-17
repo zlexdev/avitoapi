@@ -4,6 +4,7 @@ Uses ``Sanic.create_server`` to keep server lifecycle inside the running
 event loop (avoids ``Sanic.run`` which manages its own loop). ``sanic``
 is lazy-imported.
 """
+
 from __future__ import annotations
 
 import uuid
@@ -59,8 +60,7 @@ class SanicWebhookRunner(BaseWebhookRunner):
         return SanicWebApp()
 
     async def start(self) -> None:
-        app = self.app
-        assert isinstance(app, SanicWebApp)
+        app: SanicWebApp = self.app  # type: ignore[assignment]
         coro = app.app.create_server(
             host=self.config.host,
             port=self.config.port,

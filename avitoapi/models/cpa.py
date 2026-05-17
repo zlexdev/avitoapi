@@ -1,4 +1,5 @@
 """CPA v3 domain — balance, calls/chats by time, complaints lifecycle."""
+
 from __future__ import annotations
 
 from datetime import datetime

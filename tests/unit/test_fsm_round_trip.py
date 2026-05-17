@@ -3,6 +3,7 @@
 Wave 3 ships the fallback path (no ``evented`` dependency yet); the tests
 cover the in-house implementation's API surface that handler code uses.
 """
+
 from __future__ import annotations
 
 import pytest

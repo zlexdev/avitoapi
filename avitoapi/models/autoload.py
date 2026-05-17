@@ -9,6 +9,7 @@ written by ``UpdateAutoloadProfile``). All models accept extra fields
 (``ConfigDict(extra="allow")``) so callers can read forward-compat keys that
 Avito ships before this file is bumped.
 """
+
 from __future__ import annotations
 
 from datetime import datetime

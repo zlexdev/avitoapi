@@ -5,6 +5,7 @@ a JSON body, including read-only fetches (``/info``, ``/campaigns``,
 ``/stat``). All write actions are flagged ``__idempotent_mutation__`` so the
 funnel injects an ``Idempotency-Key`` and retries are safe.
 """
+
 from __future__ import annotations
 
 from datetime import date

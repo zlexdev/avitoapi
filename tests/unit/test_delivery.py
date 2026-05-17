@@ -3,6 +3,7 @@
 The surface is 31 endpoints — this file samples ~10 covering happy paths,
 idempotency injection, path templating, and list envelopes.
 """
+
 from __future__ import annotations
 
 import json
@@ -110,7 +111,9 @@ async def test_list_tariff_areas_renders_tariff_id_in_path(
     prepared = fake_session.sent[-1]
     assert prepared.url.endswith("/delivery-sandbox/tariffs/tariff_cdek/areas")
     # tariff_id lives in path, not body
-    body = prepared.body if isinstance(prepared.body, dict | type(None)) else json.loads(prepared.body)
+    body = (
+        prepared.body if isinstance(prepared.body, dict | type(None)) else json.loads(prepared.body)
+    )
     assert body is None or "tariff_id" not in body
 
 

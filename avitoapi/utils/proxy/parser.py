@@ -1,4 +1,5 @@
 """Flexible proxy parser. Accepts URL strings, ``host:port[:user:pass]`` shorthand, dicts."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -56,10 +57,7 @@ def parse_proxy_list(
     """
 
     items: Iterable[ProxyLike]
-    if isinstance(values, str):
-        items = _split_lines(values)
-    else:
-        items = values
+    items = _split_lines(values) if isinstance(values, str) else values
 
     parsed: list[Proxy] = []
     for raw in items:
@@ -90,8 +88,14 @@ def _from_dict(data: dict[str, Any], *, label_override: str | None) -> Proxy:
     password = data.get("password") or data.get("pass")
     label = label_override if label_override is not None else data.get("label")
 
-    return _build(scheme=scheme, host=str(host), port=_coerce_port(port),
-                  user=user, password=password, label=label)
+    return _build(
+        scheme=scheme,
+        host=str(host),
+        port=_coerce_port(port),
+        user=user,
+        password=password,
+        label=label,
+    )
 
 
 def _from_string(value: str, *, label_override: str | None) -> Proxy:
@@ -106,18 +110,36 @@ def _from_string(value: str, *, label_override: str | None) -> Proxy:
         creds, hostport = text.rsplit("@", 1)
         user, password = _split_creds(creds)
         host, port = _split_host_port(hostport)
-        return _build(scheme=_DEFAULT_SCHEME, host=host, port=port,
-                      user=user, password=password, label=label_override)
+        return _build(
+            scheme=_DEFAULT_SCHEME,
+            host=host,
+            port=port,
+            user=user,
+            password=password,
+            label=label_override,
+        )
 
     parts = text.split(":")
     if len(parts) == 2:
         host, port_s = parts
-        return _build(scheme=_DEFAULT_SCHEME, host=host, port=_coerce_port(port_s),
-                      user=None, password=None, label=label_override)
+        return _build(
+            scheme=_DEFAULT_SCHEME,
+            host=host,
+            port=_coerce_port(port_s),
+            user=None,
+            password=None,
+            label=label_override,
+        )
     if len(parts) == 4:
         host, port_s, user, password = parts
-        return _build(scheme=_DEFAULT_SCHEME, host=host, port=_coerce_port(port_s),
-                      user=user, password=password, label=label_override)
+        return _build(
+            scheme=_DEFAULT_SCHEME,
+            host=host,
+            port=_coerce_port(port_s),
+            user=user,
+            password=password,
+            label=label_override,
+        )
     raise ProxyParseError(f"Unrecognised proxy string: {value!r}")
 
 

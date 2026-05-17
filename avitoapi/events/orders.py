@@ -7,6 +7,7 @@ as both a coarse :class:`OrderStatusChanged` *and* a phase-specific event
 (:class:`OrderShipped`, :class:`OrderDelivered`, ...) so handlers can either
 subscribe to the lifecycle or a single transition.
 """
+
 from __future__ import annotations
 
 from datetime import datetime

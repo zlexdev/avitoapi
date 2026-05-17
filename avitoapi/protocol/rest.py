@@ -1,4 +1,5 @@
 """Default REST protocol — path templating, verb routing, JSON encode/decode."""
+
 from __future__ import annotations
 
 import hashlib

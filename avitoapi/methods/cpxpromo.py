@@ -5,6 +5,7 @@ POST endpoints. The three state-mutating actions (``remove`` / ``setAuto``
 / ``setManual``) are flagged ``__idempotent_mutation__`` so retries do not
 double-apply.
 """
+
 from __future__ import annotations
 
 from typing import ClassVar

@@ -8,6 +8,7 @@ Backed by an in-package task tracker that uses ``asyncio.create_task``
 and a strong-ref set so tasks don't get GC'd mid-flight. Pass a custom
 ``task_tracker`` to override (any object with a ``spawn(coro)`` method).
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -58,6 +59,7 @@ class WebhookFastReturnMiddleware:
         """Hand off to the tracker. Returns the task; caller may ignore it."""
         if asyncio.iscoroutine(coro_or_awaitable):
             return self._tracker.spawn(coro_or_awaitable)  # type: ignore[no-any-return]
+
         # Awaitable that isn't a coroutine — wrap so the tracker sees a coroutine.
         async def _wrap() -> Any:
             return await coro_or_awaitable

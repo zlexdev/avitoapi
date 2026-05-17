@@ -5,6 +5,7 @@ A diff between two ``GET /ratings/v1/reviews`` snapshots produces a
 when the seller answers a review (the answer text appears under
 ``answer`` in the next snapshot).
 """
+
 from __future__ import annotations
 
 from datetime import datetime

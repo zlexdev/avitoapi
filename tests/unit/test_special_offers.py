@@ -1,4 +1,5 @@
 """Unit tests for the special-offers (SBC gateway) domain."""
+
 from __future__ import annotations
 
 import json

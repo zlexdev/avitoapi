@@ -1,4 +1,5 @@
 """Flat ``Client`` facade — every Avito Partner API method bound directly here."""
+
 from __future__ import annotations
 
 import contextlib
@@ -1120,7 +1121,9 @@ class Client:
     async def get_delivery_task(self, task_id: str) -> DeliveryTask:
         return await self(GetDeliveryTask(task_id=task_id))
 
-    async def cancel_parcel(self, parcel_id: str, *, reason: str | None = None) -> ParcelChangeResult:
+    async def cancel_parcel(
+        self, parcel_id: str, *, reason: str | None = None
+    ) -> ParcelChangeResult:
         return await self(CancelParcel(parcel_id=parcel_id, reason=reason))
 
     async def check_delivery_confirmation_code(self, order_id: str, code: str) -> ConfirmationCheck:
@@ -1197,7 +1200,9 @@ class Client:
     async def cancel_announcement_v1(self, announcement_id: str) -> AnnouncementId:
         return await self(CancelAnnouncementV1(announcement_id=announcement_id))
 
-    async def cancel_parcel_v1(self, parcel_id: str, *, reason: str | None = None) -> ParcelChangeResult:
+    async def cancel_parcel_v1(
+        self, parcel_id: str, *, reason: str | None = None
+    ) -> ParcelChangeResult:
         return await self(CancelParcelV1(parcel_id=parcel_id, reason=reason))
 
     async def change_parcel_v1(
@@ -1255,7 +1260,9 @@ class Client:
         order_id: str,
         transition: OrderTransition | str,
     ) -> CncDetailsResult:
-        target = transition if isinstance(transition, OrderTransition) else OrderTransition(transition)
+        target = (
+            transition if isinstance(transition, OrderTransition) else OrderTransition(transition)
+        )
         return await self(ApplyOrderTransition(order_id=order_id, transition=target))
 
     async def check_order_confirmation_code(

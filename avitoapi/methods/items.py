@@ -1,4 +1,5 @@
 """Items-domain endpoints — list / get / update price / VAS / archive."""
+
 from __future__ import annotations
 
 from typing import ClassVar

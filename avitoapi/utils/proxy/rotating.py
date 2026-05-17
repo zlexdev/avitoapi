@@ -1,4 +1,5 @@
 """Rotating proxy transports with cumulative ban tracking."""
+
 from __future__ import annotations
 
 import asyncio
@@ -186,6 +187,7 @@ class ListProxyTransport(BaseProxyTransport):
     def _on_release_factory(self, proxy: Proxy | None):  # noqa: ANN202 — closure, internal
         def _on_release(p: Proxy, err: ProxyError | None) -> None:
             self._record_failure(p, err)
+
         return _on_release if proxy is not None else None
 
     def _record_failure(self, proxy: Proxy, err: ProxyError | None) -> None:

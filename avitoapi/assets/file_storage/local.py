@@ -1,4 +1,5 @@
 """Disk-backed :class:`FileStorage`. Filenames are sha256(key); metadata sidecar."""
+
 from __future__ import annotations
 
 import asyncio

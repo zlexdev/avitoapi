@@ -1,4 +1,5 @@
 """Per-client configuration. Strict Pydantic model with ``.from_env()`` loader."""
+
 from __future__ import annotations
 
 import os
@@ -10,9 +11,7 @@ from .types import HostKey
 
 __version__ = "0.1.0"
 
-DEFAULT_USER_AGENT = (
-    f"avitoapi/{__version__} (+https://github.com/zlexdev/avitoapi)"
-)
+DEFAULT_USER_AGENT = f"avitoapi/{__version__} (+https://github.com/zlexdev/avitoapi)"
 
 
 def _default_hosts() -> dict[HostKey, HttpUrl]:

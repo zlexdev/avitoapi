@@ -5,6 +5,7 @@ Builds a ``litestar.Litestar`` app with one ``Route`` per
 under ``uvicorn.Server`` programmatically so ``start()``/``stop()``
 remain async-safe.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -32,7 +33,7 @@ class LitestarWebApp(BaseWebApp):
         self._app: Any | None = None
 
     @property
-    def app(self) -> Any:  # type: ignore[override]
+    def app(self) -> Any:
         if self._app is None:
             from litestar import Litestar  # noqa: PLC0415 — lazy
 
@@ -50,7 +51,8 @@ class LitestarWebApp(BaseWebApp):
             )
         from litestar import Request, Response, route  # noqa: PLC0415 — lazy
 
-        @route(path=webhook.path, http_method=[webhook.http_method])
+        # litestar @route decorator strips function type
+        @route(path=webhook.path, http_method=[webhook.http_method])  # type: ignore[untyped-decorator]
         async def _handler(request: Request[Any, Any, Any]) -> Response[Any]:
             try:
                 body = await request.json()
@@ -76,8 +78,7 @@ class LitestarWebhookRunner(BaseWebhookRunner):
     async def start(self) -> None:
         import uvicorn  # noqa: PLC0415 — lazy
 
-        app = self.app
-        assert isinstance(app, LitestarWebApp)
+        app: LitestarWebApp = self.app  # type: ignore[assignment]
         config = uvicorn.Config(
             app.app,
             host=self.config.host,

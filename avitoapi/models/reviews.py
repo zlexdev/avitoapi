@@ -1,4 +1,5 @@
 """Reviews domain — rating aggregates, individual reviews, replies."""
+
 from __future__ import annotations
 
 from datetime import datetime

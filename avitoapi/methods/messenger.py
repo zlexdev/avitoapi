@@ -9,6 +9,7 @@ encoded). Switching to real ``multipart/form-data`` requires
 :class:`RestProtocol` + :class:`CurlSession` to honour ``__multipart__``
 via ``PreparedRequest.files``.
 """
+
 from __future__ import annotations
 
 from typing import ClassVar
@@ -69,9 +70,7 @@ class ListMessages(OffsetMethod[MessageList]):
     """List messages via ``GET /messenger/v3/accounts/{user_id}/chats/{chat_id}/messages/``."""
 
     __http_method__: ClassVar[str] = "GET"
-    __endpoint__: ClassVar[str] = (
-        "/messenger/v3/accounts/{user_id}/chats/{chat_id}/messages/"
-    )
+    __endpoint__: ClassVar[str] = "/messenger/v3/accounts/{user_id}/chats/{chat_id}/messages/"
     __path_fields__: ClassVar[frozenset[str]] = frozenset({"user_id", "chat_id"})
     __items_attr__: ClassVar[str | None] = "messages"
 
@@ -111,9 +110,7 @@ class SendImageMessage(BaseMethod[MessageEnvelope]):
     """
 
     __http_method__: ClassVar[str] = "POST"
-    __endpoint__: ClassVar[str] = (
-        "/messenger/v1/accounts/{user_id}/chats/{chat_id}/messages/image"
-    )
+    __endpoint__: ClassVar[str] = "/messenger/v1/accounts/{user_id}/chats/{chat_id}/messages/image"
     __path_fields__: ClassVar[frozenset[str]] = frozenset({"user_id", "chat_id"})
     __idempotent_mutation__: ClassVar[bool] = True
 
@@ -198,9 +195,7 @@ class RemoveBlacklist(BaseMethod[DeleteResult]):
     """Unblock one user via ``DELETE /messenger/v2/.../blacklist/{target_user_id}``."""
 
     __http_method__: ClassVar[str] = "DELETE"
-    __endpoint__: ClassVar[str] = (
-        "/messenger/v2/accounts/{user_id}/blacklist/{target_user_id}"
-    )
+    __endpoint__: ClassVar[str] = "/messenger/v2/accounts/{user_id}/blacklist/{target_user_id}"
     __path_fields__: ClassVar[frozenset[str]] = frozenset({"user_id", "target_user_id"})
 
     user_id: int = Field(..., ge=1)

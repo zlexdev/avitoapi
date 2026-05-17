@@ -4,6 +4,7 @@ Five POST endpoints. The mutating ones (``MultiConfirmOffers``,
 ``MultiCreateOffers``) declare ``__idempotent_mutation__ = True`` so
 retries reuse the same idempotency key.
 """
+
 from __future__ import annotations
 
 from typing import ClassVar

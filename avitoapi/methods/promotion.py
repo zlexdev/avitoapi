@@ -1,4 +1,5 @@
 """Promotion v1 — active promotions, drop, bids, BBIP order + forecast."""
+
 from __future__ import annotations
 
 from typing import ClassVar

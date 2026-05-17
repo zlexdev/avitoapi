@@ -4,6 +4,7 @@ The package ships an :class:`AssetDownloader` for bounded-concurrency CDN
 fetches and a tiny binary K/V abstraction (:class:`FileStorage`) so cached
 bytes can live in process memory, on disk, or — later — in S3 / Redis.
 """
+
 from __future__ import annotations
 
 from .downloader import AssetDownloader

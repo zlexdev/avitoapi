@@ -9,6 +9,7 @@ Namespaces are stored as ``"<namespace>:<key>"`` in the ``key`` column so
 sub-storages over the same backing pool stay isolated without needing
 extra tables.
 """
+
 from __future__ import annotations
 
 import json
@@ -208,5 +209,3 @@ class PostgresStorage(BaseStorage[Any, str]):
         view._min_pool_size = self._min_pool_size
         view._max_pool_size = self._max_pool_size
         return view
-
-

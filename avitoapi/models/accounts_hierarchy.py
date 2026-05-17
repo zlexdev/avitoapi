@@ -8,6 +8,7 @@ re-assigns ads between employees.
 All DTOs use ``extra="allow"`` so callers can read forward-compat keys
 Avito ships before this file is bumped.
 """
+
 from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field, RootModel

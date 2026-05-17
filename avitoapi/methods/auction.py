@@ -3,6 +3,7 @@
 Two methods. ``SetAuctionBids`` mutates and declares
 ``__idempotent_mutation__ = True``.
 """
+
 from __future__ import annotations
 
 from typing import ClassVar

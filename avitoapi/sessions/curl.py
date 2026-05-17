@@ -1,4 +1,5 @@
 """``CurlSession`` — default backend using ``curl_cffi`` for browser-grade TLS fingerprinting."""
+
 from __future__ import annotations
 
 import json
@@ -45,6 +46,7 @@ class CurlSession(BaseSession):
     async def close(self) -> None:
         if self._inner is not None:
             import contextlib
+
             with contextlib.suppress(Exception):
                 await self._inner.close()
             self._inner = None
@@ -93,8 +95,12 @@ class CurlSession(BaseSession):
                 raise SDKConnectionError(str(exc)) from exc
             raise TransportError(f"{type(exc).__name__}: {exc}") from exc
 
-        body: bytes = response.content if isinstance(response.content, bytes) else bytes(
-            response.content or b"",
+        body: bytes = (
+            response.content
+            if isinstance(response.content, bytes)
+            else bytes(
+                response.content or b"",
+            )
         )
         headers = {k.lower(): v for k, v in (response.headers or {}).items()}
         return RawResponse(status=response.status_code, headers=headers, body=body)

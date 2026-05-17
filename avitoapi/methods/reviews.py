@@ -1,4 +1,5 @@
 """Reviews domain — ratings info, reviews list, reply / delete reply."""
+
 from __future__ import annotations
 
 from typing import ClassVar

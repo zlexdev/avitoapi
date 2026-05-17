@@ -1,4 +1,5 @@
 """Tariff endpoint — single read of the active subscription."""
+
 from __future__ import annotations
 
 from typing import ClassVar

@@ -7,6 +7,7 @@ debits balance every call. The SDK does not wrap that with extra safeties
 Live tests are gated on ``AVITOAPI_LIVE=1`` (W6 ships only unit tests with
 canned fixtures).
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -56,7 +57,9 @@ class AutotekaFullReport(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
-    vin: str = Field(..., description="Vehicle VIN the report covers (always present in full report).")
+    vin: str = Field(
+        ..., description="Vehicle VIN the report covers (always present in full report)."
+    )
     summary: dict[str, Any] = Field(
         default_factory=dict,
         description="Headline counters Avito surfaces at the top of the report.",

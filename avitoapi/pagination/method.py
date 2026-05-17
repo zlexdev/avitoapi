@@ -4,6 +4,7 @@ Concrete endpoint classes inherit from :class:`OffsetMethod` or :class:`PageMeth
 to get pagination fields for free; :class:`Client.__call__` then auto-dispatches
 them to a paginator rather than emitting one wire call.
 """
+
 from __future__ import annotations
 
 from typing import Any, ClassVar, Generic, Self, TypeVar

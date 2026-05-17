@@ -1,4 +1,5 @@
 """Unit tests for the stock-management domain."""
+
 from __future__ import annotations
 
 import json

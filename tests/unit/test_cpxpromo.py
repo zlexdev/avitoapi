@@ -1,4 +1,5 @@
 """CpxPromo v1 — getBids / getPromotionsByItemIds / remove / setAuto / setManual."""
+
 from __future__ import annotations
 
 import json

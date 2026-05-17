@@ -6,6 +6,7 @@ Coverage:
 - ``client.get_self()`` returns ``Account`` with ``account._client is client``.
 - 403 + token_expired during a call triggers re-auth + retry via the injector.
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -18,6 +19,7 @@ from avitoapi.storage.memory import MemoryStorage
 from tests._fake_session import FakeResponse, FakeSession
 
 # ---- __call__ + funnel ----------------------------------------------------
+
 
 async def test_client_call_returns_account_when_invoked_with_get_self(
     client: Client,
@@ -38,6 +40,7 @@ async def test_client_call_binds_returned_model_to_self(
 
 
 # ---- get_self -------------------------------------------------------------
+
 
 async def test_get_self_returns_account_with_expected_fields(
     client: Client,
@@ -61,6 +64,7 @@ async def test_get_self_returns_account_bound_to_client(
 
 
 # ---- lifecycle ------------------------------------------------------------
+
 
 async def test_client_async_with_opens_and_closes_session(
     client_config: ClientConfig,
@@ -96,6 +100,7 @@ async def test_client_async_with_opens_and_closes_session(
 
 
 # ---- reauth on 403 token_expired through the funnel -----------------------
+
 
 async def test_client_reauths_and_retries_when_call_returns_token_expired_403(
     client_config: ClientConfig,

@@ -9,6 +9,7 @@ All response DTOs use ``ConfigDict(strict=False, extra="allow")`` — the
 Avito payload schema for this surface is sparsely documented and likely to
 drift.
 """
+
 from __future__ import annotations
 
 from collections.abc import Iterator

@@ -1,4 +1,5 @@
 """In-process :class:`BaseStorage` backed by a dict. Default for tests and single-process apps."""
+
 from __future__ import annotations
 
 import asyncio

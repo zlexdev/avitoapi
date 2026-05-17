@@ -1,4 +1,5 @@
 """``MongoStorage`` — :class:`BaseStorage` over ``motor.motor_asyncio`` (lazy import)."""
+
 from __future__ import annotations
 
 import contextlib
@@ -53,8 +54,7 @@ class MongoStorage(BaseStorage[Any, str]):
             from motor.motor_asyncio import AsyncIOMotorClient as _Mongo
         except ImportError as exc:
             raise ImportError(
-                "install avitoapi[mongo] to use MongoStorage "
-                "(missing motor.motor_asyncio)",
+                "install avitoapi[mongo] to use MongoStorage (missing motor.motor_asyncio)",
             ) from exc
         if self._url is None:
             raise RuntimeError("MongoStorage: no URL and no client provided")

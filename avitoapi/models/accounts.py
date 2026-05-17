@@ -1,4 +1,5 @@
 """Account-domain DTOs."""
+
 from __future__ import annotations
 
 from pydantic import EmailStr, Field, HttpUrl

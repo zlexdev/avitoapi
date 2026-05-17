@@ -4,6 +4,7 @@ We can't hit a real Postgres in CI, so we substitute a stub pool that
 records the SQL+args and returns canned rows. Verifies SQL surface,
 TTL handling, namespace prefixing, and the lazy schema bootstrap.
 """
+
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
@@ -74,10 +75,7 @@ async def test_lazy_schema_bootstrap_runs_create_table_once(storage, pool):
 
 async def test_put_writes_upsert(storage, pool):
     await storage.put("greeting", {"hello": "world"})
-    inserts = [
-        call for call in pool.calls
-        if call[0] == "execute" and "INSERT INTO" in call[1][0]
-    ]
+    inserts = [call for call in pool.calls if call[0] == "execute" and "INSERT INTO" in call[1][0]]
     assert inserts
     sql, args = inserts[0][1]
     assert "avitoapi_storage" in sql
