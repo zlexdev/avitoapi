@@ -57,7 +57,7 @@ class TokenBucket:
 
 def _make_bucket(rps: float) -> Any:
     if _HAS_EVENTED:
-        return _evented.TokenBucket(rps=rps)
+        return _evented.TokenBucket(rate_per_s=rps, burst=max(1, int(rps)))
     return TokenBucket(rps=rps)
 
 

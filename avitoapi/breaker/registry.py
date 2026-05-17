@@ -134,8 +134,8 @@ class BreakerRegistry:
     def _build(self) -> Any:
         if _HAS_EVENTED and hasattr(_evented, "CircuitBreaker"):
             return _evented.CircuitBreaker(
-                fail_threshold=self._config.breaker_fail_threshold,
-                open_seconds=self._config.breaker_open_seconds,
+                threshold=self._config.breaker_fail_threshold,
+                cooldown_s=float(self._config.breaker_open_seconds),
             )
         return CircuitBreaker(
             fail_threshold=self._config.breaker_fail_threshold,

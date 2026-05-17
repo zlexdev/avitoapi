@@ -114,25 +114,16 @@ class AvitoWebhookHandler:
         raise AvitoWebhookParseError(f"unknown event kind: {kind!r}")
 
     async def _dispatch(self, event: MessengerEvent) -> None:
-        for attr in ("feed_event", "dispatch", "propagate_event"):
+        for attr in ("event_entry", "feed_event", "dispatch", "propagate_event"):
             handler = getattr(self.dispatcher, attr, None)
             if handler is not None:
                 await handler(event)
                 return
-        # Last-resort: route via the messenger router if it's attached as `.router`.
+        # Last-resort: drive a bare router via the evented entry-point.
         router = getattr(self.dispatcher, "router", None)
         if router is None:
             return
-        observer_name = {
-            NewMessage: "new_message",
-            MessageRead: "message_read",
-            ChatArchived: "chat_archived",
-        }.get(type(event))
-        if observer_name is None:
-            return
-        observer = getattr(router, observer_name, None)
-        if observer is None:
-            return
-        route = getattr(observer, "route", None)
-        if route is not None:
-            await route(event)
+        import evented  # noqa: PLC0415 — single-use, avoids a hard top-level dep on web handler
+
+        ctx = evented.EventContext(event=event, dispatcher=self.dispatcher)
+        await router.propagate(event, ctx)

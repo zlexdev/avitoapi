@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 
 from avitoapi.events.messenger import ChatArchived, MessageRead, NewMessage
-from avitoapi.routers.messenger import MessengerRouter
+from avitoapi.routers import MessengerRouter
 from avitoapi.web.avito_webhook_handler import (
     AvitoWebhookHandler,
     AvitoWebhookParseError,
@@ -121,7 +121,7 @@ async def test_handle_falls_back_to_router_when_no_feed_event():
     received: list[NewMessage] = []
 
     @dispatcher.router.new_message()
-    async def handle(event: NewMessage) -> None:
+    async def handle(event: NewMessage, _ctx: object) -> None:
         received.append(event)
 
     handler = AvitoWebhookHandler(dispatcher)
