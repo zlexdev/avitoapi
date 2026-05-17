@@ -119,11 +119,11 @@ class AvitoWebhookHandler:
             if handler is not None:
                 await handler(event)
                 return
-        # Last-resort: drive a bare router via the evented entry-point.
+        # Last-resort: drive a bare Router instance.
         router = getattr(self.dispatcher, "router", None)
         if router is None:
             return
-        import evented  # noqa: PLC0415 — single-use, avoids a hard top-level dep on web handler
+        from ..routers import EventContext  # noqa: PLC0415 — lazy to avoid cycle
 
-        ctx = evented.EventContext(event=event, dispatcher=self.dispatcher)
+        ctx = EventContext(event=event, dispatcher=self.dispatcher)
         await router.propagate(event, ctx)

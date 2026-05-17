@@ -4,6 +4,13 @@ from __future__ import annotations
 from .base import BaseStorage
 from .memory import MemoryStorage
 from .mongo import MongoStorage
+from .postgres import PostgresStorage
 from .redis import RedisStorage
 
-__all__ = ["BaseStorage", "MemoryStorage", "MongoStorage", "RedisStorage"]
+__all__ = [
+    "BaseStorage",
+    "MemoryStorage",
+    "MongoStorage",
+    "PostgresStorage",
+    "RedisStorage",
+]

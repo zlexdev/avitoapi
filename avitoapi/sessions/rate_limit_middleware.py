@@ -1,9 +1,8 @@
 """Outbound rate-limit middleware — token bucket per ``(account_id, scope)``.
 
-Backed by ``evented.TokenBucket`` when available, otherwise an in-package
-token bucket. Two-tier: global rps per account + per-chat rps for messenger
-sends. The middleware inspects ``ctx.workflow_data['chat_id']`` to apply
-the per-chat bucket.
+Two-tier: global rps per account + per-chat rps for messenger sends.
+The middleware inspects ``ctx.workflow_data['chat_id']`` to apply the
+per-chat bucket.
 """
 from __future__ import annotations
 
@@ -16,17 +15,9 @@ from .middleware import RequestHandler, RequestMiddleware
 if TYPE_CHECKING:
     from ._models import PreparedRequest, RawResponse, RequestContext
 
-try:
-    import evented as _evented
-
-    _HAS_EVENTED = hasattr(_evented, "TokenBucket")
-except ImportError:
-    _evented = None  # type: ignore[assignment]
-    _HAS_EVENTED = False
-
 
 class TokenBucket:
-    """In-package token bucket — used when ``evented`` is missing.
+    """In-package token bucket.
 
     ``rps`` is both the refill rate and the burst capacity. Calling
     :meth:`acquire` waits until one token is available, then consumes it.
@@ -56,8 +47,6 @@ class TokenBucket:
 
 
 def _make_bucket(rps: float) -> Any:
-    if _HAS_EVENTED:
-        return _evented.TokenBucket(rate_per_s=rps, burst=max(1, int(rps)))
     return TokenBucket(rps=rps)
 
 

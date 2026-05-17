@@ -1,8 +1,8 @@
 """Per-endpoint circuit breaker registry.
 
-Real implementation delegates to :class:`evented.CircuitBreaker` when the
-optional ``evented`` dependency is installed. Without it, a minimal in-package
-breaker ships so that the rest of the SDK works on a stock Python install.
+Self-contained in-package implementation. Stateless: every breaker lives
+inside :class:`BreakerRegistry`, keyed by ``(host, path)`` or
+``(host, path, account_id)`` when ``ClientConfig.breaker_per_account`` is on.
 """
 from __future__ import annotations
 
@@ -13,14 +13,6 @@ from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from ..config import ClientConfig
-
-try:
-    import evented as _evented
-
-    _HAS_EVENTED = True
-except ImportError:
-    _evented = None  # type: ignore[assignment]
-    _HAS_EVENTED = False
 
 
 class CircuitOpenError(Exception):
@@ -36,7 +28,7 @@ class BreakerState(StrEnum):
 
 
 class CircuitBreaker:
-    """Minimal in-package breaker — used when ``evented`` is not available.
+    """Per-endpoint circuit breaker.
 
     Lifecycle:
         CLOSED -> ``record_failure()`` repeated ``fail_threshold`` times -> OPEN
@@ -132,11 +124,6 @@ class BreakerRegistry:
             return breaker
 
     def _build(self) -> Any:
-        if _HAS_EVENTED and hasattr(_evented, "CircuitBreaker"):
-            return _evented.CircuitBreaker(
-                threshold=self._config.breaker_fail_threshold,
-                cooldown_s=float(self._config.breaker_open_seconds),
-            )
         return CircuitBreaker(
             fail_threshold=self._config.breaker_fail_threshold,
             open_seconds=self._config.breaker_open_seconds,

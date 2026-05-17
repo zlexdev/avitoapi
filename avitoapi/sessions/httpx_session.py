@@ -32,6 +32,8 @@ class HttpxSession(BaseSession):
             return
         import httpx  # lazy-import
 
+        # No fixed proxy at construction — per-request proxies require a fresh
+        # AsyncClient (httpx binds proxy at client level). We build one on demand.
         self._inner = httpx.AsyncClient(timeout=self.config.request_timeout_s)
         await super().open()
 

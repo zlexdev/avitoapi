@@ -92,6 +92,84 @@ class SessionClosed(TransportError, RuntimeError):
     default_message = "Session is closed"
 
 
+class ProxyError(TransportError):
+    """Base for every proxy-attributable failure.
+
+    ``proxy_url`` is the raw proxy endpoint that was in use when the
+    failure happened (may be ``None`` when the parser refuses the input
+    upfront, before any wire call).
+    """
+
+    default_message = "Proxy error"
+
+    def __init__(
+        self,
+        detail: str | None = None,
+        *,
+        proxy_url: str | None = None,
+        context: ErrorContext | None = None,
+    ) -> None:
+        super().__init__(detail, context=context)
+        self.proxy_url = proxy_url
+
+
+class ProxyParseError(ProxyError, ValueError):
+    """Raised by :func:`parse_proxy` when the input shape is not recognised."""
+
+    default_message = "Could not parse proxy specification"
+
+
+class ProxyConnectionError(ProxyError):
+    """The proxy refused / dropped the connection (TCP-level)."""
+
+    default_message = "Proxy connection error"
+
+
+class ProxyAuthError(ProxyError):
+    """407 from the proxy, or upstream auth challenge the proxy passed through."""
+
+    default_message = "Proxy authentication failed"
+
+
+class ProxyTimeoutError(ProxyError):
+    """The proxy did not respond inside the request timeout."""
+
+    default_message = "Proxy timed out"
+
+
+class ProxyTLSError(ProxyError):
+    """TLS handshake to or through the proxy failed."""
+
+    default_message = "Proxy TLS error"
+
+
+class ProxyBanned(ProxyError):
+    """Accumulated failures crossed the configured threshold; proxy is now banned.
+
+    Carries the failure tally on ``failure_count`` so callers can surface
+    the threshold in operator dashboards or alert pipelines.
+    """
+
+    default_message = "Proxy banned after accumulated failures"
+
+    def __init__(
+        self,
+        detail: str | None = None,
+        *,
+        proxy_url: str | None = None,
+        failure_count: int = 0,
+        context: ErrorContext | None = None,
+    ) -> None:
+        super().__init__(detail, proxy_url=proxy_url, context=context)
+        self.failure_count = failure_count
+
+
+class ProxyExhausted(ProxyError):
+    """Every proxy in the pool is banned and none are available right now."""
+
+    default_message = "Proxy pool exhausted — all proxies are banned"
+
+
 class HTTPError(SDKError):
     """Raised when the server returns a non-2xx response."""
 

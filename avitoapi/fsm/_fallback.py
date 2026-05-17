@@ -1,10 +1,9 @@
-"""In-house FSM stand-in used when :mod:`evented` is not installed.
+"""In-tree FSM implementation.
 
 Covers the subset handlers actually call: ``get_state``, ``set_state``,
 ``get_data``, ``set_data``, ``update_data``, ``clear``, plus a metaclass
 that auto-prefixes ``State`` names with their owning group so
-``ChatStates.idle.state == "ChatStates:idle"``. Interface-compatible with
-``evented.FSMContext`` so handler code is identical against either backend.
+``ChatStates.idle.state == "ChatStates:idle"``.
 """
 from __future__ import annotations
 
@@ -113,11 +112,7 @@ class MemoryFSMStorage:
 
 
 class FSMContext:
-    """Per-key FSM facade backed by a :class:`MemoryFSMStorage` (or compatible).
-
-    Mirrors the subset of :class:`evented.FSMContext` handlers actually
-    use; swapping to ``evented`` needs no handler-side change.
-    """
+    """Per-key FSM facade backed by a :class:`MemoryFSMStorage` (or compatible)."""
 
     def __init__(self, storage: MemoryFSMStorage, key: StorageKey) -> None:
         self.storage = storage

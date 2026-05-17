@@ -2,7 +2,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from ..utils.proxy._base import Proxy, ProxyAcquireContext
 
 
 @dataclass(slots=True)
@@ -43,3 +46,5 @@ class RequestContext:
     elapsed_s: float = 0.0
     request_id: str = ""
     account_id: str | None = None
+    proxy: Proxy | None = None
+    proxy_acquire: ProxyAcquireContext | None = None

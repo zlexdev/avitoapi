@@ -1,10 +1,16 @@
-"""Proxy transport seam. ``NoProxyTransport`` is the default; real rotators land in W2."""
+"""Proxy transport seam. ``NoProxyTransport`` is the default; rotators live in :mod:`.rotating`."""
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 
 from pydantic import AnyUrl, BaseModel, ConfigDict, Field
+
+if TYPE_CHECKING:
+    from ...exceptions import ProxyError
+
+InvalidHook = Callable[["Proxy", "ProxyError | None"], None]
 
 
 class Proxy(BaseModel):
@@ -19,25 +25,48 @@ class Proxy(BaseModel):
 class ProxyAcquireContext:
     """Async context manager returned by :meth:`BaseProxyTransport.acquire`.
 
-    On exit, the transport learns whether the call succeeded so rotation
-    strategies can react. Use :meth:`mark_invalid` to signal that the proxy
-    failed mid-request (e.g. 407, TLS handshake error).
+    Lifecycle:
+
+    1. Caller enters the context — yields a :class:`Proxy` or ``None``.
+    2. While inside, caller may call :meth:`mark_invalid` to record a failure
+       attributable to the proxy (TLS, 407, dropped connection).
+    3. On ``__aexit__`` the transport's invalidation callback fires once if
+       :meth:`mark_invalid` was called — that's where rotators evict / cool
+       down the proxy.
+
+    ``on_release`` is the transport's hook; it receives ``(proxy, error?)``.
     """
 
-    __slots__ = ("_invalid", "proxy")
+    __slots__ = ("_invalid", "_on_release", "_release_error", "proxy")
 
-    def __init__(self, proxy: Proxy | None) -> None:
+    def __init__(
+        self,
+        proxy: Proxy | None,
+        *,
+        on_release: Callable[[Proxy, ProxyError | None], None] | None = None,
+    ) -> None:
         self.proxy: Proxy | None = proxy
         self._invalid = False
+        self._release_error: ProxyError | None = None
+        self._on_release = on_release
 
-    def mark_invalid(self) -> None:
+    @property
+    def invalid(self) -> bool:
+        return self._invalid
+
+    def mark_invalid(self, error: ProxyError | None = None) -> None:
+        """Record that this proxy attempt failed. Called from the funnel or middleware."""
+
         self._invalid = True
+        if error is not None:
+            self._release_error = error
 
     async def __aenter__(self) -> Proxy | None:
         return self.proxy
 
     async def __aexit__(self, *exc_info: Any) -> None:
-        return None
+        if self._invalid and self.proxy is not None and self._on_release is not None:
+            self._on_release(self.proxy, self._release_error)
 
 
 class BaseProxyTransport(ABC):
@@ -52,7 +81,7 @@ class BaseProxyTransport(ABC):
     ) -> ProxyAcquireContext:
         """Return a context that yields one :class:`Proxy` (or ``None``) for this attempt."""
 
-    def add_invalid_hook(self, hook: Any) -> None:
+    def add_invalid_hook(self, hook: InvalidHook) -> None:
         """Register a callable invoked when a proxy is marked invalid. Default: no-op."""
 
 

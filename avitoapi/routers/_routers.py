@@ -2,9 +2,8 @@
 
 Mirrors the aiogram convention: one ``Router`` class, one instance per
 logical scope (the bot / a sub-feature / a plugin), every event the SDK
-emits exposed as one named ``EventObserver`` attribute. Sub-routers
-compose via ``parent.include_router(child)`` (inherited from
-:class:`evented.Router`).
+emits exposed as one named :class:`EventObserver` attribute. Sub-routers
+compose via ``parent.include_router(child)``.
 
     from avitoapi import Router, F
     router = Router()
@@ -16,23 +15,18 @@ compose via ``parent.include_router(child)`` (inherited from
     async def handle_order(event, ctx): ...
 
 The same observer surface is also reachable directly on
-:class:`avitoapi.Dispatcher` — the dispatcher multiply-inherits from
-``Router`` so app-level handlers can attach without a separate routing
+:class:`avitoapi.Dispatcher` — the dispatcher inherits from
+:class:`Router` so app-level handlers can attach without a separate routing
 layer.
 
 Observers are *named managers* under the router, pre-filtered on the
 event class (and, for messenger sub-types, on the message's
-``MessageType``). Filter evaluation is done by ``evented`` itself when
-``dispatcher.event_entry(event)`` fans the event out.
-
-Requires ``evented`` (private dep at ``github.com/zlexdev/evented``); install
-via ``pip install 'git+https://${GH_TOKEN}@github.com/zlexdev/evented.git'``.
+:class:`MessageType`). Filter evaluation happens inside :meth:`Router.propagate`.
 """
 from __future__ import annotations
 
+from collections.abc import Callable, Iterable
 from typing import Any
-
-import evented
 
 from ..events.autoload import AutoloadFailed, AutoloadReportReady
 from ..events.balance import (
@@ -83,29 +77,28 @@ from ..events.orders import (
     OrderStatusChanged,
 )
 from ..events.reviews import ReviewAnswered, ReviewReceived
+from ..logging import get_logger
+from .context import EventContext
+from .middleware import MiddlewareChain
+from .observer import EventObserver, Filter, Handler, HandlerManager
 
-EventObserver = evented.EventObserver  # alias of evented.HandlerManager
+log = get_logger(__name__)
 
 
-def _isinst(cls: type) -> Any:
+def _isinst(cls: type) -> Filter:
     """Build an ``event_filter`` callable that matches ``isinstance(event, cls)``."""
 
     return lambda ev: isinstance(ev, cls)
 
 
-def _msg_of(kind: Any) -> Any:
-    """``NewMessage`` filter narrowing to one ``MessageType`` variant."""
+def _msg_of(kind: Any) -> Filter:
+    """``NewMessage`` filter narrowing to one :class:`MessageType` variant."""
 
     return lambda ev: isinstance(ev, NewMessage) and getattr(ev.message, "type", None) == kind
 
 
-def install_observers(router_like: Any) -> None:  # noqa: PLR0915 — flat by design
+def install_observers(router_like: Router) -> None:  # noqa: PLR0915 — flat by design
     """Attach every SDK observer as a named manager on ``router_like``.
-
-    ``router_like`` must be any ``evented.Router`` subclass — this includes
-    both :class:`Router` and :class:`avitoapi.Dispatcher` (which inherits
-    from ``Router``). Splitting this out as a free function keeps both
-    inheritance paths sharing one source of truth.
 
     Kept as one flat function on purpose: the observer wiring is a single
     declarative manifest, splitting it into per-domain helpers would hide
@@ -115,113 +108,92 @@ def install_observers(router_like: Any) -> None:  # noqa: PLR0915 — flat by de
     from ..models.messenger import MessageType  # noqa: PLC0415 — lazy to avoid cycle
 
     r = router_like
-    r.new_message = r.manager("messenger.new_message", event_filter=_isinst(NewMessage))
-    r.text_message = r.manager("messenger.text_message", event_filter=_msg_of(MessageType.TEXT))
-    r.image_message = r.manager("messenger.image_message", event_filter=_msg_of(MessageType.IMAGE))
-    r.link_message = r.manager("messenger.link_message", event_filter=_msg_of(MessageType.LINK))
-    r.item_message = r.manager("messenger.item_message", event_filter=_msg_of(MessageType.ITEM))
-    r.location_message = r.manager(
-        "messenger.location_message", event_filter=_msg_of(MessageType.LOCATION),
-    )
-    r.voice_message = r.manager("messenger.voice_message", event_filter=_msg_of(MessageType.VOICE))
-    r.call_message = r.manager("messenger.call_message", event_filter=_msg_of(MessageType.CALL))
-    r.file_message = r.manager("messenger.file_message", event_filter=_msg_of(MessageType.FILE))
-    r.system_message = r.manager("messenger.system_message", event_filter=_msg_of(MessageType.SYSTEM))
-    r.app_call_message = r.manager(
-        "messenger.app_call_message", event_filter=_msg_of(MessageType.APP_CALL),
-    )
-    r.deleted_message = r.manager(
-        "messenger.deleted_message", event_filter=_msg_of(MessageType.DELETED),
-    )
-    r.unknown_message = r.manager(
-        "messenger.unknown_message", event_filter=_msg_of(MessageType.UNKNOWN),
-    )
-    r.message_read = r.manager("messenger.message_read", event_filter=_isinst(MessageRead))
-    r.chat_archived = r.manager("messenger.chat_archived", event_filter=_isinst(ChatArchived))
-    r.chat_blacklisted = r.manager(
-        "messenger.chat_blacklisted", event_filter=_isinst(ChatBlacklisted),
-    )
-    r.voice_file_resolved = r.manager(
-        "messenger.voice_file_resolved", event_filter=_isinst(VoiceFileResolved),
+    r.new_message = r._manager("messenger.new_message", _isinst(NewMessage))
+    r.text_message = r._manager("messenger.text_message", _msg_of(MessageType.TEXT))
+    r.image_message = r._manager("messenger.image_message", _msg_of(MessageType.IMAGE))
+    r.link_message = r._manager("messenger.link_message", _msg_of(MessageType.LINK))
+    r.item_message = r._manager("messenger.item_message", _msg_of(MessageType.ITEM))
+    r.location_message = r._manager("messenger.location_message", _msg_of(MessageType.LOCATION))
+    r.voice_message = r._manager("messenger.voice_message", _msg_of(MessageType.VOICE))
+    r.call_message = r._manager("messenger.call_message", _msg_of(MessageType.CALL))
+    r.file_message = r._manager("messenger.file_message", _msg_of(MessageType.FILE))
+    r.system_message = r._manager("messenger.system_message", _msg_of(MessageType.SYSTEM))
+    r.app_call_message = r._manager("messenger.app_call_message", _msg_of(MessageType.APP_CALL))
+    r.deleted_message = r._manager("messenger.deleted_message", _msg_of(MessageType.DELETED))
+    r.unknown_message = r._manager("messenger.unknown_message", _msg_of(MessageType.UNKNOWN))
+    r.message_read = r._manager("messenger.message_read", _isinst(MessageRead))
+    r.chat_archived = r._manager("messenger.chat_archived", _isinst(ChatArchived))
+    r.chat_blacklisted = r._manager("messenger.chat_blacklisted", _isinst(ChatBlacklisted))
+    r.voice_file_resolved = r._manager(
+        "messenger.voice_file_resolved", _isinst(VoiceFileResolved),
     )
 
-    r.order_status_changed = r.manager(
-        "orders.status_changed", event_filter=_isinst(OrderStatusChanged),
-    )
-    r.order_created = r.manager("orders.created", event_filter=_isinst(OrderCreated))
-    r.order_confirmed = r.manager("orders.confirmed", event_filter=_isinst(OrderConfirmed))
-    r.order_shipped = r.manager("orders.shipped", event_filter=_isinst(OrderShipped))
-    r.order_delivered = r.manager("orders.delivered", event_filter=_isinst(OrderDelivered))
-    r.order_completed = r.manager("orders.completed", event_filter=_isinst(OrderCompleted))
-    r.order_cancelled = r.manager("orders.cancelled", event_filter=_isinst(OrderCancelled))
-    r.order_refunded = r.manager("orders.refunded", event_filter=_isinst(OrderRefunded))
+    r.order_status_changed = r._manager("orders.status_changed", _isinst(OrderStatusChanged))
+    r.order_created = r._manager("orders.created", _isinst(OrderCreated))
+    r.order_confirmed = r._manager("orders.confirmed", _isinst(OrderConfirmed))
+    r.order_shipped = r._manager("orders.shipped", _isinst(OrderShipped))
+    r.order_delivered = r._manager("orders.delivered", _isinst(OrderDelivered))
+    r.order_completed = r._manager("orders.completed", _isinst(OrderCompleted))
+    r.order_cancelled = r._manager("orders.cancelled", _isinst(OrderCancelled))
+    r.order_refunded = r._manager("orders.refunded", _isinst(OrderRefunded))
 
-    r.parcel_status_changed = r.manager(
-        "delivery.parcel_status_changed", event_filter=_isinst(ParcelStatusChanged),
+    r.parcel_status_changed = r._manager(
+        "delivery.parcel_status_changed", _isinst(ParcelStatusChanged),
     )
-    r.parcel_handed_over = r.manager(
-        "delivery.parcel_handed_over", event_filter=_isinst(ParcelHandedOver),
+    r.parcel_handed_over = r._manager(
+        "delivery.parcel_handed_over", _isinst(ParcelHandedOver),
     )
-    r.parcel_delivered = r.manager(
-        "delivery.parcel_delivered", event_filter=_isinst(ParcelDelivered),
-    )
-    r.parcel_returned = r.manager(
-        "delivery.parcel_returned", event_filter=_isinst(ParcelReturned),
-    )
-    r.announcement_tracked = r.manager(
-        "delivery.announcement_tracked", event_filter=_isinst(AnnouncementTracked),
+    r.parcel_delivered = r._manager("delivery.parcel_delivered", _isinst(ParcelDelivered))
+    r.parcel_returned = r._manager("delivery.parcel_returned", _isinst(ParcelReturned))
+    r.announcement_tracked = r._manager(
+        "delivery.announcement_tracked", _isinst(AnnouncementTracked),
     )
 
-    r.review_received = r.manager("reviews.received", event_filter=_isinst(ReviewReceived))
-    r.review_answered = r.manager("reviews.answered", event_filter=_isinst(ReviewAnswered))
+    r.review_received = r._manager("reviews.received", _isinst(ReviewReceived))
+    r.review_answered = r._manager("reviews.answered", _isinst(ReviewAnswered))
 
-    r.autoload_report_ready = r.manager(
-        "autoload.report_ready", event_filter=_isinst(AutoloadReportReady),
+    r.autoload_report_ready = r._manager(
+        "autoload.report_ready", _isinst(AutoloadReportReady),
     )
-    r.autoload_failed = r.manager("autoload.failed", event_filter=_isinst(AutoloadFailed))
+    r.autoload_failed = r._manager("autoload.failed", _isinst(AutoloadFailed))
 
-    r.call_received = r.manager("calltracking.received", event_filter=_isinst(CallReceived))
-    r.call_ended = r.manager("calltracking.ended", event_filter=_isinst(CallEnded))
-    r.call_recording_ready = r.manager(
-        "calltracking.recording_ready", event_filter=_isinst(CallRecordingReady),
+    r.call_received = r._manager("calltracking.received", _isinst(CallReceived))
+    r.call_ended = r._manager("calltracking.ended", _isinst(CallEnded))
+    r.call_recording_ready = r._manager(
+        "calltracking.recording_ready", _isinst(CallRecordingReady),
     )
 
-    r.balance_changed = r.manager("balance.changed", event_filter=_isinst(BalanceChanged))
-    r.balance_topped_up = r.manager("balance.topped_up", event_filter=_isinst(BalanceToppedUp))
-    r.balance_low = r.manager("balance.low", event_filter=_isinst(BalanceLow))
-    r.bonus_received = r.manager("balance.bonus_received", event_filter=_isinst(BonusReceived))
+    r.balance_changed = r._manager("balance.changed", _isinst(BalanceChanged))
+    r.balance_topped_up = r._manager("balance.topped_up", _isinst(BalanceToppedUp))
+    r.balance_low = r._manager("balance.low", _isinst(BalanceLow))
+    r.bonus_received = r._manager("balance.bonus_received", _isinst(BonusReceived))
 
-    r.item_status_changed = r.manager(
-        "items.status_changed", event_filter=_isinst(ItemStatusChanged),
-    )
-    r.item_published = r.manager("items.published", event_filter=_isinst(ItemPublished))
-    r.item_blocked = r.manager("items.blocked", event_filter=_isinst(ItemBlocked))
-    r.item_unblocked = r.manager("items.unblocked", event_filter=_isinst(ItemUnblocked))
-    r.item_sold = r.manager("items.sold", event_filter=_isinst(ItemSold))
-    r.item_archived = r.manager("items.archived", event_filter=_isinst(ItemArchived))
+    r.item_status_changed = r._manager("items.status_changed", _isinst(ItemStatusChanged))
+    r.item_published = r._manager("items.published", _isinst(ItemPublished))
+    r.item_blocked = r._manager("items.blocked", _isinst(ItemBlocked))
+    r.item_unblocked = r._manager("items.unblocked", _isinst(ItemUnblocked))
+    r.item_sold = r._manager("items.sold", _isinst(ItemSold))
+    r.item_archived = r._manager("items.archived", _isinst(ItemArchived))
 
-    # Lifecycle observers carry an ``on_`` prefix to avoid colliding with
-    # ``evented.Dispatcher.shutdown()`` (an async method on the dispatcher).
-    r.on_startup = r.manager("lifecycle.startup", event_filter=_isinst(Startup))
-    r.on_shutdown = r.manager("lifecycle.shutdown", event_filter=_isinst(Shutdown))
-    r.on_token_refreshed = r.manager(
-        "lifecycle.token_refreshed", event_filter=_isinst(TokenRefreshed),
-    )
-    r.on_auth_failed = r.manager("lifecycle.auth_failed", event_filter=_isinst(AuthFailed))
-    r.on_webhook_error = r.manager("lifecycle.webhook_error", event_filter=_isinst(WebhookError))
-    r.on_poll_error = r.manager("lifecycle.poll_error", event_filter=_isinst(PollError))
+    r.on_startup = r._manager("lifecycle.startup", _isinst(Startup))
+    r.on_shutdown = r._manager("lifecycle.shutdown", _isinst(Shutdown))
+    r.on_token_refreshed = r._manager("lifecycle.token_refreshed", _isinst(TokenRefreshed))
+    r.on_auth_failed = r._manager("lifecycle.auth_failed", _isinst(AuthFailed))
+    r.on_webhook_error = r._manager("lifecycle.webhook_error", _isinst(WebhookError))
+    r.on_poll_error = r._manager("lifecycle.poll_error", _isinst(PollError))
 
 
-class Router(evented.Router):
-    """SDK-wide aiogram-style Router exposing every event as a named observer.
+class Router:
+    """Aiogram-style router with named observers, sub-router composition, and middlewares.
 
-    One instance per scope. Compose hierarchies with :meth:`include_router`
-    inherited from the base evented Router for plugin / sub-feature
-    isolation. :class:`avitoapi.Dispatcher` is itself a ``Router``, so
-    handlers can attach to the dispatcher directly when you don't need a
-    separate routing layer.
+    One instance per scope. Compose hierarchies with :meth:`include_router` for
+    plugin / sub-feature isolation. :class:`avitoapi.Dispatcher` is itself a
+    :class:`Router`, so handlers can attach to the dispatcher directly when
+    you don't need a separate routing layer.
     """
 
+    # Observer attributes (populated by ``install_observers``). Declared as
+    # class-level type hints so IDEs offer completion before construction runs.
     new_message: EventObserver
     text_message: EventObserver
     image_message: EventObserver
@@ -285,8 +257,87 @@ class Router(evented.Router):
     on_poll_error: EventObserver
 
     def __init__(self, name: str = "avito") -> None:
-        super().__init__(name=name)
+        self.name = name
+        self.parent: Router | None = None
+        self.sub_routers: list[Router] = []
+        self._managers: dict[str, HandlerManager] = {}
+        self.outer_middleware = MiddlewareChain()
+        self.inner_middleware = MiddlewareChain()
         install_observers(self)
+
+    # ---- composition -------------------------------------------------------
+
+    def include_router(self, router: Router) -> Router:
+        """Attach a sub-router; events propagate to children after the parent's own handlers."""
+
+        if router.parent is not None:
+            raise RuntimeError(
+                f"Router {router.name!r} already has parent {router.parent.name!r}",
+            )
+        router.parent = self
+        self.sub_routers.append(router)
+        return router
+
+    def include_routers(self, *routers: Router) -> None:
+        for r in routers:
+            self.include_router(r)
+
+    def iter_routers(self) -> Iterable[Router]:
+        """Depth-first walk: self → every descendant."""
+
+        yield self
+        for child in self.sub_routers:
+            yield from child.iter_routers()
+
+    # ---- handler API ------------------------------------------------------
+
+    def _manager(self, name: str, event_filter: Filter | None) -> HandlerManager:
+        manager = HandlerManager(name=name, event_filter=event_filter)
+        self._managers[name] = manager
+        return manager
+
+    def manager(self, name: str, *, event_filter: Filter | None = None) -> HandlerManager:
+        """Public alias — create / fetch a manager by route name."""
+
+        existing = self._managers.get(name)
+        if existing is not None:
+            return existing
+        return self._manager(name, event_filter)
+
+    def on(self, name: str, *filters: Filter) -> Callable[[Handler], Handler]:
+        """Imperative shortcut: ``@router.on("orders.created")``."""
+
+        return self.manager(name)(*filters)
+
+    # ---- propagation ------------------------------------------------------
+
+    async def propagate(self, event: Any, ctx: EventContext) -> bool:
+        """Walk every manager (self → children); return ``True`` if any handler fired."""
+
+        async def _run(_event: Any, _ctx: EventContext) -> bool:
+            fired = False
+            for manager in self._managers.values():
+                if not manager.applies(_event):
+                    continue
+                inner = self.inner_middleware.wrap(self._call_one(manager))
+                if await inner(_event, _ctx):
+                    fired = True
+            for child in self.sub_routers:
+                if await child.propagate(_event, _ctx):
+                    fired = True
+            return fired
+
+        wrapped = self.outer_middleware.wrap(_run)  # type: ignore[arg-type]
+        result = await wrapped(event, ctx)
+        if result:
+            ctx.handled = True
+        return bool(result)
+
+    @staticmethod
+    def _call_one(manager: HandlerManager):  # noqa: ANN205 — closure helper
+        async def _terminal(event: Any, ctx: EventContext) -> bool:
+            return await manager.trigger(event, ctx)
+        return _terminal
 
 
 __all__ = ["EventObserver", "Router", "install_observers"]

@@ -4,9 +4,9 @@ Avito's webhook contract retries any delivery that isn't acknowledged with a
 ``200 OK`` inside 2 seconds. This middleware spawns the actual handler as a
 background task so the response can return immediately.
 
-Backed by ``evented.TaskTracker`` when installed; falls back to an in-package
-tracker that uses ``asyncio.create_task`` and a strong-ref set so tasks don't
-get GC'd mid-flight.
+Backed by an in-package task tracker that uses ``asyncio.create_task``
+and a strong-ref set so tasks don't get GC'd mid-flight. Pass a custom
+``task_tracker`` to override (any object with a ``spawn(coro)`` method).
 """
 from __future__ import annotations
 
@@ -39,9 +39,8 @@ class WebhookFastReturnMiddleware:
     """Spawn the handler on the supplied task tracker; return immediately.
 
     ``task_tracker`` is duck-typed: anything with a ``spawn(coro)`` method
-    (returning the spawned task) works. ``evented.TaskTracker`` matches by
-    construction; the in-package :class:`_FallbackTaskTracker` is supplied
-    as a default for environments without ``evented``.
+    (returning the spawned task) works. The default :class:`_FallbackTaskTracker`
+    covers the common single-process case.
     """
 
     def __init__(self, task_tracker: Any | None = None) -> None:

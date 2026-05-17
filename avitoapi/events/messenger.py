@@ -4,19 +4,13 @@ Each event carries the originating ``account_id`` so multi-account
 dispatchers can route to per-account handlers. ``NewMessage.message`` is
 typed as the :data:`avitoapi.models.messenger.Message` discriminated union
 so handlers get full IDE completion + type narrowing on ``message.type``.
-
-Requires ``evented`` (private dep at ``github.com/zlexdev/evented``); install
-via ``pip install 'git+https://${GH_TOKEN}@github.com/zlexdev/evented.git'``.
 """
 from __future__ import annotations
 
 from typing import Any
 
-import evented
-
 from ..models.messenger import Message
-
-BaseEvent = evented.Event
+from ._base import Event as BaseEvent
 
 
 class MessengerEvent(BaseEvent, event_name="messenger"):

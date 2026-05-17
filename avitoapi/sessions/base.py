@@ -9,11 +9,23 @@ from uuid import uuid4
 from structlog.contextvars import bind_contextvars, clear_contextvars
 
 from ..exceptions import (
+    ConnectionError as SDKConnectionError,
+)
+from ..exceptions import (
     ErrorContext,
     HTTPError,
+    ProxyAuthError,
+    ProxyConnectionError,
+    ProxyError,
+    ProxyTimeoutError,
+    ProxyTLSError,
     RateLimitedError,
     SDKError,
+    TLSError,
     http_error_for_status,
+)
+from ..exceptions import (
+    TimeoutError as SDKTimeoutError,
 )
 from ..logging import get_logger
 from ..models._base import BoundModel
@@ -98,20 +110,40 @@ class BaseSession(ABC):
         last_exc: BaseException | None = None
         for attempt in range(self.retry_policy.max_retries + 1):
             ctx.attempt = attempt + 1
+            acquire = self.proxy_transport.acquire(
+                account_id=ctx.account_id,
+                host=prepared.host,
+            )
             try:
-                async with self.proxy_transport.acquire(
-                    account_id=ctx.account_id,
-                    host=prepared.host,
-                ) as proxy:
+                async with acquire as proxy:
+                    ctx.proxy = proxy
+                    ctx.proxy_acquire = acquire
                     if proxy is not None:
                         prepared.proxy = str(proxy.url)
-                    raw = await self._send(prepared)
+                    try:
+                        raw = await self._send(prepared)
+                    except Exception as exc:
+                        translated = self._translate_proxy_exception(exc, proxy)
+                        if translated is not None:
+                            acquire.mark_invalid(translated)
+                            raise translated from exc
+                        raise
+                    if raw.status == 407 and proxy is not None:
+                        err = ProxyAuthError(
+                            "Proxy returned 407 (auth required)",
+                            proxy_url=str(proxy.url),
+                        )
+                        acquire.mark_invalid(err)
+                        raise err
             except Exception as exc:
                 last_exc = exc
-                if not self._should_retry_exception(prepared, attempt):
+                if not self._should_retry_exception(exc, prepared, attempt):
                     raise
                 await self._sleep_backoff(attempt, retry_after_s=None)
                 continue
+            finally:
+                ctx.proxy = None
+                ctx.proxy_acquire = None
 
             if 200 <= raw.status < 300:
                 return raw
@@ -141,6 +173,21 @@ class BaseSession(ABC):
             raise last_exc
         raise HTTPError("Exhausted retries without a response")
 
+    @staticmethod
+    def _translate_proxy_exception(exc: BaseException, proxy: Any | None) -> ProxyError | None:
+        """Promote a generic transport error to a :class:`ProxyError` when a proxy was in use."""
+
+        if proxy is None or isinstance(exc, ProxyError):
+            return None
+        proxy_url = str(proxy.url)
+        if isinstance(exc, SDKTimeoutError):
+            return ProxyTimeoutError(str(exc), proxy_url=proxy_url)
+        if isinstance(exc, TLSError):
+            return ProxyTLSError(str(exc), proxy_url=proxy_url)
+        if isinstance(exc, SDKConnectionError):
+            return ProxyConnectionError(str(exc), proxy_url=proxy_url)
+        return None
+
     @abstractmethod
     async def _send(self, prepared: PreparedRequest) -> RawResponse:
         """Execute the wire request. Translate transport-level failures to ``TransportError``."""
@@ -156,9 +203,17 @@ class BaseSession(ABC):
         protocol = ctx.method.__protocol__()
         return protocol.is_idempotent(ctx.method)
 
-    def _should_retry_exception(self, prepared: PreparedRequest, attempt: int) -> bool:
+    def _should_retry_exception(
+        self,
+        exc: BaseException,
+        prepared: PreparedRequest,
+        attempt: int,
+    ) -> bool:
         if attempt >= self.retry_policy.max_retries:
             return False
+        # Proxy faults are never the request's fault — rotate and retry regardless of verb.
+        if isinstance(exc, ProxyError):
+            return True
         return prepared.http_method in {"GET", "HEAD", "OPTIONS"}
 
     async def _sleep_backoff(self, attempt: int, *, retry_after_s: float | None) -> None:

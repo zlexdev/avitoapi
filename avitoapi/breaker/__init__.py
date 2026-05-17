@@ -1,7 +1,7 @@
 """Circuit breaker registry — keyed by ``(host, path, account_id)``.
 
-Re-exports :class:`BreakerRegistry` plus the fallback :class:`CircuitBreaker`
-used when the optional ``evented`` dependency is not installed.
+Re-exports :class:`BreakerRegistry` + :class:`CircuitBreaker`. Self-contained,
+no external runtime dep.
 """
 from __future__ import annotations
 

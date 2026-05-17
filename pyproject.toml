@@ -26,21 +26,16 @@ dependencies = [
     "curl_cffi>=0.7",
     "structlog>=24",
     "email-validator>=2.1",
-    # `evented` is a private dep at github.com/zlexdev/evented and requires
-    # a GitHub token to install. Add it manually after cloning:
-    #   GH_TOKEN=... pip install \
-    #     'git+https://${GH_TOKEN}@github.com/zlexdev/evented.git@master'
-    # Without it: Dispatcher / WebApp / WebhookRunner imports raise
-    # ImportError at the call site; everything else (Client + 200+ methods)
-    # works untouched.
 ]
 
 [project.optional-dependencies]
 httpx = ["httpx>=0.27"]
 redis = ["redis>=5.0"]
 mongo = ["motor>=3.4"]
-fastapi = ["fastapi>=0.110"]
-litestar = ["litestar>=2.7"]
+postgres = ["asyncpg>=0.29"]
+fastapi = ["fastapi>=0.110", "uvicorn>=0.27"]
+litestar = ["litestar>=2.7", "uvicorn>=0.27"]
+sanic = ["sanic>=23.6"]
 playwright = ["playwright>=1.42"]
 twocaptcha = ["2captcha-python>=1.2"]
 capsolver = ["capsolver>=1.0"]
@@ -100,7 +95,18 @@ no_implicit_optional = true
 plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
-module = ["curl_cffi.*", "evented.*", "fakeredis.*", "mongomock.*"]
+module = [
+    "curl_cffi.*",
+    "fakeredis.*",
+    "mongomock.*",
+    "aiohttp.*",
+    "asyncpg.*",
+    "fastapi.*",
+    "litestar.*",
+    "sanic.*",
+    "sanic.response",
+    "uvicorn.*",
+]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
