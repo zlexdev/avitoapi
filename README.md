@@ -8,6 +8,10 @@ external runtime deps beyond `pydantic`, `pydantic-settings`, `curl_cffi`,
 
 Specs and design decisions live in `.plans/avito-sdk-framework/`.
 
+Hands-on recipes — install, multi-account, routing, pipelines, sagas,
+webhooks (aiohttp / FastAPI / Litestar / Sanic), proxy rotation — live
+in [`docs/cookbook/`](docs/cookbook/README.md).
+
 ---
 
 ## Quickstart
@@ -70,11 +74,36 @@ async for chat in client.list_chats(unread_only=True):
 
 ### Multi-account dispatcher
 
-```python
-acc_a = Client(config=ClientConfig.from_env(), account_id="a")
-acc_b = Client(config=ClientConfig.from_env(), account_id="b")
+`ClientConfig` is a plain Pydantic model — build one per seller from
+whatever your tenant store gives you (DB row, vault secret, admin form).
+`client_id` / `client_secret` come from your Avito OAuth integration;
+`user_id` scopes the token cache so each seller's tokens stay separate.
+`account_id` is the routing label `Dispatcher` matches against
+`event.account_id`.
 
-dispatcher = make_dispatcher(accounts=[acc_a, acc_b])
+```python
+from avitoapi import Client, ClientConfig, make_dispatcher
+
+# Pretend this comes from your DB / secrets manager.
+SELLERS = [
+    {"account_id": "alice", "user_id": 12345,
+     "client_id": "int-abc", "client_secret": "shhh-a"},
+    {"account_id": "bob",   "user_id": 67890,
+     "client_id": "int-abc", "client_secret": "shhh-b"},
+]
+
+
+def build_client(row: dict) -> Client:
+    config = ClientConfig(
+        client_id=row["client_id"],
+        client_secret=row["client_secret"],
+        user_id=row["user_id"],
+        rate_limit_global_rps=8.0,      # tune per-account at construction
+    )
+    return Client(config=config, account_id=row["account_id"])
+
+
+dispatcher = make_dispatcher(accounts=[build_client(row) for row in SELLERS])
 
 @dispatcher.new_message()
 async def on_message(event, ctx):
@@ -82,7 +111,15 @@ async def on_message(event, ctx):
     await client.send_text_message(event.chat_id, "echo: " + event.message.text)
 
 await dispatcher.feed_event(some_inbound_event)
+
+# Dynamic add / remove — the registry is just a dict:
+dispatcher.accounts["carol"] = build_client(new_seller_row)
+del dispatcher.accounts["bob"]
 ```
+
+Pass `storage=`, `session=`, or `transport=` to `Client(...)` to share
+infra across accounts (one connection pool, one Redis backend) while
+keeping per-account `ClientConfig` distinct.
 
 ---
 
