@@ -1,37 +1,41 @@
 # avitoapi.pipeline
 
-Multi-stage pipeline handlers with resumable execution + saga rollback
-+ DAG fan-out + retry/timeout/when/output policies + lifecycle hooks.
+Thin avitoapi shim over **stagecraft** — the generic resumable
+pipeline + saga library at `github.com/zlexdev/stagecraft`. The mechanics
+(stage registration, runner, hooks, retry, DAG layering, saga
+compensation) live in `stagecraft`; this module wires it to avitoapi's
+:class:`EventContext` / :class:`MiddlewareChain` / :class:`Dispatcher`
+shapes.
 
 ## Surface
 
+The public surface is unchanged from before the lift-out — every name
+re-exports from `stagecraft`:
+
 ### Core
 - `Pipeline(name, *, event_filter=None, stages=[], auto_ack=True,
-  saga=False, partition_by=None, hooks=PipelineHooks())`.
+  saga=False, partition_by=None, hooks=PipelineHooks())` — factory
+  function (accepts `auto_ack` as alias for stagecraft's
+  `auto_complete`). Returns a `stagecraft.Pipeline`.
 - `Stage(name, fn, *, compensate_fn=None, retry=None, timeout=None,
   when=None, output=None, depends_on=())`.
-- `BaseStage` — inheritance-based stage registration. Class-level
-  `name` / `retry` / `timeout` / `when` / `output` / `depends_on`;
-  override `compensate` for saga rollback.
+- `BaseStage` — inheritance-based stage registration.
 - `PipelineCheckpoint` — `completed`, `compensated`,
-  `compensation_errors`, `state`. Persists in `ctx.queue.metadata`.
+  `compensation_errors`, `state`. Stored in `ctx.queue.metadata`.
 
-### Runner + router
-- `PipelineRunner(pipeline, *, middleware_chain=None).run(event, ctx) -> bool`.
-- `PipelineRouter()` — `@router.stage(pipeline_name, stage_name)` decorator
-  surface; `router.bind(dispatcher)` mounts every pipeline on the
-  dispatcher's outer middleware chain.
+### Runner + router (avitoapi-flavoured)
+- `PipelineRunner(pipeline, *, middleware_chain=None).run(event, ctx) -> bool`
+  — wraps `stagecraft.PipelineRunner` with the avitoapi adapters.
+- `PipelineRouter` — subclass of `stagecraft.PipelineRouter` adding
+  `bind(dispatcher)` for the aiogram-style outer-middleware hook.
 
 ### Stage options
 - **`retry: RetryPolicy`** — max attempts + backoff + retry_on filter.
 - **`timeout: float`** — `asyncio.wait_for` around the stage call.
 - **`when: Filter`** — predicate; `False` → skip + mark complete.
 - **`output: str`** — key in `ctx.outputs` to store the stage's return.
-- **`depends_on: tuple[str, ...]`** — DAG arrows. Stages sharing deps
-  run concurrently inside one layer; stages without `depends_on`
-  implicitly depend on the previous stage (sequential default).
-- **`compensate_fn` / `BaseStage.compensate`** — saga rollback; called
-  in reverse order on failure when `Pipeline(saga=True)`.
+- **`depends_on: tuple[str, ...]`** — DAG arrows.
+- **`compensate_fn` / `BaseStage.compensate`** — saga rollback.
 
 ### Retry / backoff
 - `RetryPolicy(max_attempts=3, backoff=ExponentialBackoff(),
@@ -50,35 +54,51 @@ Multi-stage pipeline handlers with resumable execution + saga rollback
 - `@pipeline.on_compensate()` — fires for every compensation call.
 
 ### Composition
-- `ParallelGroup(name, members)` — sugar for fan-out as a single stage:
-  members run via `asyncio.gather`. For pipeline-wide DAG fan-out
-  prefer explicit `depends_on=`.
+- `ParallelGroup(name, members)` — fan-out sugar.
+
+## Avitoapi adapters
+
+Three Protocol implementations live in `_adapters.py`:
+
+- `QueueMetadataCheckpointStore(ctx)` — implements
+  `stagecraft.CheckpointStore` over `ctx.queue.metadata` +
+  `ctx.queue.persist_metadata()`. Bound per-ctx (per `run()` call).
+- `AvitoapiStateProvider` — implements `stagecraft.StageStateProvider`;
+  returns a view that proxies `ctx.outputs` + `ctx.pipeline.*`.
+- `MiddlewareChainAdapter(chain)` — implements
+  `stagecraft.StageMiddleware` over avitoapi's `MiddlewareChain.wrap`.
+- `completion_hook(ctx)` — module-level callable that calls
+  `ctx.atomic_completed()` if the queue row hasn't been acked.
+
+The wrapper `PipelineRunner` instantiates all four per `run()` call so
+each event sees its own ctx-bound store. The wrapper `PipelineRouter`
+threads them through dispatcher's `outer_middleware`.
 
 ## Execution model
 
 ```
 PipelineRunner.run(event, ctx)
    │
-   ├─ load checkpoint from ctx.queue.metadata["pipeline:<name>"]
-   ├─ pipeline.hooks.before_run.fire
-   │
-   │  if checkpoint.state == "compensating":
-   │      resume compensate from last unfinished stage
-   │      return
-   │
-   │  layers = _build_layers()   ← topological sort, implicit "after prev"
-   │  for layer in layers:
-   │      for stage in layer:
-   │          if done / skipped / when=False → mark + continue
-   │          execute with retry-loop wrapping timeout
-   │          if output set → ctx.outputs[output] = result
-   │          mark complete + persist checkpoint
-   │
-   ├─ checkpoint.state = "done" / "failed" / "compensated"
-   ├─ hooks.after_run.fire (on success)
-   │
-   └─ if auto_ack and not ctx.queue.is_acked: atomic_completed()
+   ├─ inner = stagecraft.PipelineRunner(
+   │     pipeline,
+   │     checkpoint_store=QueueMetadataCheckpointStore(ctx),
+   │     state_provider=AvitoapiStateProvider(),
+   │     completion_hook=completion_hook,
+   │     middleware=MiddlewareChainAdapter(self.middleware_chain),
+   │   )
+   └─ return await inner.run(event, ctx)
 ```
+
+stagecraft's runner then:
+
+1. Loads checkpoint via `checkpoint_store.load("pipeline:<name>")`.
+2. Builds execution layers from `depends_on` (topological sort).
+3. For each layer: skips done / when=False / explicit-skipped stages,
+   runs the rest with retry-wrapped timeout, persists checkpoint
+   after each.
+4. On stage failure (saga=True): walks `completed` in reverse,
+   calls each `compensate_fn`, records errors. Re-raises.
+5. On success: fires `completion_hook(ctx)` → `ctx.atomic_completed()`.
 
 ## Saga / compensate
 
@@ -110,24 +130,18 @@ cancels siblings, triggers compensation (if saga).
 
 ## Files
 
-- `pipeline.py` — `Pipeline`, `Stage`, `BaseStage`, `PipelineCheckpoint`,
-  errors.
-- `runner.py` — `PipelineRunner` + `stages_in_layers` helper.
-- `router.py` — `PipelineRouter`.
-- `retry.py` — `RetryPolicy`, `Backoff`, `ConstantBackoff`, `ExponentialBackoff`.
-- `hooks.py` — `PipelineHooks` + hook signature aliases.
-- `groups.py` — `ParallelGroup`.
+- `__init__.py` — public surface + `Pipeline(...)` factory (auto_ack alias).
+- `_adapters.py` — `QueueMetadataCheckpointStore`, `AvitoapiStateProvider`,
+  `MiddlewareChainAdapter`, `completion_hook`.
+- `runner.py` — `PipelineRunner` wrapper.
+- `router.py` — `PipelineRouter` wrapper + `bind(dispatcher)`.
 
-## Lift-out discipline
+## Dependency
 
-This module imports ONLY:
-- `avitoapi.events._base.Event` (minimal base)
-- `avitoapi.routers.context` (EventContext, CtxQueue, CtxPipeline, HandlerType)
-- `avitoapi.routers.middleware` (MiddlewareChain)
-- `avitoapi.routers.observer` (Filter — just a callable)
-- `avitoapi.exceptions.SDKError`
-- `avitoapi.logging`
+Listed in `pyproject.toml` / `requirements.txt`:
 
-No avitoapi-specific events, no client, no methods, no dispatcher.
-Lift-out to a standalone library (`zlexdev/saga` or extending
-`zlexdev/evented`) is mechanical.
+```text
+stagecraft @ git+https://${GH_TOKEN}@github.com/zlexdev/stagecraft.git@v0.1.0
+```
+
+For local dev: `pip install -e ../stagecraft` (path install).

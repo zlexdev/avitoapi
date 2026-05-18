@@ -26,6 +26,7 @@ dependencies = [
     "curl_cffi>=0.7",
     "structlog>=24",
     "email-validator>=2.1",
+    "stagecraft @ git+https://${GH_TOKEN}@github.com/zlexdev/stagecraft.git@v0.1.0",
 ]
 
 [project.optional-dependencies]
