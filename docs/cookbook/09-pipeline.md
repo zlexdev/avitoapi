@@ -15,6 +15,17 @@ Compared to a single fat handler, pipelines give you:
 * optional saga rollback (see [10-pipeline-saga.md](10-pipeline-saga.md)),
 * full lifecycle hooks.
 
+> **Where the code lives.** The pipeline engine itself is
+> [`stagecraft`](https://github.com/zlexdev/stagecraft) — a
+> framework-agnostic library generic over `EventT` / `CtxT`.
+> `avitoapi.pipeline` is a thin adapter that re-exports the stagecraft
+> surface and provides avitoapi-specific Protocol implementations
+> (checkpoint store over `ctx.queue.metadata`, state provider over
+> `ctx.outputs` + `ctx.pipeline`, completion hook calling
+> `ctx.atomic_completed()`). You import `Pipeline`, `Stage`,
+> `BaseStage`, etc. from `avitoapi` exactly as before — nothing
+> changes at the call site.
+
 This page covers the basics. See [10-pipeline-saga.md](10-pipeline-saga.md)
 for compensation, [11-pipeline-dag.md](11-pipeline-dag.md) for
 `depends_on` / `ParallelGroup`.
@@ -85,8 +96,9 @@ class Dispatch(ShipStage):
 
 Subclassing the bound base auto-registers the stage in `pipeline`. The
 class attributes (`retry`, `timeout`, `when`, `output`, `depends_on`)
-map onto `Stage` fields — read [pipeline/pipeline.py](../../avitoapi/pipeline/pipeline.py)
-for the full schema.
+map onto `Stage` fields — read the
+[stagecraft.pipeline](https://github.com/zlexdev/stagecraft/blob/main/stagecraft/pipeline.py)
+source for the full schema.
 
 ---
 
@@ -241,6 +253,10 @@ async def commit(event, ctx):
     await db.commit()
     await ctx.atomic_completed()        # you own the ack now
 ```
+
+`auto_ack` is the avitoapi name; stagecraft itself calls this
+`auto_complete` (since the lib is queue-agnostic). The avitoapi
+`Pipeline(...)` factory accepts either keyword.
 
 ---
 

@@ -17,6 +17,10 @@ in [`docs/cookbook/`](docs/cookbook/README.md).
 ## Quickstart
 
 ```bash
+# Pipelines pull stagecraft from a private repo. Export a GitHub PAT
+# scoped Contents: Read on github.com/zlexdev/stagecraft first:
+export GH_TOKEN="$(cat ~/.config/zlexdev/gh.token)"
+
 uv pip install -e .[dev]
 cp .env.example .env
 # fill in AVITO_CLIENT_ID, AVITO_CLIENT_SECRET
@@ -326,6 +330,14 @@ The handler's `ctx.queue` is a typed `CtxQueue`:
 
 ## Pipelines — resumable multi-stage handlers
 
+The pipeline engine is the [`stagecraft`](https://github.com/zlexdev/stagecraft)
+library — framework-agnostic, generic over `EventT` / `CtxT` via
+TypeVars. `avitoapi.pipeline` is a thin adapter that re-exports the
+stagecraft surface and wires it to `EventContext` (checkpoint store
+over `ctx.queue.metadata`, state provider over `ctx.outputs` +
+`ctx.pipeline`, completion hook calling `ctx.atomic_completed()`).
+Imports stay the same.
+
 ```python
 from avitoapi import Pipeline, PipelineRouter, F
 
@@ -375,7 +387,8 @@ async def repay(event, ctx): ...
 
 Errors abort the pipeline and re-queue (no ack) so the next replay tries
 again from the failed stage. Successful runs ack automatically — set
-`Pipeline(..., auto_ack=False)` to take manual control.
+`Pipeline(..., auto_ack=False)` to take manual control (`auto_complete`
+is accepted as well, mirroring stagecraft's own keyword).
 
 ---
 

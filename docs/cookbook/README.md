@@ -39,6 +39,11 @@ exhaustive surface docs see each module's `_MODULE.md`.
 | 10  | [Pipelines — saga](10-pipeline-saga.md)         | `saga=True`, compensate per stage, crash mid-rollback recovery, `CompensationFailed`.|
 | 11  | [Pipelines — DAG](11-pipeline-dag.md)           | `depends_on` topological layers, `ParallelGroup`, picking between the two.           |
 
+> Pipelines 09–11 use the [`stagecraft`](https://github.com/zlexdev/stagecraft)
+> library under the hood — `avitoapi.pipeline` is a thin adapter that
+> re-exports the same surface and wires it to `EventContext`. Imports
+> from `avitoapi` are unchanged.
+
 ## Surface
 
 | #   | Page                                            | What you'll learn                                                                    |
