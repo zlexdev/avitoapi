@@ -5,6 +5,11 @@ compensation on stage failure. Each completed stage's `compensate_fn`
 is called in reverse registration order; the original exception is
 chained onto a `PipelineStageError`.
 
+> Saga semantics are implemented by
+> [`stagecraft`](https://github.com/zlexdev/stagecraft);
+> `avitoapi.pipeline` is a thin adapter — see
+> [09-pipeline.md](09-pipeline.md) for the framing.
+
 ---
 
 ## Why saga

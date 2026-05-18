@@ -10,6 +10,11 @@ fan out:
   side effects together" with no fork/join arrows across the whole
   pipeline.
 
+> DAG layering and `ParallelGroup` live in
+> [`stagecraft`](https://github.com/zlexdev/stagecraft);
+> `avitoapi.pipeline` re-exports them unchanged — see
+> [09-pipeline.md](09-pipeline.md) for the framing.
+
 ---
 
 ## `depends_on` — explicit DAG

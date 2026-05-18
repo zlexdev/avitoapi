@@ -4,21 +4,32 @@ Attach to a :class:`Dispatcher` via :meth:`bind` — every event the
 dispatcher fans out is also evaluated against every registered
 pipeline. A pipeline whose :attr:`Pipeline.event_filter` matches the
 event fires; pipelines whose filter does not match are skipped.
+
+Thin wrapper over :class:`stagecraft.PipelineRouter`: same decorator
+surface, plus :meth:`bind` for avitoapi's outer-middleware contract.
 """
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable
+from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
-from .pipeline import Pipeline, StageFn
-from .runner import PipelineRunner
+from stagecraft import PipelineRouter as _SCPipelineRouter
+
+from ._adapters import (
+    AvitoapiStateProvider,
+    MiddlewareChainAdapter,
+    QueueMetadataCheckpointStore,
+    completion_hook,
+)
 
 if TYPE_CHECKING:
+    from stagecraft import Pipeline, StageFn
+
     from ..routers.observer import Filter
 
 
-class PipelineRouter:
+class PipelineRouter(_SCPipelineRouter):
     """Collection of named :class:`Pipeline`s mounted on a Dispatcher.
 
     Example::
@@ -30,37 +41,32 @@ class PipelineRouter:
 
         @router.stage("ship-order", "charge")
         async def charge(event, ctx): ...
+
+        router.bind(dispatcher)
     """
 
-    def __init__(self) -> None:
-        self._pipelines: dict[str, Pipeline] = {}
-
-    @property
-    def pipelines(self) -> Iterable[Pipeline]:
-        return self._pipelines.values()
-
-    def pipeline(
+    def pipeline(  # type: ignore[override] — back-compat: accept auto_ack alias
         self,
         name: str,
         *,
         event_filter: Filter | None = None,
         auto_ack: bool = True,
+        auto_complete: bool | None = None,
         saga: bool = False,
     ) -> Pipeline:
-        """Get-or-create a pipeline by name."""
+        return super().pipeline(
+            name,
+            event_filter=event_filter,
+            auto_complete=auto_complete if auto_complete is not None else auto_ack,
+            saga=saga,
+        )
 
-        existing = self._pipelines.get(name)
-        if existing is not None:
-            return existing
-        new = Pipeline(name=name, event_filter=event_filter, auto_ack=auto_ack, saga=saga)
-        self._pipelines[name] = new
-        return new
-
-    def stage(self, pipeline_name: str, stage_name: str) -> Callable[[StageFn], StageFn]:
-        """Decorator scoped by ``pipeline_name`` — creates the pipeline lazily."""
-
-        pipeline = self.pipeline(pipeline_name)
-        return pipeline.stage(stage_name)
+    def stage(
+        self,
+        pipeline_name: str,
+        stage_name: str,
+    ) -> Callable[[StageFn], StageFn]:
+        return self.pipeline(pipeline_name).stage(stage_name)
 
     def bind(self, dispatcher: Any) -> None:
         """Subscribe to a dispatcher — every event runs through every matching pipeline.
@@ -85,12 +91,18 @@ class PipelineRouter:
                 ctx: Any,
             ) -> Any:
                 result = await handler(event, ctx)
+                stage_middleware = (
+                    MiddlewareChainAdapter(dispatcher.inner_middleware)
+                    if dispatcher.inner_middleware is not None
+                    else None
+                )
                 for pipeline in router.pipelines:
                     if not pipeline.applies(event):
                         continue
-                    runner = PipelineRunner(
+                    runner = _build_per_ctx_runner(
                         pipeline,
-                        middleware_chain=dispatcher.inner_middleware,
+                        ctx,
+                        stage_middleware=stage_middleware,
                     )
                     previous = ctx.handler_type
                     ctx.handler_type = HandlerType.PIPELINE
@@ -101,6 +113,20 @@ class PipelineRouter:
                 return result
 
         dispatcher.outer_middleware.register(_PipelineMiddleware())
+
+
+def _build_per_ctx_runner(pipeline, ctx, *, stage_middleware):
+    """Construct a stagecraft.PipelineRunner bound to one ``ctx``."""
+
+    from stagecraft import PipelineRunner as _SCPipelineRunner  # noqa: PLC0415
+
+    return _SCPipelineRunner(
+        pipeline,
+        checkpoint_store=QueueMetadataCheckpointStore(ctx),
+        state_provider=AvitoapiStateProvider(),
+        completion_hook=completion_hook,
+        middleware=stage_middleware,
+    )
 
 
 __all__ = ["PipelineRouter"]
