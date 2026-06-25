@@ -12,7 +12,9 @@ import time
 from abc import ABC, abstractmethod
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
+
+from ..types import JsonObject
 
 if TYPE_CHECKING:
     from ..events._base import Event
@@ -52,7 +54,7 @@ class QueuedEvent:
     event: Event
     enqueued_at: float = field(default_factory=time.time)
     attempts: int = 0
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: JsonObject = field(default_factory=dict)
     run_at: float | None = None
     priority: int = 0
     lease: MessageLease | None = None
@@ -84,7 +86,7 @@ class BaseEventQueue(ABC):
         self,
         event: Event,
         *,
-        metadata: dict[str, Any] | None = None,
+        metadata: JsonObject | None = None,
         run_at: float | None = None,
         priority: int = 0,
     ) -> QueuedEvent: ...
@@ -123,7 +125,7 @@ class BaseEventQueue(ABC):
     async def update_metadata(
         self,
         message_id: str,
-        metadata: dict[str, Any],
+        metadata: JsonObject,
     ) -> bool: ...
 
     @abstractmethod
@@ -145,7 +147,7 @@ class DeadLetter:
     attempts: int
     failed_at: float
     reason: str
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: JsonObject = field(default_factory=dict)
 
 
 class BaseDeadLetterQueue(ABC):

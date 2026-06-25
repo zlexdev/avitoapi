@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any, ClassVar, Generic, Self, TypeVar, get_args
+from collections.abc import Generator
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, Self, TypeVar, get_args
 
 from pydantic import BaseModel, ConfigDict, PrivateAttr
 
@@ -10,10 +11,13 @@ from ..exceptions import MethodDeclarationError, MethodNotBoundError
 from ..protocol.base import Protocol
 from ..protocol.rest import RestProtocol
 
-T = TypeVar("T")
+if TYPE_CHECKING:
+    from ..client import Client
+
+T_co = TypeVar("T_co", covariant=True)
 
 
-class BaseMethod(BaseModel, Generic[T]):
+class BaseMethod(BaseModel, Generic[T_co]):
     """Aiogram-style typed endpoint. Awaiting executes through the bound client.
 
     Subclasses fix wire intent via class-vars; the actual encoding is delegated
@@ -55,20 +59,21 @@ class BaseMethod(BaseModel, Generic[T]):
     __multipart__: ClassVar[bool] = False
     __binary_response__: ClassVar[bool] = False
 
-    _client: Any = PrivateAttr(default=None)
+    _client: Client | None = PrivateAttr(default=None)
 
-    def as_(self, client: Any) -> Self:
+    def as_(self, client: Client) -> Self:
         """Attach a client and return ``self``. Idempotent; re-binding overwrites."""
 
         self._client = client
         return self
 
-    async def emit(self, client: Any) -> T:
+    async def emit(self, client: Client) -> T_co:
         """Execute through the session funnel and return the typed response."""
 
-        return await client.session.make_request(client, self)  # type: ignore[no-any-return]
+        return await client.session.make_request(client, self)  # type: ignore[return-value]
 
-    def __await__(self) -> Any:
+    def __await__(self) -> Generator[object, None, T_co]:
+        # coroutine protocol: yield type is opaque (event-loop internal), kept as object
         if self._client is None:
             raise MethodNotBoundError(
                 f"{type(self).__name__} awaited without a client bound. Use "
@@ -76,7 +81,7 @@ class BaseMethod(BaseModel, Generic[T]):
             )
         return self.emit(self._client).__await__()
 
-    def __init_subclass__(cls, **kwargs: Any) -> None:
+    def __init_subclass__(cls, **kwargs: Any) -> None:  # typed-Any: __init_subclass__ standard signature
         super().__init_subclass__(**kwargs)
         cls.__protocol__.validate_subclass(cls)
         if "__path__" in cls.__dict__:
@@ -108,6 +113,6 @@ class BaseMethod(BaseModel, Generic[T]):
         if explicit is not None and from_generic is not None and explicit is not from_generic:
             raise MethodDeclarationError(
                 f"{cls.__name__}: __returning__={explicit.__name__} contradicts "
-                f"Generic parameter T={from_generic.__name__}. Pick one.",
+                f"Generic parameter T_co={from_generic.__name__}. Pick one.",
             )
         return explicit if explicit is not None else from_generic

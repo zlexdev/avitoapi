@@ -13,13 +13,13 @@ Aiogram-style async SDK over the Avito Partner API. Public surface lives in
 | `logging.py` | Structlog config + redaction processor for secrets / tokens. |
 | `exceptions.py` | One tree of SDK errors + `http_error_for_status`. |
 | `methods/` | `BaseMethod[T]` + per-domain method-classes (W1: `accounts.py`). |
-| `models/` | `BoundModel` + per-domain Pydantic DTOs (W1: `accounts.py`, `common.py`). |
+| `models/` | `AvitoObject` + per-domain Pydantic DTOs (W1: `accounts.py`, `common.py`). |
 | `protocol/` | `Protocol` ABC + `RestProtocol` concrete. |
 | `sessions/` | `BaseSession` funnel + `CurlSession` / `HttpxSession` backends. |
 | `transport/` | `RetryPolicy` + default header builder. |
-| `auth/` | `OAuthClient` + `OAuthInjectorMiddleware` + `solvers/` seam. |
+| `auth/` | `OAuthClient` + `OAuthInjectorMiddleware`. |
 | `storage/` | `BaseStorage[TDoc, TId]` ABC + `MemoryStorage` (W1 only backend). |
-| `utils/proxy/` | `BaseProxyTransport` ABC + `NoProxyTransport` (real rotators in W2). |
+| `transport/proxy/` | `BaseProxyTransport` ABC + `NoProxyTransport` (real rotators in W2). |
 
 ## Funnel — what a request goes through
 
@@ -33,7 +33,7 @@ await client.get_self()
           → OAuthInjectorMiddleware (Authorization header, 403-token-expired refresh)
           → _terminal (retry loop, proxy acquire, _send → RawResponse, status mapping)
       → protocol.decode_response(method, raw)
-      → BoundModel.as_(client) if result is BoundModel
+      → AvitoObject.as_(client) if result is AvitoObject
   → typed Account
 ```
 

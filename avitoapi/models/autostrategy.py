@@ -20,7 +20,7 @@ from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, ConfigDict, Field, RootModel
 
-from ._base import BoundModel
+from ._base import AvitoObject
 from .common import Money
 
 if TYPE_CHECKING:
@@ -41,7 +41,7 @@ class CampaignStatus(StrEnum):
     DRAFT = "draft"
 
 
-class Campaign(BoundModel):
+class Campaign(AvitoObject):
     """One autostrategy campaign row (list + info responses).
 
     Bound methods build awaitable method-classes pre-attached to the client;
@@ -49,7 +49,6 @@ class Campaign(BoundModel):
     :class:`~avitoapi.exceptions.ModelNotBoundError` on those actions.
     """
 
-    model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
     id: str = Field(..., description="Campaign identifier (string).")
     name: str = Field(..., description="Human-readable campaign name.")

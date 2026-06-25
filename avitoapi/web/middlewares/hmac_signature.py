@@ -11,6 +11,9 @@ from __future__ import annotations
 import hashlib
 import hmac
 from collections.abc import Awaitable, Callable
+from typing import Any
+
+from ...routers.middleware import BaseMiddleware, NextHandler
 
 SecretProvider = Callable[[str], Awaitable["str | None"]]
 
@@ -19,7 +22,7 @@ class HMACSignatureMissingError(ValueError):
     """Raised when ``require_signature=True`` and no header was supplied."""
 
 
-class HMACSignatureMiddleware:
+class HMACSignatureMiddleware(BaseMiddleware[Any, Any]):
     """Verify ``x-avito-messenger-signature`` against the per-webhook secret.
 
     ``secret_provider(webhook_id)`` returns the secret (or ``None`` if the
@@ -36,6 +39,25 @@ class HMACSignatureMiddleware:
         self._secret_provider = secret_provider
         self.header_name = header_name
         self.require_signature = require_signature
+
+    async def __call__(self, handler: NextHandler[Any, Any], event: Any, ctx: Any) -> Any:
+        """Verify HMAC before passing to next handler.
+
+        Returns ``(403, {"error": "signature_missing"})`` or
+        ``(403, {"error": "signature_mismatch"})`` on failure;
+        calls ``handler(event, ctx)`` on success.
+        """
+        from .context import WebhookRequestContext  # noqa: PLC0415 — local to avoid cycle
+
+        wctx: WebhookRequestContext = ctx
+        signature = wctx.headers.get(self.header_name)
+        try:
+            ok = await self.verify(wctx.raw_body, signature, wctx.webhook_id)
+        except HMACSignatureMissingError:
+            return (403, {"error": "signature_missing"})
+        if not ok:
+            return (403, {"error": "signature_mismatch"})
+        return await handler(event, ctx)
 
     async def verify(
         self,

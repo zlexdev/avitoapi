@@ -10,16 +10,16 @@ absorbs forward-compat ``type`` values from future Avito rollouts.
 from __future__ import annotations
 
 import logging
-from datetime import datetime
 from enum import StrEnum
-from typing import TYPE_CHECKING, Annotated, Any, Literal
+from typing import TYPE_CHECKING, Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, RootModel, model_validator
 
-from ._base import BoundModel
-from .common import Money
+from ._base import AvitoObject
+from .common import Money, TZDatetime
 
 if TYPE_CHECKING:
+    from ..client import Client
     from ..methods.messenger import (
         DeleteMessage,
         ListMessages,
@@ -100,7 +100,7 @@ class LinkContent(BaseModel):
     model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
     text: str | None = Field(default=None)
     url: HttpUrl = Field(..., description="Linked URL.")
-    preview: dict[str, Any] = Field(default_factory=dict)
+    preview: dict[str, object] = Field(default_factory=dict)
 
 
 class LocationContent(BaseModel):
@@ -141,7 +141,7 @@ class AppCallContent(BaseModel):
     duration_s: int | None = Field(default=None, ge=0)
 
 
-class _MessageBase(BoundModel):
+class _MessageBase(AvitoObject):
     """Shared envelope every message variant carries (id, author, timestamps).
 
     Concrete subclasses pin ``type`` to a single literal so Pydantic's
@@ -149,12 +149,11 @@ class _MessageBase(BoundModel):
     :meth:`delete`) live here so every variant inherits them.
     """
 
-    model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
     id: str = Field(..., description="Avito message id (string, not int).")
     chat_id: str = Field(..., description="Owning chat id.")
     author_id: int = Field(..., description="Author user id.")
-    created_at: datetime = Field(..., description="Server-side creation time (UTC).")
+    created_at: TZDatetime = Field(..., description="Server-side creation time (UTC).")
 
     def reply(self, text: str) -> SendTextMessage:
         """Build an awaitable text-reply method-class bound to this message's chat.
@@ -254,7 +253,7 @@ class AppCallMessage(_MessageBase):
 
 class DeletedMessage(_MessageBase):
     type: Literal[MessageType.DELETED] = Field(default=MessageType.DELETED)
-    content: dict[str, Any] = Field(default_factory=dict)
+    content: dict[str, object] = Field(default_factory=dict)
 
 
 class UnknownMessage(_MessageBase):
@@ -267,7 +266,7 @@ class UnknownMessage(_MessageBase):
 
     type: Literal[MessageType.UNKNOWN] = Field(default=MessageType.UNKNOWN)
     raw_type: str | None = Field(default=None, description="Original wire ``type`` value.")
-    content: dict[str, Any] = Field(default_factory=dict)
+    content: dict[str, object] = Field(default_factory=dict)
 
 
 Message = Annotated[
@@ -294,7 +293,7 @@ def _warn_unknown(raw_type: str) -> None:
     log.warning("messenger.unknown_message_type", extra={"raw_type": raw_type})
 
 
-class MessageEnvelope(BoundModel):
+class MessageEnvelope(AvitoObject):
     """Container that normalises arbitrary inbound payloads into a typed Message.
 
     The discriminated union itself cannot absorb unknown discriminator values,
@@ -302,13 +301,12 @@ class MessageEnvelope(BoundModel):
     original under ``raw_type``) before delegating to the union validator.
     """
 
-    model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
     root: Message
 
     @model_validator(mode="before")
     @classmethod
-    def _coerce(cls, value: Any) -> Any:
+    def _coerce(cls, value: object) -> object:
         if not isinstance(value, dict):
             return value
         inner = value.get("root", value)
@@ -317,7 +315,7 @@ class MessageEnvelope(BoundModel):
         return {"root": inner}
 
 
-def decode_message(payload: dict[str, Any]) -> Message:  # type: ignore[valid-type]
+def decode_message(payload: dict[str, object]) -> Message:
     """Validate one wire payload into the right :class:`Message` variant.
 
     Re-maps unknown ``type`` values to :class:`UnknownMessage` and emits one
@@ -329,7 +327,7 @@ def decode_message(payload: dict[str, Any]) -> Message:  # type: ignore[valid-ty
     return MessageEnvelope.model_validate({"root": normalised}).root
 
 
-def _normalise_unknown(payload: dict[str, Any]) -> dict[str, Any]:
+def _normalise_unknown(payload: dict[str, object]) -> dict[str, object]:
     raw_type = payload.get("type")
     if raw_type == MessageType.UNKNOWN.value or payload.get("raw_type") is not None:
         return payload
@@ -340,14 +338,13 @@ def _normalise_unknown(payload: dict[str, Any]) -> dict[str, Any]:
     return payload
 
 
-class Chat(BoundModel):
+class Chat(AvitoObject):
     """One messenger chat.
 
     Bound actions return awaitable method-class instances; callers ``await``
     them. Manual-constructed chats raise :class:`ModelNotBoundError` on action.
     """
 
-    model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
     id: str = Field(..., description="Avito chat id (string).")
     state: ChatState = Field(default=ChatState.ACTIVE, description="Lifecycle state.")
@@ -358,7 +355,7 @@ class Chat(BoundModel):
 
     @model_validator(mode="before")
     @classmethod
-    def _normalise_last_message(cls, value: Any) -> Any:
+    def _normalise_last_message(cls, value: object) -> object:
         if not isinstance(value, dict):
             return value
         last = value.get("last_message")
@@ -419,24 +416,22 @@ class Chat(BoundModel):
         ).as_(client)
 
 
-class ChatList(BoundModel):
+class ChatList(AvitoObject):
     """Page of chats returned by ``GET /messenger/v2/.../chats``."""
 
-    model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
     chats: list[Chat] = Field(default_factory=list)
 
 
-class MessageList(BoundModel):
+class MessageList(AvitoObject):
     """Page of messages returned by ``GET /messenger/v3/.../messages``."""
 
-    model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
     messages: list[Message] = Field(default_factory=list)
 
     @model_validator(mode="before")
     @classmethod
-    def _normalise_messages(cls, value: Any) -> Any:
+    def _normalise_messages(cls, value: object) -> object:
         if not isinstance(value, dict):
             return value
         raw = value.get("messages")
@@ -454,11 +449,10 @@ class BlacklistEntry(BaseModel):
     model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
     user_id: int = Field(...)
-    context: dict[str, Any] = Field(default_factory=dict)
+    context: dict[str, object] = Field(default_factory=dict)
 
 
-class Blacklist(BoundModel):
-    model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
+class Blacklist(AvitoObject):
 
     users: list[BlacklistEntry] = Field(default_factory=list)
 
@@ -476,7 +470,7 @@ class UploadImageResult(BaseModel):
 
     @model_validator(mode="before")
     @classmethod
-    def _flatten(cls, value: Any) -> Any:
+    def _flatten(cls, value: object) -> object:
         if isinstance(value, dict) and "image_id" not in value and value:
             first = next(iter(value.values()))
             if isinstance(first, str):
@@ -493,21 +487,19 @@ class VoiceFile(BaseModel):
     url: HttpUrl = Field(...)
 
 
-class VoiceFiles(BoundModel):
-    model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
+class VoiceFiles(AvitoObject):
 
     voices: list[VoiceFile] = Field(default_factory=list)
 
 
-class DeleteResult(BoundModel):
+class DeleteResult(AvitoObject):
     """Empty envelope returned by mutating endpoints that have no body."""
 
-    model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
     success: bool = Field(default=True)
 
 
-def _resolve_user_id(client: Any) -> int:
+def _resolve_user_id(client: Client) -> int:
     user_id = getattr(client.config, "user_id", None)
     if user_id is None:
         raise ValueError(
@@ -516,14 +508,13 @@ def _resolve_user_id(client: Any) -> int:
     return int(user_id)
 
 
-class WebhookActionResult(BoundModel):
+class WebhookActionResult(AvitoObject):
     """Result envelope for ``POST /messenger/v3/webhook`` and unsubscribe.
 
     Avito returns a thin acknowledgement; ``message`` carries the
     server-side reason on partial-success rollouts.
     """
 
-    model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
     success: bool = Field(default=True, description="True on 2xx.")
     message: str | None = Field(default=None, description="Optional server message.")

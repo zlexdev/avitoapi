@@ -24,10 +24,11 @@ import base64
 import pickle
 from abc import ABC, abstractmethod
 from collections.abc import Callable
-from typing import Any, ClassVar
+from typing import ClassVar
 
 from ..events._base import Event
 from ..logging import get_logger
+from ..types import JsonObject, JSONValue
 
 log = get_logger(__name__)
 
@@ -36,17 +37,17 @@ class EventSerializer(ABC):
     """Convert :class:`Event` instances to/from a JSON-friendly form for storage."""
 
     @abstractmethod
-    def dump(self, event: Event) -> Any: ...
+    def dump(self, event: Event) -> JSONValue: ...
 
     @abstractmethod
-    def load(self, payload: Any) -> Event: ...
+    def load(self, payload: JSONValue) -> Event: ...
 
 
 class EventRegistrationError(ValueError):
     """Raised on conflicting or unknown event registrations."""
 
 
-Upgrader = Callable[[dict[str, Any]], dict[str, Any]]
+Upgrader = Callable[[JsonObject], JsonObject]
 
 
 class EventRegistry:
@@ -121,7 +122,7 @@ class EventRegistry:
         return cls._versions.get(name, 1)
 
     @classmethod
-    def upgrade(cls, name: str, data: dict[str, Any], from_version: int) -> dict[str, Any]:
+    def upgrade(cls, name: str, data: JsonObject, from_version: int) -> JsonObject:
         """Walk the upgrader chain from ``from_version`` up to the current version."""
 
         current = cls._versions.get(name, 1)
@@ -145,7 +146,7 @@ class EventRegistry:
         cls._upgraders.clear()
 
 
-def _event_to_dict(event: Event) -> dict[str, Any]:
+def _event_to_dict(event: Event) -> JsonObject:
     """Best-effort attribute snapshot for a generic :class:`Event`.
 
     Uses ``vars(event)`` so any subclass that just stashes kwargs on
@@ -171,7 +172,7 @@ class JSONSerializer(EventSerializer):
         self._registry = registry
         _auto_register_known_events()
 
-    def dump(self, event: Event) -> dict[str, Any]:
+    def dump(self, event: Event) -> JsonObject:
         type_name = self._registry.name_for(type(event))
         version = self._registry.version_of(type_name)
         return {
@@ -180,7 +181,7 @@ class JSONSerializer(EventSerializer):
             "data": _event_to_dict(event),
         }
 
-    def load(self, payload: Any) -> Event:
+    def load(self, payload: JSONValue) -> Event:
         if not isinstance(payload, dict):
             raise ValueError(
                 f"JSONSerializer expected dict payload, got {type(payload).__name__}",
@@ -197,7 +198,7 @@ class JSONSerializer(EventSerializer):
         data = payload.get("data") or {}
         if not isinstance(data, dict):
             raise ValueError("payload 'data' must be an object")
-        version = int(payload.get("version") or 1)
+        version = int(payload.get("version") or 1)  # type: ignore[arg-type]  # JSONValue narrowed at runtime
         current = self._registry.version_of(type_name)
         if version < current:
             data = self._registry.upgrade(type_name, dict(data), from_version=version)
@@ -216,7 +217,7 @@ class PickleSerializer(EventSerializer):
     def dump(self, event: Event) -> str:
         return base64.b64encode(pickle.dumps(event)).decode("ascii")
 
-    def load(self, payload: Any) -> Event:
+    def load(self, payload: JSONValue) -> Event:
         if not isinstance(payload, str):
             raise ValueError(
                 f"PickleSerializer expected str payload, got {type(payload).__name__}",

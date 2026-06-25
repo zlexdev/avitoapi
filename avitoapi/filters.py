@@ -22,7 +22,6 @@ that takes one event and returns ``bool``.
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
-from typing import Any
 
 
 class MagicFilter:
@@ -38,13 +37,13 @@ class MagicFilter:
     def __init__(
         self,
         *,
-        resolver: Callable[[Any], Any] = lambda ev: ev,
-        predicate: Callable[[Any], bool] | None = None,
+        resolver: Callable[[object], object] = lambda ev: ev,
+        predicate: Callable[[object], bool] | None = None,
     ) -> None:
         self._resolver = resolver
         self._predicate = predicate
 
-    def __call__(self, event: Any) -> bool:
+    def __call__(self, event: object) -> bool:
         if self._predicate is None:
             return bool(self._resolver(event))
         return bool(self._predicate(event))
@@ -55,7 +54,7 @@ class MagicFilter:
         prev = self._resolver
         return MagicFilter(resolver=lambda ev: getattr(prev(ev), name, None))
 
-    def __getitem__(self, key: Any) -> MagicFilter:
+    def __getitem__(self, key: object) -> MagicFilter:
         prev = self._resolver
         return MagicFilter(resolver=lambda ev: _safe_index(prev(ev), key))
 
@@ -67,27 +66,27 @@ class MagicFilter:
         prev = self._resolver
         return MagicFilter(predicate=lambda ev: prev(ev) != other)
 
-    def __gt__(self, other: Any) -> MagicFilter:
+    def __gt__(self, other: object) -> MagicFilter:
         prev = self._resolver
-        return MagicFilter(predicate=lambda ev: prev(ev) > other)
+        return MagicFilter(predicate=lambda ev: prev(ev) > other)  # type: ignore[operator]  # runtime comparison on opaque objects
 
-    def __ge__(self, other: Any) -> MagicFilter:
+    def __ge__(self, other: object) -> MagicFilter:
         prev = self._resolver
-        return MagicFilter(predicate=lambda ev: prev(ev) >= other)
+        return MagicFilter(predicate=lambda ev: prev(ev) >= other)  # type: ignore[operator]
 
-    def __lt__(self, other: Any) -> MagicFilter:
+    def __lt__(self, other: object) -> MagicFilter:
         prev = self._resolver
-        return MagicFilter(predicate=lambda ev: prev(ev) < other)
+        return MagicFilter(predicate=lambda ev: prev(ev) < other)  # type: ignore[operator]
 
-    def __le__(self, other: Any) -> MagicFilter:
+    def __le__(self, other: object) -> MagicFilter:
         prev = self._resolver
-        return MagicFilter(predicate=lambda ev: prev(ev) <= other)
+        return MagicFilter(predicate=lambda ev: prev(ev) <= other)  # type: ignore[operator]
 
-    def __and__(self, other: MagicFilter | Callable[[Any], bool]) -> MagicFilter:
+    def __and__(self, other: MagicFilter | Callable[[object], bool]) -> MagicFilter:
         left = self
         return MagicFilter(predicate=lambda ev: left(ev) and other(ev))
 
-    def __or__(self, other: MagicFilter | Callable[[Any], bool]) -> MagicFilter:
+    def __or__(self, other: MagicFilter | Callable[[object], bool]) -> MagicFilter:
         left = self
         return MagicFilter(predicate=lambda ev: left(ev) or other(ev))
 
@@ -95,32 +94,32 @@ class MagicFilter:
         inner = self
         return MagicFilter(predicate=lambda ev: not inner(ev))
 
-    def in_(self, values: Iterable[Any]) -> MagicFilter:
+    def in_(self, values: Iterable[object]) -> MagicFilter:
         snapshot = tuple(values)
         prev = self._resolver
         return MagicFilter(predicate=lambda ev: prev(ev) in snapshot)
 
-    def contains(self, value: Any) -> MagicFilter:
+    def contains(self, value: object) -> MagicFilter:
         prev = self._resolver
         return MagicFilter(predicate=lambda ev: _safe_contains(prev(ev), value))
 
-    def func(self, fn: Callable[[Any], bool]) -> MagicFilter:
+    def func(self, fn: Callable[[object], bool]) -> MagicFilter:
         prev = self._resolver
         return MagicFilter(predicate=lambda ev: bool(fn(prev(ev))))
 
     __hash__ = None  # type: ignore[assignment]
 
 
-def _safe_index(obj: Any, key: Any) -> Any:
+def _safe_index(obj: object, key: object) -> object:
     try:
-        return obj[key]
+        return obj[key]  # type: ignore[index]  # runtime duck-typed indexing
     except (TypeError, KeyError, IndexError):
         return None
 
 
-def _safe_contains(haystack: Any, needle: Any) -> bool:
+def _safe_contains(haystack: object, needle: object) -> bool:
     try:
-        return needle in haystack
+        return needle in haystack  # type: ignore[operator]  # runtime duck-typed containment
     except TypeError:
         return False
 

@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, ConfigDict, Field, RootModel
 
-from ._base import BoundModel
+from ._base import AvitoObject, AvitoRootObject
 from .common import Money
 
 if TYPE_CHECKING:
@@ -36,7 +36,7 @@ class CallByTime(BaseModel):
     duration_s: int | None = Field(default=None, ge=0, description="Call duration in seconds.")
 
 
-class ChatByTime(BoundModel):
+class ChatByTime(AvitoObject):
     """One row from ``POST /cpa/v3/chatsByTime`` (also the shape of ``chatByActionId``)."""
 
     model_config = ConfigDict(populate_by_name=True, strict=True, extra="allow")
@@ -56,7 +56,7 @@ class ComplaintStatus(StrEnum):
     CANCELLED = "cancelled"
 
 
-class Complaint(BoundModel):
+class Complaint(AvitoObject):
     """One CPA complaint row + lifecycle."""
 
     model_config = ConfigDict(populate_by_name=True, strict=True, extra="allow")
@@ -89,10 +89,10 @@ class CallList(RootModel[list[CallByTime]]):
         return len(self.root)
 
 
-class ChatList(RootModel[list[ChatByTime]], BoundModel):
+class ChatList(AvitoRootObject[list[ChatByTime]]):
     """Top-level array envelope for the chats-by-time response.
 
-    Inherits :class:`BoundModel` so the funnel cascades the client into each
+    Inherits :class:`AvitoObject` so the funnel cascades the client into each
     contained :class:`ChatByTime`.
     """
 
@@ -105,10 +105,10 @@ class ChatList(RootModel[list[ChatByTime]], BoundModel):
         return len(self.root)
 
 
-class ComplaintList(RootModel[list[Complaint]], BoundModel):
+class ComplaintList(AvitoRootObject[list[Complaint]]):
     """Top-level array envelope for the complaints listing.
 
-    Inherits :class:`BoundModel` so the funnel cascades the client into each
+    Inherits :class:`AvitoObject` so the funnel cascades the client into each
     contained :class:`Complaint` (enabling ``complaint.cancel()``).
     """
 

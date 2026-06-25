@@ -3,17 +3,15 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-from ..exceptions import ConnectionError as SDKConnectionError
-from ..exceptions import TimeoutError as SDKTimeoutError
-from ..exceptions import TLSError, TransportError
+from ..exceptions import AvitoConnectionError, AvitoTimeoutError, TLSError, TransportError
 from ._models import PreparedRequest, RawResponse
 from .base import BaseSession
 
 if TYPE_CHECKING:
     from ..config import ClientConfig
-    from ..utils.proxy._base import BaseProxyTransport
+    from ..transport.proxy._base import BaseProxyTransport
 
 
 class CurlSession(BaseSession):
@@ -33,14 +31,14 @@ class CurlSession(BaseSession):
     ) -> None:
         super().__init__(config=config, proxy_transport=proxy_transport)
         self.impersonate = impersonate
-        self._inner: Any = None
+        self._inner: object = None
 
     async def open(self) -> None:
         if self._inner is not None:
             return
         from curl_cffi.requests import AsyncSession  # lazy-import
 
-        self._inner = AsyncSession(impersonate=self.impersonate)
+        self._inner = AsyncSession(impersonate=self.impersonate)  # type: ignore[arg-type]  # curl_cffi expects Literal; str is fine at runtime
         await super().open()
 
     async def close(self) -> None:
@@ -48,7 +46,7 @@ class CurlSession(BaseSession):
             import contextlib
 
             with contextlib.suppress(Exception):
-                await self._inner.close()
+                await self._inner.close()  # type: ignore[attr-defined]
             self._inner = None
         await super().close()
 
@@ -57,18 +55,18 @@ class CurlSession(BaseSession):
             await self.open()
         assert self._inner is not None
 
-        kwargs: dict[str, Any] = {
+        kwargs: dict[str, object] = {
             "headers": prepared.headers,
             "params": prepared.query or None,
             "timeout": prepared.timeout_s,
         }
         if prepared.body is not None:
-            if isinstance(prepared.body, (dict, list)):
+            if isinstance(prepared.body, dict | list):
                 kwargs["data"] = json.dumps(prepared.body)
                 prepared.headers.setdefault("Content-Type", "application/json")
             elif isinstance(prepared.body, str):
                 kwargs["data"] = prepared.body
-            elif isinstance(prepared.body, (bytes, bytearray)):
+            elif isinstance(prepared.body, bytes | bytearray):
                 kwargs["data"] = bytes(prepared.body)
             else:
                 kwargs["data"] = json.dumps(prepared.body)
@@ -78,21 +76,21 @@ class CurlSession(BaseSession):
             kwargs["proxies"] = {"http": prepared.proxy, "https": prepared.proxy}
 
         try:
-            response = await self._inner.request(
+            response = await self._inner.request(  # type: ignore[attr-defined]
                 prepared.http_method,
                 prepared.url,
                 **kwargs,
             )
         except TimeoutError as exc:
-            raise SDKTimeoutError(str(exc)) from exc
-        except Exception as exc:
+            raise AvitoTimeoutError(str(exc)) from exc
+        except Exception as exc:  # noqa: BLE001 — transport boundary: normalise backend error, re-raised
             name = type(exc).__name__.lower()
             if "timeout" in name:
-                raise SDKTimeoutError(str(exc)) from exc
+                raise AvitoTimeoutError(str(exc)) from exc
             if "ssl" in name or "tls" in name or "certificate" in name:
                 raise TLSError(str(exc)) from exc
             if "connect" in name or "resolve" in name:
-                raise SDKConnectionError(str(exc)) from exc
+                raise AvitoConnectionError(str(exc)) from exc
             raise TransportError(f"{type(exc).__name__}: {exc}") from exc
 
         body: bytes = (

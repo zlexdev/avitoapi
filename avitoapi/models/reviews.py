@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from datetime import datetime
 from typing import TYPE_CHECKING
 
-from pydantic import BaseModel, ConfigDict, Field, RootModel
+from pydantic import BaseModel, ConfigDict, Field
 
-from ._base import BoundModel
+from ._base import AvitoObject, AvitoRootObject
+from .common import TZDatetime
 
 if TYPE_CHECKING:
     from ..methods.reviews import DeleteReviewReply, ReplyToReview
@@ -35,7 +35,7 @@ class RatingInfo(BaseModel):
     )
 
 
-class ReviewReply(BoundModel):
+class ReviewReply(AvitoObject):
     """Seller's reply attached to a review."""
 
     model_config = ConfigDict(populate_by_name=True, strict=True, extra="allow")
@@ -43,7 +43,7 @@ class ReviewReply(BoundModel):
     id: int = Field(..., description="Reply id (numeric — Avito's ratings API uses ints).")
     review_id: int = Field(..., description="Parent review id.")
     message: str = Field(..., description="Reply text as published.")
-    created_at: datetime = Field(..., description="Reply creation timestamp (UTC).")
+    created_at: TZDatetime = Field(..., description="Reply creation timestamp (UTC).")
 
     def delete(self) -> DeleteReviewReply:
         """Build a delete method-class bound to this reply."""
@@ -54,7 +54,7 @@ class ReviewReply(BoundModel):
         return DeleteReviewReply(answer_id=self.id).as_(client)
 
 
-class Review(BoundModel):
+class Review(AvitoObject):
     """A single review row from ``GET /ratings/v1/reviews``."""
 
     model_config = ConfigDict(populate_by_name=True, strict=True, extra="allow")
@@ -63,7 +63,7 @@ class Review(BoundModel):
     author: str = Field(..., description="Author display name.")
     stars: int = Field(..., ge=1, le=5, description="Stars (1..5).")
     text: str = Field(..., description="Review text body.")
-    created_at: datetime = Field(..., description="Creation timestamp (UTC).")
+    created_at: TZDatetime = Field(..., description="Creation timestamp (UTC).")
     reply: ReviewReply | None = Field(default=None, description="Seller reply when present.")
 
     def reply_to(self, message: str) -> ReplyToReview:
@@ -78,10 +78,10 @@ class Review(BoundModel):
         return ReplyToReview(review_id=self.id, message=message).as_(client)
 
 
-class ReviewList(RootModel[list[Review]], BoundModel):
+class ReviewList(AvitoRootObject[list[Review]]):
     """Top-level array envelope for paginated reviews responses.
 
-    Inherits :class:`BoundModel` so the funnel cascades the client into each
+    Inherits :class:`AvitoObject` so the funnel cascades the client into each
     contained :class:`Review` (and its nested :class:`ReviewReply`).
     """
 

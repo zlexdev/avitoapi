@@ -9,7 +9,6 @@ when the seller answers a review (the answer text appears under
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
 
 from .messenger import BaseEvent
 
@@ -20,7 +19,7 @@ class ReviewEvent(BaseEvent, event_name="reviews"):
     account_id: str
     review_id: str
 
-    def __init__(self, *, account_id: str, review_id: str, **kwargs: Any) -> None:
+    def __init__(self, *, account_id: str, review_id: str, **kwargs: object) -> None:
         super().__init__()
         self.account_id = account_id
         self.review_id = review_id

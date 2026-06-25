@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, Field, RootModel
+from pydantic import BaseModel, ConfigDict, Field
 
-from ._base import BoundModel
+from ._base import AvitoObject, AvitoRootObject
 
 
 class StockInfo(BaseModel):
@@ -31,7 +31,7 @@ class StockInfo(BaseModel):
     )
 
 
-class StockInfoList(RootModel[list[StockInfo]], BoundModel):
+class StockInfoList(AvitoRootObject[list[StockInfo]]):
     """Top-level array envelope for stock-info responses."""
 
     root: list[StockInfo] = Field(default_factory=list)
@@ -43,10 +43,9 @@ class StockInfoList(RootModel[list[StockInfo]], BoundModel):
         return len(self.root)
 
 
-class StockUpdateResult(BoundModel):
+class StockUpdateResult(AvitoObject):
     """Acknowledgement returned by ``PUT /stock-management/1/stocks``."""
 
-    model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
     success: bool = Field(default=True, description="True on 2xx.")
     updated: int | None = Field(

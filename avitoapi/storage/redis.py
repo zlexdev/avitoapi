@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from datetime import timedelta
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from .base import BaseStorage
 
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from redis.asyncio import Redis
 
 
-class RedisStorage(BaseStorage[Any, str]):
+class RedisStorage(BaseStorage[object, str]):
     """Async-Redis-backed K/V. Lazy-imports :mod:`redis.asyncio`.
 
     Install via ``pip install avitoapi[redis]``. JSON-serialises values with
@@ -54,21 +54,21 @@ class RedisStorage(BaseStorage[Any, str]):
         self._resolved = _Redis.from_url(self._url, decode_responses=False)
         return self._resolved
 
-    async def get(self, key: str) -> Any | None:
+    async def get(self, key: str) -> object | None:
         raw = await self._redis().get(self._full_key(key))
         if raw is None:
             return None
-        if isinstance(raw, (bytes, bytearray)):
+        if isinstance(raw, bytes | bytearray):
             raw = raw.decode("utf-8")
         try:
-            return json.loads(raw)
+            return json.loads(raw)  # type: ignore[no-any-return]  # json.loads stubs return Any
         except json.JSONDecodeError:
-            return raw
+            return raw  # type: ignore[no-any-return]  # redis stubs type get() as Any
 
     async def put(
         self,
         key: str,
-        value: Any,
+        value: object,
         *,
         ttl: timedelta | None = None,
     ) -> None:

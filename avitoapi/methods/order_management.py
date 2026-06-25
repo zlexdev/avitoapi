@@ -97,7 +97,7 @@ class CncSetOrderDetails(BaseMethod[CncDetailsResult]):
     __idempotent_mutation__: ClassVar[bool] = True
 
     order_id: str = Field(..., min_length=1)
-    details: dict[str, Any] = Field(
+    details: dict[str, Any] = Field(  # typed-Any: pydantic invariant dict field
         default_factory=dict, description="CnC details payload (free-form)."
     )
 
@@ -175,13 +175,13 @@ class CreateOrderLabelsExtended(BaseMethod[LabelTaskResult]):
     order_ids: list[str] = Field(
         ..., min_length=1, description="Orders to include in the extended-label batch."
     )
-    options: dict[str, Any] = Field(
+    options: dict[str, Any] = Field(  # typed-Any: pydantic invariant dict field
         default_factory=dict,
         description="Extended label options (format, size, …).",
     )
 
 
-class DownloadOrderLabels(BaseMethod[_BytesEnvelope]):  # type: ignore[type-var]
+class DownloadOrderLabels(BaseMethod[bytes]):
     """Download generated labels via ``GET /order-management/1/orders/labels/{taskID}/download``.
 
     Sets ``__binary_response__ = True`` so :class:`RestProtocol.decode_response`

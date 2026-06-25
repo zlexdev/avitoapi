@@ -11,24 +11,22 @@ new fields don't break decoding.
 
 from __future__ import annotations
 
-from datetime import datetime
 from enum import StrEnum
 from typing import TYPE_CHECKING
 
-from pydantic import BaseModel, ConfigDict, Field, RootModel
+from pydantic import BaseModel, ConfigDict, Field
 
-from ._base import BoundModel
+from ._base import AvitoObject, AvitoRootObject
+from .common import TZDatetime
 
 if TYPE_CHECKING:
+    from ..client import Client
     from ..methods.order_management import (
         AcceptReturnOrder,
         ApplyOrderTransition,
         DownloadOrderLabels,
         SetOrderTrackingNumber,
     )
-
-
-_OM_CFG = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
 
 class ManagedOrderStatus(StrEnum):
@@ -57,7 +55,7 @@ class OrderTransition(StrEnum):
 class OrderMarking(BaseModel):
     """One marking (mark code / serial) attached to an order line."""
 
-    model_config = _OM_CFG
+    model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
     code: str = Field(..., min_length=1, description="Mark code (UIN / DataMatrix payload).")
     item_id: int | None = Field(
@@ -68,20 +66,18 @@ class OrderMarking(BaseModel):
     )
 
 
-class CourierDeliveryRange(BoundModel):
+class CourierDeliveryRange(AvitoObject):
     """Buyer-facing courier delivery window."""
 
-    model_config = _OM_CFG
 
-    date_from: datetime | None = Field(default=None, description="Earliest courier slot (UTC).")
-    date_to: datetime | None = Field(default=None, description="Latest courier slot (UTC).")
+    date_from: TZDatetime | None = Field(default=None, description="Earliest courier slot (UTC).")
+    date_to: TZDatetime | None = Field(default=None, description="Latest courier slot (UTC).")
     comment: str | None = Field(default=None, description="Free-form note shown to the buyer.")
 
 
-class LabelTaskResult(BoundModel):
+class LabelTaskResult(AvitoObject):
     """Async-task envelope returned by label-generation endpoints."""
 
-    model_config = _OM_CFG
 
     task_id: str | None = Field(
         default=None, alias="taskID", description="Task id for polling / download."
@@ -94,14 +90,13 @@ class LabelTaskResult(BoundModel):
     )
 
 
-class ManagedOrder(BoundModel):
+class ManagedOrder(AvitoObject):
     """A managed order row returned by ``GET /order-management/1/orders``.
 
     Bound methods are not ``async def``: they return an awaitable method-class
     with the client pre-attached, mirroring the items / orders pattern.
     """
 
-    model_config = _OM_CFG
 
     id: str = Field(..., min_length=1, description="Order id (string — Avito uses opaque ids).")
     status: ManagedOrderStatus | str | None = Field(
@@ -111,8 +106,8 @@ class ManagedOrder(BoundModel):
     item_id: int | None = Field(default=None, description="Item the order was placed against.")
     buyer_id: int | None = Field(default=None, description="Buyer's Avito user id.")
     seller_id: int | None = Field(default=None, description="Seller's Avito user id.")
-    created_at: datetime | None = Field(default=None, description="Creation timestamp (UTC).")
-    updated_at: datetime | None = Field(default=None, description="Last update timestamp (UTC).")
+    created_at: TZDatetime | None = Field(default=None, description="Creation timestamp (UTC).")
+    updated_at: TZDatetime | None = Field(default=None, description="Last update timestamp (UTC).")
     markings: list[OrderMarking] = Field(
         default_factory=list, description="Marking codes attached to the order."
     )
@@ -161,10 +156,10 @@ class ManagedOrder(BoundModel):
         return DownloadOrderLabels(taskID=taskID).as_(client)
 
 
-class ManagedOrderList(BoundModel, RootModel[list[ManagedOrder]]):
+class ManagedOrderList(AvitoRootObject[list[ManagedOrder]]):
     """Root-array envelope for ``GET /order-management/1/orders``.
 
-    Inherits :class:`BoundModel` so the session funnel binds it; the custom
+    Inherits :class:`AvitoObject` so the session funnel binds it; the custom
     :meth:`as_` cascades the client into each contained :class:`ManagedOrder`
     so chains like ``orders.root[0].apply_transition(...)`` work after a
     list call.
@@ -178,17 +173,16 @@ class ManagedOrderList(BoundModel, RootModel[list[ManagedOrder]]):
     def __len__(self) -> int:
         return len(self.root)
 
-    def as_(self, client: object) -> ManagedOrderList:  # type: ignore[override]
+    def as_(self, client: Client) -> ManagedOrderList:
         self._client = client
         for item in self.root:
             item.as_(client)
         return self
 
 
-class MarkingResult(BoundModel):
+class MarkingResult(AvitoObject):
     """Result of ``POST /order-management/1/markings``."""
 
-    model_config = _OM_CFG
 
     ok: bool | None = Field(default=None, description="High-level success flag.")
     accepted: list[str] = Field(
@@ -202,19 +196,17 @@ class MarkingResult(BoundModel):
     )
 
 
-class OrderConfirmationCheck(BoundModel):
+class OrderConfirmationCheck(AvitoObject):
     """Result of ``POST /order-management/1/order/checkConfirmationCode``."""
 
-    model_config = _OM_CFG
 
     ok: bool | None = Field(default=None, description="Whether the confirmation code matched.")
     reason: str | None = Field(default=None, description="Failure reason when ``ok`` is False.")
 
 
-class CncDetailsResult(BoundModel):
+class CncDetailsResult(AvitoObject):
     """Result of ``POST /order-management/1/order/cncSetDetails`` (click-and-collect)."""
 
-    model_config = _OM_CFG
 
     ok: bool | None = Field(default=None, description="High-level success flag.")
     order_id: str | None = Field(default=None, description="Order touched by the call.")

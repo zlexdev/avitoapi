@@ -10,9 +10,11 @@ exist. Constructor signature stays the same as before the lift-out:
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, Any
 
 from stagecraft import PipelineRunner as _SCPipelineRunner
+from stagecraft import RunOutcome
 
 from ._adapters import (
     AvitoapiStateProvider,
@@ -22,10 +24,11 @@ from ._adapters import (
 )
 
 if TYPE_CHECKING:
+    from stagecraft import Pipeline, Stage
+
     from ..events._base import Event
     from ..routers.context import EventContext
     from ..routers.middleware import MiddlewareChain
-    from stagecraft import Pipeline, Stage
 
 
 class PipelineRunner:
@@ -46,15 +49,15 @@ class PipelineRunner:
 
     def __init__(
         self,
-        pipeline: Pipeline,
+        pipeline: Pipeline[Event, EventContext],
         *,
-        middleware_chain: MiddlewareChain | None = None,
+        middleware_chain: MiddlewareChain[Any, Any] | None = None,
     ) -> None:
         self.pipeline = pipeline
         self.middleware_chain = middleware_chain
 
-    async def run(self, event: Event, ctx: EventContext) -> bool:
-        inner: _SCPipelineRunner = _SCPipelineRunner(
+    async def run(self, event: Event, ctx: EventContext) -> RunOutcome:
+        inner: _SCPipelineRunner[Event, EventContext] = _SCPipelineRunner(
             self.pipeline,
             checkpoint_store=QueueMetadataCheckpointStore(ctx),
             state_provider=AvitoapiStateProvider(),
@@ -68,7 +71,9 @@ class PipelineRunner:
         return await inner.run(event, ctx)
 
 
-def stages_in_layers(stages):
+def stages_in_layers(
+    stages: Iterable[Stage[Any, Any, Any]],  # typed-Any: stagecraft Stage generic boundary — lib's own signature uses Any here
+) -> list[list[Stage[Any, Any, Any]]]:  # typed-Any: stagecraft Stage generic boundary
     """Re-export of :func:`stagecraft.stages_in_layers`.
 
     Kept as a local symbol so the public ``from avitoapi import …``

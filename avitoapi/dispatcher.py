@@ -95,12 +95,12 @@ class Dispatcher(Router):
     ) -> None:
         super().__init__(name=name)
         self.accounts: dict[str, Client] = {}
-        self.fsm_storage: BaseStorage[Any, str] | None = None
-        self.idempotency_storage: InMemoryIdempotencyStore | Any = InMemoryIdempotencyStore()
-        self.dlq: InMemoryDeadLetterQueue | Any = InMemoryDeadLetterQueue()
-        self.web: Any = None
+        self.fsm_storage: BaseStorage[object, str] | None = None
+        self.idempotency_storage: InMemoryIdempotencyStore | Any = InMemoryIdempotencyStore()  # typed-Any: replaceable backend, no ABC yet
+        self.dlq: InMemoryDeadLetterQueue | Any = InMemoryDeadLetterQueue()  # typed-Any: replaceable DLQ, local class has event/exc push
+        self.web: object | None = None
         self.event_queue: BaseEventQueue = event_queue or EventQueue(MemoryStorage())
-        self._inflight: set[asyncio.Task[Any]] = set()
+        self._inflight: set[asyncio.Task[Any]] = set()  # typed-Any: heterogeneous background tasks
 
     async def feed_event(self, event: Event) -> bool:
         """Persist + propagate one event. Returns ``True`` if anything handled it.
@@ -169,19 +169,19 @@ class Dispatcher(Router):
         ctx = EventContext(event=queued.event, dispatcher=self, queue=ctx_queue)
         try:
             return await self.propagate(queued.event, ctx)
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001 — handler boundary: log + isolate one handler's failure
             log.exception(
                 "dispatcher.handler_failed",
-                event=type(queued.event).__name__,
+                event_type=type(queued.event).__name__,
                 message_id=queued.message_id,
             )
             await self.dlq.push(queued.event, exc)
             raise
 
-    def spawn(self, coro: Awaitable[Any]) -> asyncio.Task[Any]:
+    def spawn(self, coro: Awaitable[Any]) -> asyncio.Task[Any]:  # typed-Any: heterogeneous coroutine/task return types
         """Schedule a background task; keep a strong ref so it doesn't get GC'd mid-flight."""
 
-        async def _wrap() -> Any:
+        async def _wrap() -> Any:  # typed-Any: wraps heterogeneous awaitable
             return await coro
 
         task = asyncio.create_task(_wrap())
@@ -201,10 +201,10 @@ class Dispatcher(Router):
 def make_dispatcher(
     *,
     accounts: list[Client],
-    fsm_storage: BaseStorage[Any, str] | None = None,
-    idempotency_storage: Any | None = None,
-    dlq: Any | None = None,
-    web: Any | None = None,
+    fsm_storage: BaseStorage[object, str] | None = None,
+    idempotency_storage: InMemoryIdempotencyStore | None = None,  # typed-Any: no ABC yet
+    dlq: InMemoryDeadLetterQueue | Any | None = None,  # typed-Any: replaceable DLQ
+    web: object | None = None,
     log_level: str = "INFO",
 ) -> Dispatcher:
     """Build a Dispatcher attached to the given :class:`Client` instances.
@@ -227,7 +227,7 @@ def make_dispatcher(
 
 
 # Public alias: ``avitoapi.HandlerCallable``-style for users who want to type the callback.
-DispatcherCallback = Callable[[Event], Awaitable[Any]]
+DispatcherCallback = Callable[[Event], Awaitable[Any]]  # typed-Any: callback return value is discarded
 
 
 __all__ = [

@@ -3,16 +3,18 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from collections.abc import Awaitable, Callable
-from typing import TYPE_CHECKING, Any
+from collections.abc import Awaitable, Callable, Iterator
+from typing import Generic, TypeVar
 
-if TYPE_CHECKING:
-    from .context import EventContext
+from ..events._base import Event
 
-NextHandler = Callable[[Any, "EventContext"], Awaitable[Any]]
+CtxT = TypeVar("CtxT")
+ResultT = TypeVar("ResultT")
+
+NextHandler = Callable[[Event, CtxT], Awaitable[ResultT]]
 
 
-class BaseMiddleware(ABC):
+class BaseMiddleware(ABC, Generic[CtxT, ResultT]):
     """Wrap one event delivery.
 
     Subclasses implement ``__call__``; they decide whether to call
@@ -31,51 +33,57 @@ class BaseMiddleware(ABC):
     @abstractmethod
     async def __call__(
         self,
-        handler: NextHandler,
-        event: Any,
-        ctx: EventContext,
-    ) -> Any: ...
+        handler: Callable[[Event, CtxT], Awaitable[ResultT]],
+        event: Event,
+        ctx: CtxT,
+    ) -> ResultT: ...
 
 
-class MiddlewareChain:
+class MiddlewareChain(Generic[CtxT, ResultT]):
     """Ordered list of :class:`BaseMiddleware`. Earlier registrations wrap later ones."""
 
     __slots__ = ("_items",)
 
     def __init__(self) -> None:
-        self._items: list[BaseMiddleware] = []
+        self._items: list[BaseMiddleware[CtxT, ResultT]] = []
 
-    def register(self, middleware: BaseMiddleware) -> BaseMiddleware:
+    def register(self, middleware: BaseMiddleware[CtxT, ResultT]) -> BaseMiddleware[CtxT, ResultT]:
         """Append a middleware. Returns it for fluent chaining."""
 
         self._items.append(middleware)
         return middleware
 
-    def __call__(self, middleware: BaseMiddleware) -> BaseMiddleware:
+    def __call__(self, middleware: BaseMiddleware[CtxT, ResultT]) -> BaseMiddleware[CtxT, ResultT]:
         """Decorator form: ``@router.outer_middleware``."""
 
         return self.register(middleware)
 
-    def __iter__(self):  # noqa: ANN204 — small iterator helper
+    def __iter__(self) -> Iterator[BaseMiddleware[CtxT, ResultT]]:
         return iter(self._items)
 
     def __len__(self) -> int:
         return len(self._items)
 
-    def wrap(self, terminal: NextHandler) -> NextHandler:
+    def wrap(
+        self,
+        terminal: Callable[[Event, CtxT], Awaitable[ResultT]],
+    ) -> Callable[[Event, CtxT], Awaitable[ResultT]]:
         """Fold the chain over ``terminal`` and return the composed handler."""
 
-        handler: NextHandler = terminal
+        handler: Callable[[Event, CtxT], Awaitable[ResultT]] = terminal
         for middleware in reversed(self._items):
             handler = _bind(middleware, handler)
         return handler
 
 
-def _bind(mw: BaseMiddleware, nxt: NextHandler) -> NextHandler:
-    async def _call(event: Any, ctx: EventContext) -> Any:
+def _bind(
+    mw: BaseMiddleware[CtxT, ResultT],
+    nxt: Callable[[Event, CtxT], Awaitable[ResultT]],
+) -> Callable[[Event, CtxT], Awaitable[ResultT]]:
+    async def _call(event: Event, ctx: CtxT) -> ResultT:
         return await mw(nxt, event, ctx)
 
     return _call
 
 
-__all__ = ["BaseMiddleware", "MiddlewareChain", "NextHandler"]
+__all__ = ["BaseMiddleware", "CtxT", "MiddlewareChain", "NextHandler", "ResultT"]

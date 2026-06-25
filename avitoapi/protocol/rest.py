@@ -5,7 +5,10 @@ from __future__ import annotations
 import hashlib
 import json
 from datetime import timedelta
-from typing import TYPE_CHECKING, Any
+from typing import (  # typed-Any: BaseMethod[Any] = heterogeneous method holder (return type erased at protocol layer)
+    TYPE_CHECKING,
+    Any,
+)
 from uuid import uuid4
 
 from ..exceptions import (
@@ -13,6 +16,7 @@ from ..exceptions import (
     PathResolutionError,
     ResponseDecodingError,
 )
+from ..types import JsonObject
 from .base import Protocol
 
 if TYPE_CHECKING:
@@ -113,11 +117,11 @@ class RestProtocol(Protocol):
         method: BaseMethod[Any],
         raw: RawResponse,
     ) -> Any:
+        if getattr(method, "__binary_response__", False):
+            return raw.body
         returning = method.__returning__
         if returning is None:
             return None
-        if getattr(method, "__binary_response__", False):
-            return raw.body
         if not raw.body:
             return None
         try:
@@ -126,7 +130,7 @@ class RestProtocol(Protocol):
             raise ResponseDecodingError(
                 f"{type(method).__name__}: response body is not valid JSON",
             ) from exc
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001 — decode boundary: re-raised as ResponseDecodingError
             raise ResponseDecodingError(
                 f"{type(method).__name__}: response did not match {returning.__name__}",
             ) from exc
@@ -155,7 +159,7 @@ class RestProtocol(Protocol):
         return endpoint
 
     @staticmethod
-    def _dump(method: BaseMethod[Any]) -> dict[str, Any]:
+    def _dump(method: BaseMethod[Any]) -> JsonObject:
         data = method.model_dump(mode="json", exclude_none=True, by_alias=False)
         return {k: v for k, v in data.items() if not k.startswith("_")}
 
@@ -182,7 +186,7 @@ class RestProtocol(Protocol):
         method: BaseMethod[Any],
         http_method: str,
         payload: dict[str, Any],
-    ) -> tuple[dict[str, Any], Any]:
+    ) -> tuple[JsonObject, Any]:
         remaining = {k: v for k, v in payload.items() if k not in method.__path_fields__}
         if method.__query_fields__ is not None or method.__body_fields__ is not None:
             query = {

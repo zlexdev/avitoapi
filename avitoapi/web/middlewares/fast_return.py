@@ -13,7 +13,9 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import Awaitable, Coroutine
-from typing import Any
+from typing import Any  # typed-Any: asyncio Task/Coroutine and middleware generics use Any
+
+from ...routers.middleware import BaseMiddleware, NextHandler
 
 
 class _FallbackTaskTracker:
@@ -36,7 +38,7 @@ class _FallbackTaskTracker:
         await asyncio.wait(self._tasks, timeout=timeout)
 
 
-class WebhookFastReturnMiddleware:
+class WebhookFastReturnMiddleware(BaseMiddleware[Any, Any]):
     """Spawn the handler on the supplied task tracker; return immediately.
 
     ``task_tracker`` is duck-typed: anything with a ``spawn(coro)`` method
@@ -52,16 +54,21 @@ class WebhookFastReturnMiddleware:
         """The underlying tracker — exposed for shutdown coordination."""
         return self._tracker
 
+    async def __call__(self, handler: NextHandler[Any, Any], event: Any, ctx: Any) -> Any:
+        """Schedule handler as a background task; return 200 immediately."""
+        self.schedule(handler(event, ctx))
+        return (200, {"ok": True})
+
     def schedule(
         self,
         coro_or_awaitable: Coroutine[Any, Any, Any] | Awaitable[Any],
     ) -> asyncio.Task[Any]:
         """Hand off to the tracker. Returns the task; caller may ignore it."""
         if asyncio.iscoroutine(coro_or_awaitable):
-            return self._tracker.spawn(coro_or_awaitable)  # type: ignore[no-any-return]
+            return self._tracker.spawn(coro_or_awaitable)
 
         # Awaitable that isn't a coroutine — wrap so the tracker sees a coroutine.
         async def _wrap() -> Any:
             return await coro_or_awaitable
 
-        return self._tracker.spawn(_wrap())  # type: ignore[no-any-return]
+        return self._tracker.spawn(_wrap())

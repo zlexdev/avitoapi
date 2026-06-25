@@ -4,19 +4,24 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 from enum import StrEnum
+from typing import TYPE_CHECKING
 
-from pydantic import BaseModel, ConfigDict, Field, RootModel, model_validator
+from pydantic import ConfigDict, Field, model_validator
 
-from .common import Money
+from ._base import AvitoObject, AvitoRootObject
+from .common import Money, TZDatetime
+
+if TYPE_CHECKING:
+    from ..client import Client
 
 
-class Balance(BaseModel):
+class Balance(AvitoObject):
     """Real-money wallet balance returned by ``GET /core/v1/accounts/{user_id}/balance/``."""
 
     model_config = ConfigDict(populate_by_name=True, strict=True, extra="allow")
 
     real: Money = Field(..., description="Real-money balance (rubles).")
-    as_of: datetime = Field(
+    as_of: TZDatetime = Field(
         default_factory=lambda: datetime.now(UTC),
         description="Snapshot timestamp; synthesised if Avito omits it from the body.",
     )
@@ -29,7 +34,7 @@ class Balance(BaseModel):
         return data
 
 
-class BalanceBonus(BaseModel):
+class BalanceBonus(AvitoObject):
     """Bonus balance returned by ``GET /core/v1/accounts/{user_id}/balance/bonus``."""
 
     model_config = ConfigDict(populate_by_name=True, strict=True, extra="allow")
@@ -48,7 +53,7 @@ class OperationType(StrEnum):
     RELEASE = "release"
 
 
-class Operation(BaseModel):
+class Operation(AvitoObject):
     """One row of the wallet operations history."""
 
     model_config = ConfigDict(populate_by_name=True, strict=True, extra="allow")
@@ -56,15 +61,19 @@ class Operation(BaseModel):
     id: str | int = Field(..., description="Stable operation id (string or numeric).")
     kind: OperationType = Field(..., description="Operation kind.")
     amount: Money = Field(..., description="Signed amount; positive=credit, negative=debit.")
-    created_at: datetime = Field(..., description="Operation timestamp (UTC).")
+    created_at: TZDatetime = Field(..., description="Operation timestamp (UTC).")
     meta: dict[str, str] = Field(
         default_factory=dict,
         description="Free-form per-operation metadata (string values only).",
     )
 
 
-class OperationList(RootModel[list[Operation]]):
-    """Top-level JSON array envelope for endpoints that return a bare list of operations."""
+class OperationList(AvitoRootObject[list[Operation]]):
+    """Top-level JSON array envelope for endpoints that return a bare list of operations.
+
+    Inherits :class:`AvitoObject` so the funnel cascades the client into each
+    contained :class:`Operation`.
+    """
 
     root: list[Operation] = Field(default_factory=list)
 
@@ -73,3 +82,9 @@ class OperationList(RootModel[list[Operation]]):
 
     def __len__(self) -> int:
         return len(self.root)
+
+    def as_(self, client: Client) -> OperationList:
+        self._client = client
+        for op in self.root:
+            op.as_(client)
+        return self

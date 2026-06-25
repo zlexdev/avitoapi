@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 import sys
-from typing import Any
+from typing import Any, cast
 
 import structlog
 from structlog.contextvars import merge_contextvars
@@ -33,14 +33,14 @@ _REDACTED = "***"
 
 
 def _redact_processor(
-    _logger: Any,
+    _logger: Any,  # typed-Any: structlog processor logger param
     _method_name: str,
-    event_dict: dict[str, Any],
-) -> dict[str, Any]:
-    return _walk_redact(event_dict)
+    event_dict: dict[str, Any],  # typed-Any: structlog EventDict = MutableMapping[str, Any]
+) -> dict[str, Any]:  # typed-Any: structlog EventDict return
+    return cast("dict[str, Any]", _walk_redact(event_dict))
 
 
-def _walk_redact(value: Any) -> Any:
+def _walk_redact(value: object) -> object:
     if isinstance(value, dict):
         return {
             k: (_REDACTED if k.lower() in _REDACT_KEYS else _walk_redact(v))
@@ -70,7 +70,7 @@ def configure(level: int | str = logging.INFO, *, json: bool = False) -> None:
         stream=sys.stderr,
     )
 
-    processors: list[Any] = [
+    processors: list[Any] = [  # typed-Any: structlog processor Callable uses Any in stubs
         merge_contextvars,
         add_log_level,
         TimeStamper(fmt="iso", utc=True),
@@ -82,7 +82,7 @@ def configure(level: int | str = logging.INFO, *, json: bool = False) -> None:
     structlog.configure(
         processors=processors,
         wrapper_class=structlog.make_filtering_bound_logger(
-            logging.getLevelName(level) if isinstance(level, int) else level,
+            level if isinstance(level, int) else logging.getLevelNamesMapping()[level],
         ),
         context_class=dict,
         logger_factory=structlog.PrintLoggerFactory(sys.stderr),
@@ -96,4 +96,4 @@ def get_logger(name: str | None = None) -> BoundLogger:
 
     if not _configured:
         configure()
-    return structlog.get_logger(name)
+    return cast("BoundLogger", structlog.get_logger(name))

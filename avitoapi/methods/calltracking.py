@@ -54,7 +54,7 @@ class ListCalls(BaseMethod[CallList]):
     date_to: datetime = Field(..., description="Window end (inclusive, UTC).")
 
 
-class GetCallRecording(BaseMethod[_BytesEnvelope]):  # type: ignore[type-var]
+class GetCallRecording(BaseMethod[bytes]):
     """Recording audio via ``GET /calltracking/v2/calls/{call_id}/recording``.
 
     Sets ``__binary_response__ = True`` so :class:`RestProtocol.decode_response`

@@ -21,7 +21,7 @@ class Event:
     __event_name__: ClassVar[str] = ""
     registry: ClassVar[dict[str, type[Event]]] = {}
 
-    def __init_subclass__(cls, *, event_name: str = "", **kwargs: Any) -> None:
+    def __init_subclass__(cls, *, event_name: str = "", **kwargs: object) -> None:
         super().__init_subclass__(**kwargs)
         if event_name:
             cls.__event_name__ = event_name
@@ -29,7 +29,7 @@ class Event:
         elif not cls.__event_name__:
             cls.__event_name__ = cls.__qualname__
 
-    def __init__(self, **kwargs: Any) -> None:
+    def __init__(self, **kwargs: object) -> None:
         for k, v in kwargs.items():
             setattr(self, k, v)
 
@@ -38,4 +38,22 @@ class Event:
         return f"{type(self).__name__}({attrs})"
 
 
-__all__ = ["Event"]
+class RawWebhookEvent(Event, event_name="raw_webhook"):
+    """Fallback event for unrecognised webhook payload types.
+
+    Carries the raw ``kind`` string and the unparsed ``payload`` dict so
+    handlers can still inspect or log the data without the dispatcher dropping it.
+    """
+
+    kind: str
+    payload: dict[str, Any]
+    account_id: str
+
+    def __init__(self, *, kind: str, payload: dict[str, Any], account_id: str = "") -> None:
+        super().__init__()
+        self.kind = kind
+        self.payload = payload
+        self.account_id = account_id
+
+
+__all__ = ["Event", "RawWebhookEvent"]

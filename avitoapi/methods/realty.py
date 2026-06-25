@@ -79,7 +79,7 @@ class UpdatePeriodPrices(BaseMethod[None]):
         description="Replacement set of period-price rules (full list, not a delta).",
     )
 
-    def model_dump(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
+    def model_dump(self, *args: Any, **kwargs: Any) -> dict[str, Any]:  # typed-Any: pydantic model_dump override
         # Avito accepts a bare JSON array on this endpoint; the funnel
         # serialises whatever the protocol routes into ``body``. We keep
         # the standard dump shape and let the protocol wrap it.

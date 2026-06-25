@@ -9,7 +9,6 @@ running multi-account deployment wants in Sentry/Grafana.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
 
 from .messenger import BaseEvent
 
@@ -19,7 +18,7 @@ class LifecycleEvent(BaseEvent, event_name="lifecycle"):
 
     occurred_at: datetime
 
-    def __init__(self, *, occurred_at: datetime, **kwargs: Any) -> None:
+    def __init__(self, *, occurred_at: datetime, **kwargs: object) -> None:
         super().__init__()
         self.occurred_at = occurred_at
         for k, v in kwargs.items():

@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from decimal import Decimal
 from enum import StrEnum
-from typing import Generic, TypeVar
+from typing import Annotated, Generic, TypeVar
 
-from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, field_serializer, field_validator
 
 
 class Currency(StrEnum):
@@ -63,3 +64,14 @@ class AvitoErrorBody(BaseModel):
 
     code: str | int | None = None
     message: str | None = None
+
+
+def _require_tz(v: datetime) -> datetime:
+    """Reject naive datetimes — every wire datetime must carry timezone info."""
+    if v.tzinfo is None:
+        raise ValueError(f"datetime must be timezone-aware; got naive: {v!r}")
+    return v
+
+
+TZDatetime = Annotated[datetime, AfterValidator(_require_tz)]
+"""``datetime`` subtype that rejects naive instances at Pydantic validation time."""

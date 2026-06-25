@@ -48,7 +48,7 @@ class CreateParcel(BaseMethod[Parcel]):
     __endpoint__: ClassVar[str] = "/createParcel"
     __idempotent_mutation__: ClassVar[bool] = True
 
-    payload: dict[str, Any] = Field(
+    payload: dict[str, Any] = Field(  # typed-Any: pydantic invariant dict field
         default_factory=dict,
         description="Free-form parcel payload (Avito's schema is fluid; pass through).",
     )
@@ -67,7 +67,7 @@ class ListTariffAreas(BaseMethod[TariffAreaList]):
     __idempotent_mutation__: ClassVar[bool] = True
 
     tariff_id: str = Field(..., min_length=1)
-    filters: dict[str, Any] = Field(default_factory=dict, description="Optional filter bag.")
+    filters: dict[str, Any] = Field(default_factory=dict, description="Optional filter bag.")  # typed-Any: pydantic invariant dict field
 
 
 class ListTariffTerms(BaseMethod[TariffTermList]):
@@ -79,7 +79,7 @@ class ListTariffTerms(BaseMethod[TariffTermList]):
     __idempotent_mutation__: ClassVar[bool] = True
 
     tariff_id: str = Field(..., min_length=1)
-    filters: dict[str, Any] = Field(default_factory=dict, description="Optional filter bag.")
+    filters: dict[str, Any] = Field(default_factory=dict, description="Optional filter bag.")  # typed-Any: pydantic invariant dict field
 
 
 class ListTariffsV2(BaseMethod[TariffList]):
@@ -89,7 +89,7 @@ class ListTariffsV2(BaseMethod[TariffList]):
     __endpoint__: ClassVar[str] = "/delivery-sandbox/tariffsV2"
     __idempotent_mutation__: ClassVar[bool] = True
 
-    filters: dict[str, Any] = Field(default_factory=dict, description="Free-form filter payload.")
+    filters: dict[str, Any] = Field(default_factory=dict, description="Free-form filter payload.")  # typed-Any: pydantic invariant dict field
 
 
 class SetAreaCustomSchedule(BaseMethod[GenericDeliveryResult]):
@@ -100,7 +100,7 @@ class SetAreaCustomSchedule(BaseMethod[GenericDeliveryResult]):
     __idempotent_mutation__: ClassVar[bool] = True
 
     area_id: str = Field(..., min_length=1)
-    schedule: dict[str, Any] = Field(
+    schedule: dict[str, Any] = Field(  # typed-Any: pydantic invariant dict field
         default_factory=dict, description="Schedule payload (free-form)."
     )
 
@@ -114,7 +114,7 @@ class ListTariffTerminals(BaseMethod[TerminalList]):
     __idempotent_mutation__: ClassVar[bool] = True
 
     tariff_id: str = Field(..., min_length=1)
-    filters: dict[str, Any] = Field(default_factory=dict, description="Optional filter bag.")
+    filters: dict[str, Any] = Field(default_factory=dict, description="Optional filter bag.")  # typed-Any: pydantic invariant dict field
 
 
 class GetDeliveryTask(BaseMethod[DeliveryTask]):
@@ -157,7 +157,7 @@ class SetOrderProperties(BaseMethod[OrderProperties]):
     __idempotent_mutation__: ClassVar[bool] = True
 
     order_id: str = Field(..., min_length=1)
-    properties: dict[str, Any] = Field(default_factory=dict, description="Property bag to set.")
+    properties: dict[str, Any] = Field(default_factory=dict, description="Property bag to set.")  # typed-Any: pydantic invariant dict field
 
 
 class GetOrderRealAddress(BaseMethod[RealAddress]):
@@ -199,7 +199,7 @@ class ChangeParcelResult(BaseMethod[ParcelChangeResult]):
     __idempotent_mutation__: ClassVar[bool] = True
 
     parcel_id: str = Field(..., min_length=1)
-    result: dict[str, Any] = Field(default_factory=dict, description="Result payload (free-form).")
+    result: dict[str, Any] = Field(default_factory=dict, description="Result payload (free-form)  # typed-Any: pydantic invariant dict field.")
 
 
 class BatchChangeParcels(BaseMethod[ParcelChangeResult]):
@@ -209,7 +209,7 @@ class BatchChangeParcels(BaseMethod[ParcelChangeResult]):
     __endpoint__: ClassVar[str] = "/sandbox/changeParcels"
     __idempotent_mutation__: ClassVar[bool] = True
 
-    parcels: list[dict[str, Any]] = Field(
+    parcels: list[dict[str, Any]] = Field(  # typed-Any: pydantic invariant dict field
         default_factory=list,
         description="List of parcel change payloads.",
     )
@@ -232,7 +232,7 @@ class CreateAnnouncement(BaseMethod[Announcement]):
     __endpoint__: ClassVar[str] = "/createAnnouncement"
     __idempotent_mutation__: ClassVar[bool] = True
 
-    payload: dict[str, Any] = Field(
+    payload: dict[str, Any] = Field(  # typed-Any: pydantic invariant dict field
         default_factory=dict,
         description="Free-form announcement payload.",
     )
@@ -245,7 +245,7 @@ class CreateAnnouncementV1(BaseMethod[Announcement]):
     __endpoint__: ClassVar[str] = "/delivery-sandbox/announcements/create"
     __idempotent_mutation__: ClassVar[bool] = True
 
-    payload: dict[str, Any] = Field(
+    payload: dict[str, Any] = Field(  # typed-Any: pydantic invariant dict field
         default_factory=dict, description="Free-form announcement payload."
     )
 
@@ -293,7 +293,7 @@ class ListTariffSortingCenters(BaseMethod[SortingCenterList]):
     __idempotent_mutation__: ClassVar[bool] = True
 
     tariff_id: str = Field(..., min_length=1)
-    filters: dict[str, Any] = Field(default_factory=dict, description="Optional filter bag.")
+    filters: dict[str, Any] = Field(default_factory=dict, description="Optional filter bag.")  # typed-Any: pydantic invariant dict field
 
 
 class CancelAnnouncementV1(BaseMethod[AnnouncementId]):
@@ -325,7 +325,7 @@ class ChangeParcelV1(BaseMethod[ParcelChangeResult]):
     __idempotent_mutation__: ClassVar[bool] = True
 
     parcel_id: str = Field(..., min_length=1)
-    changes: dict[str, Any] = Field(default_factory=dict, description="Change payload (free-form).")
+    changes: dict[str, Any] = Field(default_factory=dict, description="Change payload (free-form)  # typed-Any: pydantic invariant dict field.")
 
 
 class CreateAnnouncementV1Alt(BaseMethod[Announcement]):
@@ -339,7 +339,7 @@ class CreateAnnouncementV1Alt(BaseMethod[Announcement]):
     __endpoint__: ClassVar[str] = "/delivery-sandbox/v1/createAnnouncement"
     __idempotent_mutation__: ClassVar[bool] = True
 
-    payload: dict[str, Any] = Field(
+    payload: dict[str, Any] = Field(  # typed-Any: pydantic invariant dict field
         default_factory=dict, description="Free-form announcement payload."
     )
 
@@ -392,4 +392,4 @@ class CreateParcelV2(BaseMethod[Parcel]):
     __endpoint__: ClassVar[str] = "/delivery-sandbox/v2/createParcel"
     __idempotent_mutation__: ClassVar[bool] = True
 
-    payload: dict[str, Any] = Field(default_factory=dict, description="Free-form parcel payload.")
+    payload: dict[str, Any] = Field(default_factory=dict, description="Free-form parcel payload.")  # typed-Any: pydantic invariant dict field

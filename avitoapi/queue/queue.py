@@ -38,10 +38,11 @@ import contextlib
 import time
 import uuid
 from collections.abc import AsyncIterator
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from ..logging import get_logger
 from ..storage.base import BaseStorage
+from ..types import JsonObject
 from .base import BaseDeadLetterQueue, BaseEventQueue, DeadLetter, MessageLease, QueuedEvent
 from .serializer import EventSerializer, JSONSerializer
 
@@ -71,7 +72,7 @@ class EventQueue(BaseEventQueue):
 
     def __init__(
         self,
-        storage: BaseStorage[Any, str],
+        storage: BaseStorage[object, str],
         *,
         serializer: EventSerializer | None = None,
         namespace: str = "events",
@@ -90,7 +91,7 @@ class EventQueue(BaseEventQueue):
         self,
         event: Event,
         *,
-        metadata: dict[str, Any] | None = None,
+        metadata: JsonObject | None = None,
         run_at: float | None = None,
         priority: int = 0,
     ) -> QueuedEvent:
@@ -109,7 +110,7 @@ class EventQueue(BaseEventQueue):
             await self._storage.put(_INDEX_KEY, index)
         return record
 
-    def _row_for_enqueue(self, record: QueuedEvent) -> dict[str, Any]:
+    def _row_for_enqueue(self, record: QueuedEvent) -> JsonObject:
         return {
             "enqueued_at": record.enqueued_at,
             "attempts": 0,
@@ -128,7 +129,7 @@ class EventQueue(BaseEventQueue):
     ) -> QueuedEvent | None:
         timeout = visibility_timeout if visibility_timeout is not None else self.visibility_timeout
         now = time.time()
-        dlq_pushes: list[tuple[str, dict[str, Any]]] = []
+        dlq_pushes: list[tuple[str, JsonObject]] = []
         async with self._lock:
             index = await self._read_index()
             for message_id in list(index):
@@ -168,13 +169,13 @@ class EventQueue(BaseEventQueue):
         return None
 
     @staticmethod
-    def _is_ready(row: dict[str, Any], *, now: float) -> bool:
+    def _is_ready(row: JsonObject, *, now: float) -> bool:
         run_at = row.get("run_at")
-        if run_at is not None and float(run_at) > now:
+        if run_at is not None and float(run_at) > now:  # type: ignore[arg-type]  # JSONValue narrowed at runtime
             return False
         lease_id = row.get("lease_id") or ""
         if lease_id:
-            expires = float(row.get("lease_expires_at") or 0.0)
+            expires = float(row.get("lease_expires_at") or 0.0)  # type: ignore[arg-type]  # JSONValue narrowed at runtime
             if expires > now:
                 return False
         return True
@@ -231,7 +232,7 @@ class EventQueue(BaseEventQueue):
     async def replay(self) -> AsyncIterator[QueuedEvent]:
         async with self._lock:
             index = await self._read_index()
-            rows: list[tuple[str, dict[str, Any]]] = []
+            rows: list[tuple[str, JsonObject]] = []
             for mid in index:
                 row = await self._storage.get(mid)
                 if isinstance(row, dict):
@@ -242,19 +243,19 @@ class EventQueue(BaseEventQueue):
             except Exception:  # noqa: BLE001 — bad row should not abort the replay
                 log.exception("queue.skip_unloadable_row", message_id=mid)
 
-    def _row_to_queued(self, message_id: str, row: dict[str, Any]) -> QueuedEvent:
+    def _row_to_queued(self, message_id: str, row: JsonObject) -> QueuedEvent:
         event = self._serializer.load(row.get("payload"))
         return QueuedEvent(
             message_id=message_id,
             event=event,
-            enqueued_at=float(row.get("enqueued_at") or 0.0),
-            attempts=int(row.get("attempts") or 0),
-            metadata=dict(row.get("metadata") or {}),
-            run_at=row.get("run_at"),
-            priority=int(row.get("priority") or 0),
+            enqueued_at=float(row.get("enqueued_at") or 0.0),  # type: ignore[arg-type]  # JSONValue narrowed at runtime
+            attempts=int(row.get("attempts") or 0),  # type: ignore[arg-type]  # JSONValue narrowed at runtime
+            metadata=dict(row.get("metadata") or {}),  # type: ignore[arg-type]  # JSONValue narrowed at runtime
+            run_at=row.get("run_at"),  # type: ignore[arg-type]  # JSONValue narrowed at runtime
+            priority=int(row.get("priority") or 0),  # type: ignore[arg-type]  # JSONValue narrowed at runtime
         )
 
-    async def update_metadata(self, message_id: str, metadata: dict[str, Any]) -> bool:
+    async def update_metadata(self, message_id: str, metadata: JsonObject) -> bool:
         async with self._lock:
             row = await self._storage.get(message_id)
             if not isinstance(row, dict):
@@ -333,7 +334,7 @@ class EventQueue(BaseEventQueue):
 
     async def _push_dlq(
         self,
-        rows: list[tuple[str, dict[str, Any]]],
+        rows: list[tuple[str, JsonObject]],
         *,
         reason: str,
     ) -> None:
@@ -355,10 +356,10 @@ class EventQueue(BaseEventQueue):
                 DeadLetter(
                     message_id=mid,
                     event=event,
-                    attempts=int(row.get("attempts") or 0),
+                    attempts=int(row.get("attempts") or 0),  # type: ignore[arg-type]  # JSONValue narrowed at runtime
                     failed_at=time.time(),
                     reason=reason,
-                    metadata=dict(row.get("metadata") or {}),
+                    metadata=dict(row.get("metadata") or {}),  # type: ignore[arg-type]  # JSONValue narrowed at runtime
                 ),
             )
 

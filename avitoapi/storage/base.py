@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from datetime import timedelta
-from typing import Any, Generic, TypeVar
+from typing import Generic, TypeVar
 
 TDoc = TypeVar("TDoc")
 TId = TypeVar("TId")
@@ -22,14 +22,14 @@ class BaseStorage(ABC, Generic[TDoc, TId]):
     namespace: str = ""
 
     @abstractmethod
-    async def get(self, key: str) -> Any | None:
+    async def get(self, key: str) -> TDoc | None:
         """Return the JSON-decoded value or ``None`` if absent or expired."""
 
     @abstractmethod
     async def put(
         self,
         key: str,
-        value: Any,
+        value: TDoc,
         *,
         ttl: timedelta | None = None,
     ) -> None:
@@ -49,7 +49,7 @@ class BaseStorage(ABC, Generic[TDoc, TId]):
 
         sentinel = f"__health__:{id(self)}"
         try:
-            await self.put(sentinel, 1, ttl=timedelta(seconds=5))
+            await self.put(sentinel, 1, ttl=timedelta(seconds=5))  # type: ignore[arg-type]  # int sentinel; TDoc irrelevant for health probe
             value = await self.get(sentinel)
             await self.delete(sentinel)
         except Exception:

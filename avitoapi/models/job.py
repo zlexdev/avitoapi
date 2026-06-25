@@ -7,11 +7,11 @@ by any structured-log binding (see ``logging.py``).
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from ._base import BoundModel
+from ._base import AvitoObject
 
 if TYPE_CHECKING:
     from ..methods.job import GetResumeContacts
@@ -33,14 +33,13 @@ class ResumeSearchQuery(BaseModel):
     per_page: int = Field(default=25, ge=1, le=100)
 
 
-class Resume(BoundModel):
+class Resume(AvitoObject):
     """One résumé summary row.
 
     Bound action :meth:`get_contacts` builds an awaitable method-class for the
     contacts endpoint — the only way to fetch the candidate's email/phone.
     """
 
-    model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
     id: str = Field(..., description="Avito résumé id (string).")
     title: str = Field(..., description="Résumé title / role.")
@@ -99,7 +98,7 @@ __all__: list[str] = [
 ]
 
 
-def _annotate_pii(_: Any = None) -> None:
+def _annotate_pii(_: object = None) -> None:
     """No-op marker — kept so ``logging.py`` can ``import _annotate_pii`` later.
 
     Importing this symbol from a future logging-side redactor lets it pin

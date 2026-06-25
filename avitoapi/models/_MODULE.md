@@ -5,10 +5,10 @@ response shapes, state-machine table, and bound action methods.
 
 ## Contract
 
-- All response models extend `BoundModel` (`models/_base.py`).
+- All response models extend `AvitoObject` (`models/_base.py`).
   - `model_config = ConfigDict(populate_by_name=True, strict=True)`.
   - Private `_client` is set by `as_(client)` after decode.
-  - `as_(client)` recursively binds nested `BoundModel` children
+  - `as_(client)` recursively binds nested `AvitoObject` children
     (inside `list` and `dict` containers too).
   - `_require_client()` raises `ModelNotBoundError` when bound methods
     fire on a hand-built instance.
@@ -25,8 +25,8 @@ response shapes, state-machine table, and bound action methods.
   `BbipForecast`, `PromotionList`, `BidList`), `cpa.py`
   (`CpaBalanceInfo`, `CallByTime`, `ChatByTime`, `Complaint`,
   `ComplaintStatus`, `CallList`, `ChatList`, `ComplaintList`). List
-  envelopes that hold BoundModel children (`OrderList`, `ReviewList`,
-  `ChatList`, `ComplaintList`) inherit `BoundModel` so the funnel
+  envelopes that hold AvitoObject children (`OrderList`, `ReviewList`,
+  `ChatList`, `ComplaintList`) inherit `AvitoObject` so the funnel
   cascades the client into nested rows — enabling `order.refund()`,
   `review.reply_to(...)`, `complaint.cancel()` after a paginated fetch.
 

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from datetime import datetime
 from enum import StrEnum
 from typing import TYPE_CHECKING
 
@@ -10,8 +9,8 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from ..exceptions import InvalidStateTransition
 from ..logging import get_logger
-from ._base import BoundModel
-from .common import Money
+from ._base import AvitoObject
+from .common import Money, TZDatetime
 
 if TYPE_CHECKING:
     from ..methods.orders import (
@@ -62,9 +61,6 @@ def assert_order_transition(
             illegal transition. When ``False``, log a warning and let the
             mutation through — useful when Avito ships a new status before
             the SDK's table is refreshed.
-
-    Raises:
-        InvalidStateTransition: When the transition is illegal and ``strict``.
     """
 
     if current == target:
@@ -105,13 +101,13 @@ class TrackInfo(BaseModel):
         ..., min_length=1, description="Carrier slug (Avito Доставка, CDEK, Pochta…)."
     )
     code: str = Field(..., min_length=1, description="Carrier tracking code.")
-    updated_at: datetime | None = Field(
+    updated_at: TZDatetime | None = Field(
         default=None,
         description="Last time the carrier reported a status update (UTC).",
     )
 
 
-class Order(BoundModel):
+class Order(AvitoObject):
     """DBS order DTO returned by ``GET /orders/list`` and per-order endpoints.
 
     Forward-compatible: extra fields land via ``ConfigDict(extra="allow")``
@@ -139,8 +135,8 @@ class Order(BoundModel):
     track: TrackInfo | None = Field(
         default=None, description="Carrier tracking info, when shipped."
     )
-    created_at: datetime | None = Field(default=None, description="Creation timestamp (UTC).")
-    updated_at: datetime | None = Field(default=None, description="Last update timestamp (UTC).")
+    created_at: TZDatetime | None = Field(default=None, description="Creation timestamp (UTC).")
+    updated_at: TZDatetime | None = Field(default=None, description="Last update timestamp (UTC).")
 
     def change_status(
         self,
@@ -206,14 +202,14 @@ class Order(BoundModel):
         return RefundOrder(order_id=self.id, reason=reason).as_(client)
 
 
-class OrderList(BoundModel):
+class OrderList(AvitoObject):
     """List envelope for ``GET /orders/list``.
 
     Avito's DBS docs are uneven across third-party clients on the exact
     shape; the union model here accepts the canonical `{"orders": [...]}`
     payload and tolerates unknown extra keys via ``extra="allow"``.
 
-    Inherits :class:`BoundModel` so the funnel cascades the client into
+    Inherits :class:`AvitoObject` so the funnel cascades the client into
     each contained :class:`Order` (so bound actions like ``order.refund()``
     work after a paginated fetch).
     """

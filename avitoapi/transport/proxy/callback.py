@@ -179,7 +179,7 @@ class CallbackProxyTransport(BaseProxyTransport):
         if result is None:
             self._current = None
             return None
-        proxy = result if isinstance(result, Proxy) else parse_proxy(result)
+        proxy = result if isinstance(result, Proxy) else parse_proxy(result)  # type: ignore[arg-type]  # awaitable case raises above; result is ProxyLike here
         self._current = proxy
         return proxy
 
@@ -221,7 +221,7 @@ class CallbackProxyTransport(BaseProxyTransport):
         self,
         account_id: str | None,
         host: str | None,
-    ):  # noqa: ANN202 — closure, internal
+    ) -> Callable[[Proxy, ProxyError | None], None]:
         def _on_release(proxy: Proxy, err: ProxyError | None) -> None:
             self._handle_error(proxy, err, account_id=account_id, host=host)
 

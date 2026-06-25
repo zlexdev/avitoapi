@@ -45,4 +45,4 @@ class RetryPolicy:
             return max(0.0, retry_after_s)
         base = min(self.initial_s * (2 ** max(0, attempt)), self.max_s)
         jitter = base * self.jitter_ratio * (random.random() * 2 - 1)
-        return max(0.0, base + jitter)
+        return float(max(0.0, base + jitter))

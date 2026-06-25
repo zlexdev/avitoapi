@@ -18,7 +18,7 @@ from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, ConfigDict, Field, RootModel
 
-from ._base import BoundModel
+from ._base import AvitoObject
 
 if TYPE_CHECKING:
     from ..methods.cpxpromo import (
@@ -67,7 +67,7 @@ class CpxBidList(RootModel[list[CpxBid]]):
         return len(self.root)
 
 
-class CpxPromotion(BoundModel):
+class CpxPromotion(AvitoObject):
     """One per-item CpxPromo state row.
 
     Bound methods build awaitable method-classes pre-attached to the client;
@@ -75,7 +75,6 @@ class CpxPromotion(BoundModel):
     :class:`~avitoapi.exceptions.ModelNotBoundError` on those actions.
     """
 
-    model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
     item_id: int = Field(..., ge=1, description="Item under (or eligible for) promotion.")
     mode: CpxPromotionStatus = Field(..., description="Current promotion mode for this item.")

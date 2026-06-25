@@ -8,8 +8,6 @@ so handlers get full IDE completion + type narrowing on ``message.type``.
 
 from __future__ import annotations
 
-from typing import Any
-
 from ..models.messenger import Message
 from ._base import Event as BaseEvent
 
@@ -20,7 +18,7 @@ class MessengerEvent(BaseEvent, event_name="messenger"):
     account_id: str
     chat_id: str
 
-    def __init__(self, *, account_id: str, chat_id: str, **kwargs: Any) -> None:
+    def __init__(self, *, account_id: str, chat_id: str, **kwargs: object) -> None:
         super().__init__()
         self.account_id = account_id
         self.chat_id = chat_id

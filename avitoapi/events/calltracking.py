@@ -7,7 +7,6 @@ diffs successive pages and emits one event per new row.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
 
 from .messenger import BaseEvent
 
@@ -18,7 +17,7 @@ class CalltrackingEvent(BaseEvent, event_name="calltracking"):
     account_id: str
     call_id: str
 
-    def __init__(self, *, account_id: str, call_id: str, **kwargs: Any) -> None:
+    def __init__(self, *, account_id: str, call_id: str, **kwargs: object) -> None:
         super().__init__()
         self.account_id = account_id
         self.call_id = call_id

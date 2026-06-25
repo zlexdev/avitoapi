@@ -21,7 +21,7 @@ everything else lives in `BaseSession`.
      `http_error_for_status`. Retry GET/HEAD/OPTIONS + 408/429/5xx within
      `RetryPolicy.max_retries`, honour `Retry-After` on 429.
 7. `protocol.decode_response(method, raw)` → typed `T`.
-8. If `T` is a `BoundModel`, call `T.as_(client)` so bound methods work.
+8. If `T` is a `AvitoObject`, call `T.as_(client)` so bound methods work.
 
 ## Subclass contract
 

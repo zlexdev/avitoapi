@@ -13,13 +13,12 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field, RootModel
 
-from ._base import BoundModel
+from ._base import AvitoObject
 
 
-class AhUserStatus(BoundModel):
+class AhUserStatus(AvitoObject):
     """Result of ``GET /checkAhUserV1`` — is this user inside an AH company?"""
 
-    model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
     is_ah_user: bool = Field(
         ...,
@@ -112,10 +111,9 @@ class ItemList(RootModel[list[EmployeeItem]]):
         return len(self.root)
 
 
-class LinkItemsResult(BoundModel):
+class LinkItemsResult(AvitoObject):
     """Result of ``POST /linkItemsV1`` — best-effort acknowledgement envelope."""
 
-    model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
     success: bool = Field(default=True, description="True on 2xx; Avito returns minimal body.")
     linked: int | None = Field(
