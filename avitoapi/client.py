@@ -7,10 +7,16 @@ from collections.abc import Coroutine
 from datetime import date, datetime
 from decimal import Decimal
 from types import TracebackType
-from typing import TYPE_CHECKING, Any, Self, TypeVar, overload
+from typing import (  # typed-Any: MethodPaginator[Any]/Coroutine[Any,...] = erased-T holders
+    TYPE_CHECKING,
+    Any,
+    Self,
+    TypeVar,
+    cast,
+    overload,
+)
 
 from .auth.oauth import OAuthClient, OAuthInjectorMiddleware, TokenCache
-from .auth.solvers.base import ChallengeSolver, NullSolver
 from .config import ClientConfig
 from .logging import get_logger
 from .methods._base import BaseMethod
@@ -253,8 +259,8 @@ from .sessions import create_default_session
 from .sessions.base import BaseSession
 from .storage.base import BaseStorage
 from .storage.memory import MemoryStorage
-from .types import HealthState, HealthStatus
-from .utils.proxy._base import BaseProxyTransport, NoProxyTransport
+from .transport.proxy._base import BaseProxyTransport, NoProxyTransport
+from .types import HealthState, HealthStatus, JsonObject
 
 if TYPE_CHECKING:
     from datetime import date
@@ -292,7 +298,7 @@ if TYPE_CHECKING:
     )
     from .models.orders import Order
     from .models.promotion import BbipOrder, BidList, PromotionList
-    from .models.realty import BookingList, Calendar, PeriodPriceList
+    from .models.realty import BookingList, Calendar, PeriodPrice, PeriodPriceList
     from .models.reviews import RatingInfo, ReviewReply
     from .sessions.middleware import RequestMiddlewareManager
 
@@ -324,15 +330,13 @@ class Client:
         *,
         config: ClientConfig,
         session: BaseSession | None = None,
-        storage: BaseStorage[Any, str] | None = None,
-        solver: ChallengeSolver | None = None,
+        storage: BaseStorage[object, str] | None = None,
         transport: BaseProxyTransport | None = None,
         account_id: str | None = None,
     ) -> None:
         self.config = config
         self.account_id = account_id
-        self.storage: BaseStorage[Any, str] = storage or MemoryStorage()
-        self.solver: ChallengeSolver = solver or NullSolver()
+        self.storage: BaseStorage[object, str] = storage or MemoryStorage()
         proxy_transport = transport or NoProxyTransport()
         self.session: BaseSession = session or create_default_session(
             config,
@@ -376,7 +380,7 @@ class Client:
             await self.storage.close()
 
     @overload
-    def __call__(self, method: PaginatedMethod[TR]) -> MethodPaginator[Any]: ...
+    def __call__(self, method: PaginatedMethod[TR]) -> MethodPaginator[Any]: ...  # type: ignore[overload-overlap]
     @overload
     def __call__(self, method: BaseMethod[TR]) -> Coroutine[Any, Any, TR]: ...
     def __call__(
@@ -964,7 +968,7 @@ class Client:
     async def update_period_prices(
         self,
         item_id: int,
-        prices: list[Any],
+        prices: list[PeriodPrice],
     ) -> None:
         """Replace period-price rules for one realty item (idempotent)."""
 
@@ -1012,8 +1016,9 @@ class Client:
         limit: int = 100,
         offset: int = 0,
     ) -> ItemList:
-        return await self(
-            ListItemsByEmployee(employee_id=employee_id, limit=limit, offset=offset),
+        return cast(
+            "ItemList",
+            await self(ListItemsByEmployee(employee_id=employee_id, limit=limit, offset=offset)),
         )
 
     async def get_auction_bids(self) -> AuctionBidList:
@@ -1079,7 +1084,7 @@ class Client:
     async def list_subscriptions(self) -> SubscriptionList:
         return await self(ListSubscriptions())
 
-    async def create_parcel(self, payload: dict[str, Any] | None = None) -> Parcel:
+    async def create_parcel(self, payload: JsonObject | None = None) -> Parcel:
         """Register a parcel via the legacy ``POST /createParcel`` surface."""
         return await self(CreateParcel(payload=payload or {}))
 
@@ -1087,7 +1092,7 @@ class Client:
         self,
         tariff_id: str,
         *,
-        filters: dict[str, Any] | None = None,
+        filters: JsonObject | None = None,
     ) -> TariffAreaList:
         return await self(ListTariffAreas(tariff_id=tariff_id, filters=filters or {}))
 
@@ -1095,18 +1100,18 @@ class Client:
         self,
         tariff_id: str,
         *,
-        filters: dict[str, Any] | None = None,
+        filters: JsonObject | None = None,
     ) -> TariffTermList:
         return await self(ListTariffTerms(tariff_id=tariff_id, filters=filters or {}))
 
-    async def list_tariffs_v2(self, *, filters: dict[str, Any] | None = None) -> TariffList:
+    async def list_tariffs_v2(self, *, filters: JsonObject | None = None) -> TariffList:
         return await self(ListTariffsV2(filters=filters or {}))
 
     async def set_area_custom_schedule(
         self,
         area_id: str,
         *,
-        schedule: dict[str, Any] | None = None,
+        schedule: JsonObject | None = None,
     ) -> GenericDeliveryResult:
         return await self(SetAreaCustomSchedule(area_id=area_id, schedule=schedule or {}))
 
@@ -1114,7 +1119,7 @@ class Client:
         self,
         tariff_id: str,
         *,
-        filters: dict[str, Any] | None = None,
+        filters: JsonObject | None = None,
     ) -> TerminalList:
         return await self(ListTariffTerminals(tariff_id=tariff_id, filters=filters or {}))
 
@@ -1132,7 +1137,7 @@ class Client:
     async def set_delivery_order_properties(
         self,
         order_id: str,
-        properties: dict[str, Any],
+        properties: JsonObject,
     ) -> OrderProperties:
         return await self(SetOrderProperties(order_id=order_id, properties=properties))
 
@@ -1153,23 +1158,23 @@ class Client:
     async def change_parcel_result(
         self,
         parcel_id: str,
-        result: dict[str, Any],
+        result: JsonObject,
     ) -> ParcelChangeResult:
         return await self(ChangeParcelResult(parcel_id=parcel_id, result=result))
 
     async def batch_change_parcels(
         self,
-        parcels: list[dict[str, Any]],
+        parcels: list[JsonObject],
     ) -> ParcelChangeResult:
         return await self(BatchChangeParcels(parcels=parcels))
 
     async def cancel_announcement(self, announcement_id: str) -> AnnouncementId:
         return await self(CancelAnnouncement(announcement_id=announcement_id))
 
-    async def create_announcement(self, payload: dict[str, Any] | None = None) -> Announcement:
+    async def create_announcement(self, payload: JsonObject | None = None) -> Announcement:
         return await self(CreateAnnouncement(payload=payload or {}))
 
-    async def create_announcement_v1(self, payload: dict[str, Any] | None = None) -> Announcement:
+    async def create_announcement_v1(self, payload: JsonObject | None = None) -> Announcement:
         return await self(CreateAnnouncementV1(payload=payload or {}))
 
     async def track_announcement_v1(self, announcement_id: str) -> AnnouncementEvent:
@@ -1191,7 +1196,7 @@ class Client:
         self,
         tariff_id: str,
         *,
-        filters: dict[str, Any] | None = None,
+        filters: JsonObject | None = None,
     ) -> SortingCenterList:
         return await self(
             ListTariffSortingCenters(tariff_id=tariff_id, filters=filters or {}),
@@ -1208,13 +1213,13 @@ class Client:
     async def change_parcel_v1(
         self,
         parcel_id: str,
-        changes: dict[str, Any],
+        changes: JsonObject,
     ) -> ParcelChangeResult:
         return await self(ChangeParcelV1(parcel_id=parcel_id, changes=changes))
 
     async def create_announcement_v1_alt(
         self,
-        payload: dict[str, Any] | None = None,
+        payload: JsonObject | None = None,
     ) -> Announcement:
         return await self(CreateAnnouncementV1Alt(payload=payload or {}))
 
@@ -1237,7 +1242,7 @@ class Client:
     async def get_registered_parcel_id_v1(self, external_id: str) -> RegisteredParcelId:
         return await self(GetRegisteredParcelIdV1(external_id=external_id))
 
-    async def create_parcel_v2(self, payload: dict[str, Any] | None = None) -> Parcel:
+    async def create_parcel_v2(self, payload: JsonObject | None = None) -> Parcel:
         return await self(CreateParcelV2(payload=payload or {}))
 
     async def set_order_markings(
@@ -1275,7 +1280,7 @@ class Client:
     async def cnc_set_order_details(
         self,
         order_id: str,
-        details: dict[str, Any],
+        details: JsonObject,
     ) -> CncDetailsResult:
         return await self(CncSetOrderDetails(order_id=order_id, details=details))
 
@@ -1326,7 +1331,7 @@ class Client:
         self,
         order_ids: list[str],
         *,
-        options: dict[str, Any] | None = None,
+        options: JsonObject | None = None,
     ) -> LabelTaskResult:
         return await self(
             CreateOrderLabelsExtended(order_ids=order_ids, options=options or {}),
@@ -1454,5 +1459,5 @@ class Client:
             )
         return self.config.user_id
 
-    def _build_oauth_cache_key(self, client: Any) -> str:
+    def _build_oauth_cache_key(self, client: Self) -> str:
         return self._oauth.cache_key_for(user_id=client.config.user_id)

@@ -3,10 +3,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
+
+from ..types import JSONValue
 
 if TYPE_CHECKING:
-    from ..utils.proxy._base import Proxy, ProxyAcquireContext
+    from ..client import Client
+    from ..methods._base import BaseMethod
+    from ..transport.proxy._base import Proxy, ProxyAcquireContext
 
 
 @dataclass(slots=True)
@@ -17,8 +21,8 @@ class PreparedRequest:
     http_method: str
     url: str
     headers: dict[str, str] = field(default_factory=dict)
-    query: dict[str, Any] = field(default_factory=dict)
-    body: Any = None
+    query: dict[str, JSONValue] = field(default_factory=dict)
+    body: JSONValue | bytes | None = None
     files: list[tuple[str, bytes, str | None]] | None = None
     proxy: str | None = None
     timeout_s: float = 30.0
@@ -39,10 +43,10 @@ class RawResponse:
 class RequestContext:
     """Per-call mutable bag carried through the middleware chain."""
 
-    client: Any
-    method: Any | None = None
+    client: Client
+    method: BaseMethod[object] | None = None
     breaker_path: str | None = None
-    workflow_data: dict[str, Any] = field(default_factory=dict)
+    workflow_data: dict[str, JSONValue] = field(default_factory=dict)
     attempt: int = 0
     elapsed_s: float = 0.0
     request_id: str = ""

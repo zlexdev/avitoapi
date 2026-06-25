@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from ._base import BoundModel
+from ._base import AvitoObject
 
 
 class MarketPriceCorrespondence(BaseModel):
@@ -38,10 +38,9 @@ class MarketPriceCorrespondence(BaseModel):
     )
 
 
-class RealtyReportTask(BoundModel):
+class RealtyReportTask(AvitoObject):
     """Task handle returned by ``POST /realty/v1/report/create/{itemId}``."""
 
-    model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
     task_id: str = Field(
         ...,

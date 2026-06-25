@@ -8,14 +8,16 @@ funnel's "returning must be a ``BaseModel``" contract.
 
 from __future__ import annotations
 
-from datetime import datetime
 from enum import StrEnum
 
 from pydantic import BaseModel, ConfigDict, Field, RootModel
 
-from ._base import BoundModel
+from ..exceptions import InvalidStateTransition
+from ..logging import get_logger
+from ._base import AvitoObject
+from .common import TZDatetime
 
-_DELIVERY_CFG = ConfigDict(populate_by_name=True, strict=False, extra="allow")
+_log = get_logger(__name__)
 
 
 class ParcelStatus(StrEnum):
@@ -29,13 +31,57 @@ class ParcelStatus(StrEnum):
     CANCELLED = "cancelled"
 
 
-class Parcel(BoundModel):
+PARCEL_TRANSITIONS: dict[ParcelStatus, frozenset[ParcelStatus]] = {
+    ParcelStatus.REGISTERED: frozenset({ParcelStatus.ACCEPTED, ParcelStatus.CANCELLED}),
+    ParcelStatus.ACCEPTED: frozenset({ParcelStatus.IN_TRANSIT, ParcelStatus.CANCELLED}),
+    ParcelStatus.IN_TRANSIT: frozenset({ParcelStatus.DELIVERED, ParcelStatus.RETURNED}),
+    ParcelStatus.DELIVERED: frozenset(),
+    ParcelStatus.RETURNED: frozenset(),
+    ParcelStatus.CANCELLED: frozenset(),
+}
+
+
+def assert_parcel_transition(
+    old: ParcelStatus,
+    new: ParcelStatus,
+    *,
+    strict: bool,
+) -> None:
+    """Verify ``old -> new`` against :data:`PARCEL_TRANSITIONS`.
+
+    Args:
+        old: The parcel's present status.
+        new: The status the caller wants to move to.
+        strict: When ``True``, raise :class:`InvalidStateTransition` on an
+            illegal transition. When ``False``, log a warning and let the
+            mutation through.
+    """
+    if old == new:
+        return
+    allowed = PARCEL_TRANSITIONS.get(old, frozenset())
+    if new in allowed:
+        return
+    if strict:
+        raise InvalidStateTransition(
+            f"Parcel cannot move {old.value} -> {new.value}; "
+            f"allowed from {old.value}: {sorted(s.value for s in allowed)}",
+            current=old,
+            target=new,
+        )
+    _log.warning(
+        "parcel.transition.unknown",
+        current=old.value,
+        target=new.value,
+        allowed=sorted(s.value for s in allowed),
+    )
+
+
+class Parcel(AvitoObject):
     """A parcel registered with Avito Доставка.
 
     Forward-compatible DTO — ``extra="allow"`` so unknown keys flow through.
     """
 
-    model_config = _DELIVERY_CFG
 
     id: str | None = Field(default=None, description="Parcel id (Avito-side).")
     external_id: str | None = Field(
@@ -45,16 +91,15 @@ class Parcel(BoundModel):
         default=None, description="Coarse status (string fallback for unknowns)."
     )
     tariff_id: str | None = Field(default=None, description="Tariff applied at registration.")
-    created_at: datetime | None = Field(
+    created_at: TZDatetime | None = Field(
         default=None, description="When the parcel was registered (UTC)."
     )
-    updated_at: datetime | None = Field(default=None, description="Last server-side update (UTC).")
+    updated_at: TZDatetime | None = Field(default=None, description="Last server-side update (UTC).")
 
 
-class ParcelTracking(BoundModel):
+class ParcelTracking(AvitoObject):
     """Tracking snapshot for a parcel returned by the tracking endpoints."""
 
-    model_config = _DELIVERY_CFG
 
     parcel_id: str | None = Field(default=None, description="Parcel id under tracking.")
     status: ParcelStatus | str | None = Field(default=None, description="Latest status.")
@@ -64,10 +109,9 @@ class ParcelTracking(BoundModel):
     )
 
 
-class ParcelChangeResult(BoundModel):
+class ParcelChangeResult(AvitoObject):
     """Result envelope returned by parcel-mutation endpoints (change, batch-change)."""
 
-    model_config = _DELIVERY_CFG
 
     ok: bool | None = Field(default=None, description="High-level success flag, when surfaced.")
     parcel_id: str | None = Field(default=None, description="Parcel that the change applied to.")
@@ -77,20 +121,18 @@ class ParcelChangeResult(BoundModel):
     )
 
 
-class Tariff(BoundModel):
+class Tariff(AvitoObject):
     """One tariff descriptor surfaced by ``/delivery-sandbox/tariffsV2`` and friends."""
 
-    model_config = _DELIVERY_CFG
 
     id: str | None = Field(default=None, description="Tariff id.")
     name: str | None = Field(default=None, description="Human-readable tariff name.")
     carrier: str | None = Field(default=None, description="Carrier slug (cdek, post, dpd…).")
 
 
-class TariffArea(BoundModel):
+class TariffArea(AvitoObject):
     """Geographic coverage entry attached to a tariff."""
 
-    model_config = _DELIVERY_CFG
 
     id: str | None = Field(default=None, description="Area id, when surfaced.")
     region: str | None = Field(default=None, description="Region code or label.")
@@ -100,10 +142,9 @@ class TariffArea(BoundModel):
     )
 
 
-class TariffTerm(BoundModel):
+class TariffTerm(AvitoObject):
     """A single shipping term row for a tariff."""
 
-    model_config = _DELIVERY_CFG
 
     id: str | None = Field(default=None, description="Term id, when surfaced.")
     min_days: int | None = Field(
@@ -114,30 +155,27 @@ class TariffTerm(BoundModel):
     )
 
 
-class Terminal(BoundModel):
+class Terminal(AvitoObject):
     """A terminal / pickup point attached to a tariff."""
 
-    model_config = _DELIVERY_CFG
 
     id: str | None = Field(default=None, description="Terminal id.")
     address: str | None = Field(default=None, description="Postal address.")
     schedule: str | None = Field(default=None, description="Free-form schedule string.")
 
 
-class SortingCenter(BoundModel):
+class SortingCenter(AvitoObject):
     """A sorting-center descriptor for the dedicated tariff API."""
 
-    model_config = _DELIVERY_CFG
 
     id: str | None = Field(default=None, description="Sorting-center id.")
     name: str | None = Field(default=None, description="Human-readable name.")
     address: str | None = Field(default=None, description="Postal address.")
 
 
-class Announcement(BoundModel):
+class Announcement(AvitoObject):
     """An announcement (pickup request) created against a tariff."""
 
-    model_config = _DELIVERY_CFG
 
     id: str | None = Field(default=None, description="Announcement id.")
     status: str | None = Field(
@@ -148,20 +186,18 @@ class Announcement(BoundModel):
     )
 
 
-class AnnouncementEvent(BoundModel):
+class AnnouncementEvent(AvitoObject):
     """One event from ``/v1/getAnnouncementEvent``."""
 
-    model_config = _DELIVERY_CFG
 
     type: str | None = Field(default=None, description="Event type slug.")
-    occurred_at: datetime | None = Field(default=None, description="Event timestamp (UTC).")
+    occurred_at: TZDatetime | None = Field(default=None, description="Event timestamp (UTC).")
     payload: dict[str, object] = Field(default_factory=dict, description="Raw event payload.")
 
 
-class DeliveryTask(BoundModel):
+class DeliveryTask(AvitoObject):
     """Async task envelope returned by ``GET /delivery-sandbox/tasks/{task_id}``."""
 
-    model_config = _DELIVERY_CFG
 
     id: str | None = Field(default=None, description="Task id.")
     status: str | None = Field(
@@ -173,19 +209,17 @@ class DeliveryTask(BoundModel):
     error: str | None = Field(default=None, description="Failure description, when present.")
 
 
-class ConfirmationCheck(BoundModel):
+class ConfirmationCheck(AvitoObject):
     """Result of ``POST /delivery-sandbox/order/checkConfirmationCode``."""
 
-    model_config = _DELIVERY_CFG
 
     ok: bool | None = Field(default=None, description="Whether the confirmation code matched.")
     reason: str | None = Field(default=None, description="Failure reason, when ``ok`` is False.")
 
 
-class RealAddress(BoundModel):
+class RealAddress(AvitoObject):
     """Buyer-supplied delivery address resolved by the realAddress endpoint."""
 
-    model_config = _DELIVERY_CFG
 
     address: str | None = Field(default=None, description="Resolved postal address string.")
     components: dict[str, object] = Field(
@@ -193,39 +227,35 @@ class RealAddress(BoundModel):
     )
 
 
-class OrderProperties(BoundModel):
+class OrderProperties(AvitoObject):
     """Generic order-properties envelope shared across delivery-sandbox set/get."""
 
-    model_config = _DELIVERY_CFG
 
     properties: dict[str, object] = Field(
         default_factory=dict, description="Free-form property bag."
     )
 
 
-class AnnouncementId(BoundModel):
+class AnnouncementId(AvitoObject):
     """Result of the v1 cancel/track announcement calls when only an id flows back."""
 
-    model_config = _DELIVERY_CFG
 
     id: str | None = Field(default=None, description="Announcement id touched by the call.")
     ok: bool | None = Field(default=None, description="High-level success flag.")
 
 
-class ParcelInfo(BoundModel):
+class ParcelInfo(AvitoObject):
     """Detailed parcel info from ``POST /delivery-sandbox/v1/getParcelInfo``."""
 
-    model_config = _DELIVERY_CFG
 
     parcel_id: str | None = Field(default=None, description="Parcel id.")
     status: ParcelStatus | str | None = Field(default=None, description="Latest status.")
     info: dict[str, object] = Field(default_factory=dict, description="Free-form info bag.")
 
 
-class ChangeParcelInfo(BoundModel):
+class ChangeParcelInfo(AvitoObject):
     """Result of ``POST /delivery-sandbox/v1/getChangeParcelInfo``."""
 
-    model_config = _DELIVERY_CFG
 
     parcel_id: str | None = Field(default=None, description="Parcel id.")
     change: dict[str, object] = Field(
@@ -233,10 +263,9 @@ class ChangeParcelInfo(BoundModel):
     )
 
 
-class RegisteredParcelId(BoundModel):
+class RegisteredParcelId(AvitoObject):
     """Result of ``POST /delivery-sandbox/v1/getRegisteredParcelID``."""
 
-    model_config = _DELIVERY_CFG
 
     parcel_id: str | None = Field(default=None, description="Registered parcel id.")
 
@@ -304,7 +333,7 @@ class SortingCenterList(RootModel[list[SortingCenter]]):
 class GenericDeliveryResult(BaseModel):
     """Generic ack envelope for delivery endpoints whose payload Avito has not pinned."""
 
-    model_config = _DELIVERY_CFG
+    model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
     ok: bool | None = Field(default=None, description="Generic success flag.")
     data: dict[str, object] | None = Field(default=None, description="Free-form payload.")

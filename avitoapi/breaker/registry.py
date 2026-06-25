@@ -8,9 +8,19 @@ inside :class:`BreakerRegistry`, keyed by ``(host, path)`` or
 from __future__ import annotations
 
 import asyncio
+import re
 import time
 from enum import StrEnum
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any  # typed-Any: pybreaker Breaker object has no public type
+
+# Matches purely-numeric or UUID path segments that identify a specific resource.
+# Replaced with ``{id}`` so all variants of one endpoint share a single breaker.
+# Examples:  /items/123/photos  →  /items/{id}/photos
+#            /users/550e8400-e29b-41d4-a716-446655440000  →  /users/{id}
+_PATH_TEMPLATE_RE = re.compile(
+    r"/(?:\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?=/|$)",
+    re.IGNORECASE,
+)
 
 if TYPE_CHECKING:
     from ..config import ClientConfig
@@ -107,10 +117,16 @@ class BreakerRegistry:
         self._breakers: dict[tuple[str, ...], Any] = {}
         self._lock = asyncio.Lock()
 
+    @staticmethod
+    def _normalize_path(path: str) -> str:
+        """Replace numeric/UUID path segments with ``{id}`` to key by template."""
+        return _PATH_TEMPLATE_RE.sub("/{id}", path)
+
     def _key_for(self, host: str, path: str, account_id: str | None) -> tuple[str, ...]:
+        template = self._normalize_path(path)
         if self._config.breaker_per_account and account_id is not None:
-            return (host, path, account_id)
-        return (host, path)
+            return (host, template, account_id)
+        return (host, template)
 
     async def for_key(
         self,

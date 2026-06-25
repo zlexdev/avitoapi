@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 import random
 import time
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from enum import StrEnum
 
@@ -184,7 +184,7 @@ class ListProxyTransport(BaseProxyTransport):
             return False
         return True
 
-    def _on_release_factory(self, proxy: Proxy | None):  # noqa: ANN202 — closure, internal
+    def _on_release_factory(self, proxy: Proxy | None) -> Callable[[Proxy, ProxyError | None], None] | None:
         def _on_release(p: Proxy, err: ProxyError | None) -> None:
             self._record_failure(p, err)
 

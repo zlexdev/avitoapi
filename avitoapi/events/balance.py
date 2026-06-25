@@ -10,7 +10,6 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
-from typing import Any
 
 from .messenger import BaseEvent
 
@@ -20,7 +19,7 @@ class BalanceEvent(BaseEvent, event_name="balance"):
 
     account_id: str
 
-    def __init__(self, *, account_id: str, **kwargs: Any) -> None:
+    def __init__(self, *, account_id: str, **kwargs: object) -> None:
         super().__init__()
         self.account_id = account_id
         for k, v in kwargs.items():

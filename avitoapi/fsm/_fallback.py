@@ -10,9 +10,26 @@ from __future__ import annotations
 
 import asyncio
 import copy
-from typing import Any
+from typing import Any, Protocol, runtime_checkable
 
 from .key_builder import StorageKey
+
+
+@runtime_checkable
+class FSMStorageProtocol(Protocol):
+    """Structural contract for FSM storage backends.
+
+    Any class that implements ``get_state``, ``set_state``, ``get_data``,
+    ``set_data``, and ``clear`` with the signatures below satisfies this
+    protocol — including :class:`MemoryFSMStorage` and any
+    ``BaseStorage``-backed adapter.
+    """
+
+    async def get_state(self, key: StorageKey) -> str | None: ...
+    async def set_state(self, key: StorageKey, state: str | None) -> None: ...
+    async def get_data(self, key: StorageKey) -> dict[str, Any]: ...
+    async def set_data(self, key: StorageKey, data: dict[str, Any]) -> None: ...
+    async def clear(self, key: StorageKey) -> None: ...
 
 
 class State:
@@ -113,9 +130,9 @@ class MemoryFSMStorage:
 
 
 class FSMContext:
-    """Per-key FSM facade backed by a :class:`MemoryFSMStorage` (or compatible)."""
+    """Per-key FSM facade backed by any :class:`FSMStorageProtocol` backend."""
 
-    def __init__(self, storage: MemoryFSMStorage, key: StorageKey) -> None:
+    def __init__(self, storage: FSMStorageProtocol, key: StorageKey) -> None:
         self.storage = storage
         self.key = key
 

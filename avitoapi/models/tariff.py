@@ -5,19 +5,18 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from pydantic import ConfigDict, Field
+from pydantic import Field
 
-from ._base import BoundModel
+from ._base import AvitoObject
 
 
-class TariffInfo(BoundModel):
+class TariffInfo(AvitoObject):
     """Result of ``GET /tariff/info/1`` — current subscription snapshot.
 
     Avito surfaces the plan name, the active feature set under ``limits``,
     and an optional expiry. Unknown keys land in ``extra`` (forward-compat).
     """
 
-    model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
     name: str | None = Field(default=None, description="Human-readable tariff name.")
     plan: str | None = Field(default=None, description="Internal plan code.")

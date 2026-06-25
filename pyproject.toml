@@ -84,7 +84,8 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["ANN", "PLR2004", "B011", "SIM102", "SIM105", "F841", "PLW0603", "ASYNC240", "PT017", "PT006", "RUF003", "RUF015"]
+"tests/**/*.py" = ["ANN", "PLR2004", "B011", "SIM102", "SIM105", "F841", "PLW0603", "PT017", "PT006", "RUF003", "RUF015"]
+"avitoapi/**/__init__.py" = ["PLC0414"]
 
 [tool.mypy]
 python_version = "3.11"

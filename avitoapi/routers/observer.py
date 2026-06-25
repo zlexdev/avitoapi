@@ -13,13 +13,14 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
+from typing import Generic, TypeVar
 
-if TYPE_CHECKING:
-    from .context import EventContext
+from ..events._base import Event
 
-Filter = Callable[[Any], bool]
-Handler = Callable[..., Awaitable[Any]]
+Filter = Callable[[Event], bool]
+Handler = Callable[..., Awaitable[object]]
+
+EventT_contra = TypeVar("EventT_contra", bound=Event, contravariant=True)
 
 
 @dataclass(slots=True)
@@ -29,7 +30,7 @@ class HandlerSpec:
     handler: Handler
     filters: tuple[Filter, ...] = ()
 
-    def matches(self, event: Any) -> bool:
+    def matches(self, event: Event) -> bool:
         for predicate in self.filters:
             try:
                 if not predicate(event):
@@ -40,7 +41,7 @@ class HandlerSpec:
 
 
 @dataclass(slots=True)
-class HandlerManager:
+class HandlerManager(Generic[EventT_contra]):
     """Named manager that owns handlers for one event route.
 
     ``event_filter`` is the gate that decides whether the event belongs to
@@ -66,7 +67,7 @@ class HandlerManager:
 
         return _decorator
 
-    def applies(self, event: Any) -> bool:
+    def applies(self, event: Event) -> bool:
         if self.event_filter is None:
             return True
         try:
@@ -74,7 +75,7 @@ class HandlerManager:
         except Exception:  # noqa: BLE001 — bad filter is not a propagation error
             return False
 
-    async def trigger(self, event: Any, ctx: EventContext) -> bool:
+    async def trigger(self, event: EventT_contra, ctx: object) -> bool:
         """Run every matching handler. Returns ``True`` if anything fired."""
 
         fired = False
@@ -90,4 +91,4 @@ class HandlerManager:
 EventObserver = HandlerManager
 
 
-__all__ = ["EventObserver", "Filter", "Handler", "HandlerManager", "HandlerSpec"]
+__all__ = ["EventObserver", "EventT_contra", "Filter", "Handler", "HandlerManager", "HandlerSpec"]

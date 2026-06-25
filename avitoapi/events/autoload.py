@@ -8,7 +8,6 @@ and :class:`AutoloadFailed` when the report carries fatal errors.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
 
 from .messenger import BaseEvent
 
@@ -19,7 +18,7 @@ class AutoloadEvent(BaseEvent, event_name="autoload"):
     account_id: str
     report_id: int
 
-    def __init__(self, *, account_id: str, report_id: int, **kwargs: Any) -> None:
+    def __init__(self, *, account_id: str, report_id: int, **kwargs: object) -> None:
         super().__init__()
         self.account_id = account_id
         self.report_id = report_id

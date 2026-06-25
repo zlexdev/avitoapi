@@ -135,7 +135,7 @@ async def _httpx_request(
     proxy_url = str(proxy.url)
     start = time.monotonic()
     async with httpx.AsyncClient(proxy=proxy_url, timeout=timeout_s) as client:
-        response = await client.request(method, url)  # type: ignore[arg-type] — httpx wants Literal, runtime accepts str
+        response = await client.request(method, url)
     elapsed = time.monotonic() - start
     return int(response.status_code), elapsed
 

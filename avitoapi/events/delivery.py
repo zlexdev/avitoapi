@@ -10,7 +10,6 @@ carrier's terminology.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
 
 from .messenger import BaseEvent
 
@@ -21,7 +20,7 @@ class DeliveryEvent(BaseEvent, event_name="delivery"):
     account_id: str
     parcel_id: str
 
-    def __init__(self, *, account_id: str, parcel_id: str, **kwargs: Any) -> None:
+    def __init__(self, *, account_id: str, parcel_id: str, **kwargs: object) -> None:
         super().__init__()
         self.account_id = account_id
         self.parcel_id = parcel_id

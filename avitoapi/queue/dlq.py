@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import asyncio
 import time
-from typing import Any
 
 from ..logging import get_logger
 from ..storage.base import BaseStorage
+from ..types import JsonObject
 from .base import BaseDeadLetterQueue, DeadLetter
 from .serializer import EventSerializer, JSONSerializer
 
@@ -61,7 +61,7 @@ class StorageDeadLetterQueue(BaseDeadLetterQueue):
 
     def __init__(
         self,
-        storage: BaseStorage[Any, str],
+        storage: BaseStorage[object, str],
         *,
         serializer: EventSerializer | None = None,
         namespace: str = "dlq",
@@ -94,7 +94,7 @@ class StorageDeadLetterQueue(BaseDeadLetterQueue):
     async def pop_all(self) -> list[DeadLetter]:
         async with self._lock:
             index = await self._read_index()
-            rows: list[tuple[str, dict[str, Any]]] = []
+            rows: list[tuple[str, JsonObject]] = []
             for letter_id in index:
                 row = await self._storage.get(letter_id)
                 if isinstance(row, dict):
@@ -113,10 +113,10 @@ class StorageDeadLetterQueue(BaseDeadLetterQueue):
                 DeadLetter(
                     message_id=str(row.get("message_id") or letter_id),
                     event=event,
-                    attempts=int(row.get("attempts") or 0),
-                    failed_at=float(row.get("failed_at") or time.time()),
+                    attempts=int(row.get("attempts") or 0),  # type: ignore[arg-type]  # JSONValue narrowed at runtime
+                    failed_at=float(row.get("failed_at") or time.time()),  # type: ignore[arg-type]  # JSONValue narrowed at runtime
                     reason=str(row.get("reason") or ""),
-                    metadata=dict(row.get("metadata") or {}),
+                    metadata=dict(row.get("metadata") or {}),  # type: ignore[arg-type]  # JSONValue narrowed at runtime
                 ),
             )
         return out

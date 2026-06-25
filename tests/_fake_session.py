@@ -30,7 +30,7 @@ from avitoapi.config import ClientConfig
 from avitoapi.methods._base import BaseMethod
 from avitoapi.sessions._models import PreparedRequest, RawResponse
 from avitoapi.sessions.base import BaseSession
-from avitoapi.utils.proxy._base import NoProxyTransport
+from avitoapi.transport.proxy._base import NoProxyTransport
 
 FIXTURE_DIR = Path(__file__).parent / "fixtures"
 
@@ -46,7 +46,7 @@ class FakeResponse:
         status: int = 200,
         headers: dict[str, str] | None = None,
     ) -> None:
-        if isinstance(body, (dict, list)):
+        if isinstance(body, dict | list):
             self.body: bytes = json.dumps(body).encode()
         elif isinstance(body, str):
             self.body = body.encode()
@@ -88,7 +88,6 @@ class FakeSession(BaseSession):
         self._call_counts: dict[str, int] = defaultdict(int)
         self._default: FakeResponse | Callable[[PreparedRequest], FakeResponse] | None = None
 
-    # ---- registration API --------------------------------------------------
 
     def register(
         self,
@@ -147,7 +146,6 @@ class FakeSession(BaseSession):
     ) -> None:
         self._default = FakeResponse(body=body, status=status)
 
-    # ---- introspection -----------------------------------------------------
 
     def call_count(self, method_cls: type[BaseMethod[Any]]) -> int:
         return self._call_counts[method_cls.__name__]
@@ -156,7 +154,6 @@ class FakeSession(BaseSession):
         self.sent.clear()
         self._call_counts.clear()
 
-    # ---- BaseSession contract ---------------------------------------------
 
     async def _send(self, prepared: PreparedRequest) -> RawResponse:
         self.sent.append(prepared)
@@ -174,7 +171,6 @@ class FakeSession(BaseSession):
         resp = responder(prepared) if callable(responder) else responder
         return RawResponse(status=resp.status, headers=resp.headers, body=resp.body)
 
-    # ---- internals ---------------------------------------------------------
 
     def _lookup(
         self,

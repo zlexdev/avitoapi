@@ -7,9 +7,9 @@ both deal with the same :class:`AuctionBid` shape.
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, Field, RootModel
+from pydantic import BaseModel, ConfigDict, Field
 
-from ._base import BoundModel
+from ._base import AvitoObject, AvitoRootObject
 
 
 class AuctionBid(BaseModel):
@@ -31,10 +31,10 @@ class AuctionBid(BaseModel):
     )
 
 
-class AuctionBidList(RootModel[list[AuctionBid]], BoundModel):
+class AuctionBidList(AvitoRootObject[list[AuctionBid]]):
     """Top-level array envelope for auction-bids responses.
 
-    Inherits :class:`BoundModel` so the funnel cascades the client into
+    Inherits :class:`AvitoObject` so the funnel cascades the client into
     contained rows (no bound actions today, but kept for symmetry).
     """
 
@@ -47,10 +47,9 @@ class AuctionBidList(RootModel[list[AuctionBid]], BoundModel):
         return len(self.root)
 
 
-class SetAuctionBidsResult(BoundModel):
+class SetAuctionBidsResult(AvitoObject):
     """Acknowledgement returned by ``POST /auction/1/bids``."""
 
-    model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
     success: bool = Field(default=True, description="True on 2xx.")
     updated: int | None = Field(

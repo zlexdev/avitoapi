@@ -7,12 +7,20 @@ Covers ``FSMContext`` (``get_state`` / ``set_state`` / ``get_data`` /
 
 from __future__ import annotations
 
-from ._fallback import FSMContext, MemoryFSMStorage, State, StateFilter, StatesGroup
+from ._fallback import (
+    FSMContext,
+    FSMStorageProtocol,
+    MemoryFSMStorage,
+    State,
+    StateFilter,
+    StatesGroup,
+)
 from .key_builder import AvitoStorageKeyBuilder, StorageKey
 
 __all__ = [
     "AvitoStorageKeyBuilder",
     "FSMContext",
+    "FSMStorageProtocol",
     "MemoryFSMStorage",
     "State",
     "StateFilter",

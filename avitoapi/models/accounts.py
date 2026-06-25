@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from pydantic import EmailStr, Field, HttpUrl
 
-from ._base import BoundModel
+from ._base import AvitoObject
 
 
-class Account(BoundModel):
+class Account(AvitoObject):
     """Authenticated account profile returned by ``GET /core/v1/accounts/self``.
 
     No bound methods in W1 — order, balance, and item actions land in W2 / W5.

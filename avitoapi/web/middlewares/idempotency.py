@@ -5,10 +5,11 @@ from __future__ import annotations
 from datetime import timedelta
 from typing import Any
 
+from ...routers.middleware import BaseMiddleware, NextHandler
 from ...storage.base import BaseStorage
 
 
-class WebhookIdempotencyMiddleware:
+class WebhookIdempotencyMiddleware(BaseMiddleware[Any, Any]):
     """Mark and check ``(chat_id, message_id)`` pairs as seen.
 
     Backed by any :class:`BaseStorage`. On replay the consumer should call
@@ -23,6 +24,15 @@ class WebhookIdempotencyMiddleware:
     ) -> None:
         self._storage = storage.namespaced("webhook_seen")
         self._ttl = ttl
+
+    async def __call__(self, handler: NextHandler[Any, Any], event: Any, ctx: Any) -> Any:
+        """Dedup by ``(chat_id, message_id)`` from context; pass-through if new."""
+        from .context import WebhookRequestContext  # noqa: PLC0415
+
+        wctx: WebhookRequestContext = ctx
+        if wctx.chat_id and await self.seen(wctx.chat_id, wctx.message_id):
+            return (200, {"ok": True, "skipped": "duplicate"})
+        return await handler(event, ctx)
 
     @staticmethod
     def _key(chat_id: str, message_id: str) -> str:

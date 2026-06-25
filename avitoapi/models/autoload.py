@@ -14,11 +14,10 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import StrEnum
-from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, model_validator
 
-from ._base import BoundModel
+from ._base import AvitoObject
 
 
 class AutoloadItemStatus(StrEnum):
@@ -52,16 +51,15 @@ class AutoloadItemReport(BaseModel):
     )
 
 
-class AutoloadReport(BoundModel):
+class AutoloadReport(AvitoObject):
     """One autoload run report.
 
     No bound methods — Avito has no per-report mutating endpoints. The model
-    inherits :class:`BoundModel` so the session funnel can recursively bind
-    nested ``BoundModel`` instances in mixed-list responses without special
+    inherits :class:`AvitoObject` so the session funnel can recursively bind
+    nested ``AvitoObject`` instances in mixed-list responses without special
     casing.
     """
 
-    model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
     id: str = Field(..., description="Stable report identifier.")
     report_date: datetime = Field(..., description="When the report was generated (UTC).")
@@ -155,7 +153,7 @@ class AutoloadIdConversion(BaseModel):
 
     @model_validator(mode="before")
     @classmethod
-    def _wrap_top_level_mapping(cls, value: Any) -> Any:
+    def _wrap_top_level_mapping(cls, value: object) -> object:
         if isinstance(value, dict) and "mapping" not in value:
             return {"mapping": {str(k): int(v) for k, v in value.items()}}
         return value

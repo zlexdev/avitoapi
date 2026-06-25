@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from .context import WebhookRequestContext
 from .fast_return import WebhookFastReturnMiddleware
 from .hmac_signature import HMACSignatureMiddleware, SecretProvider
 from .idempotency import WebhookIdempotencyMiddleware
@@ -11,4 +12,5 @@ __all__ = [
     "SecretProvider",
     "WebhookFastReturnMiddleware",
     "WebhookIdempotencyMiddleware",
+    "WebhookRequestContext",
 ]

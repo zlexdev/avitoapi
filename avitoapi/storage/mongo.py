@@ -4,15 +4,18 @@ from __future__ import annotations
 
 import contextlib
 from datetime import UTC, datetime, timedelta
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any  # typed-Any: motor AsyncIOMotorClient type param
 
 from .base import BaseStorage
 
 if TYPE_CHECKING:
-    from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
+    from motor.motor_asyncio import (  # optional dep, only with [mongo] extra
+        AsyncIOMotorClient,
+        AsyncIOMotorCollection,
+    )
 
 
-class MongoStorage(BaseStorage[Any, str]):
+class MongoStorage(BaseStorage[object, str]):
     """Async-MongoDB-backed K/V. Lazy-imports :mod:`motor.motor_asyncio`.
 
     Install via ``pip install avitoapi[mongo]``. Each entry is one document:
@@ -25,7 +28,7 @@ class MongoStorage(BaseStorage[Any, str]):
 
     def __init__(
         self,
-        client: AsyncIOMotorClient | None = None,
+        client: AsyncIOMotorClient[dict[str, Any]] | None = None,
         *,
         url: str | None = None,
         database: str = "avitoapi",
@@ -41,13 +44,13 @@ class MongoStorage(BaseStorage[Any, str]):
         self._coll_name = collection
         self.namespace = namespace
         self._owns_client = bool(owns_client) if owns_client is not None else client is None
-        self._resolved: AsyncIOMotorClient | None = client
+        self._resolved: AsyncIOMotorClient[dict[str, Any]] | None = client
         self._index_ready = False
 
     def _full_key(self, key: str) -> str:
         return f"{self.namespace}:{key}" if self.namespace else key
 
-    def _mongo(self) -> AsyncIOMotorClient:
+    def _mongo(self) -> AsyncIOMotorClient[dict[str, Any]]:
         if self._resolved is not None:
             return self._resolved
         try:
@@ -61,7 +64,7 @@ class MongoStorage(BaseStorage[Any, str]):
         self._resolved = _Mongo(self._url)
         return self._resolved
 
-    def _collection(self) -> AsyncIOMotorCollection:
+    def _collection(self) -> AsyncIOMotorCollection[dict[str, Any]]:
         return self._mongo()[self._db_name][self._coll_name]
 
     async def _ensure_index(self) -> None:
@@ -71,7 +74,7 @@ class MongoStorage(BaseStorage[Any, str]):
             await self._collection().create_index("expires_at", expireAfterSeconds=0)
         self._index_ready = True
 
-    async def get(self, key: str) -> Any | None:
+    async def get(self, key: str) -> object | None:
         await self._ensure_index()
         doc = await self._collection().find_one({"_id": self._full_key(key)})
         if doc is None:
@@ -80,12 +83,13 @@ class MongoStorage(BaseStorage[Any, str]):
         if expires_at is not None and expires_at < datetime.now(UTC):
             await self._collection().delete_one({"_id": self._full_key(key)})
             return None
-        return doc.get("value")
+        value: object | None = doc.get("value")
+        return value
 
     async def put(
         self,
         key: str,
-        value: Any,
+        value: object,
         *,
         ttl: timedelta | None = None,
     ) -> None:

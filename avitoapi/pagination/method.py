@@ -13,7 +13,7 @@ from pydantic import Field
 
 from ..methods._base import BaseMethod
 
-T = TypeVar("T", bound=Any)
+T = TypeVar("T")
 
 _DEFAULT_PAGE_SIZE_OFFSET = 50
 _DEFAULT_PAGE_SIZE_NUMBERED = 25
@@ -42,7 +42,7 @@ class PaginatedMethod(BaseMethod[T], Generic[T]):
     def _page_size(self) -> int:
         raise NotImplementedError
 
-    def _extract_items(self, response: Any) -> list[Any]:
+    def _extract_items(self, response: Any) -> list[Any]:  # typed-Any: response is T; items are opaque sub-elements
         """Pull the list of items out of one page's response."""
 
         attr = self.__items_attr__
@@ -67,7 +67,7 @@ class PaginatedMethod(BaseMethod[T], Generic[T]):
             f"{type(response).__name__}; set __items_attr__ on the method class",
         )
 
-    def _has_next(self, items: list[Any], response: Any) -> bool:  # noqa: ARG002 — override hook
+    def _has_next(self, items: list[Any], response: Any) -> bool:  # typed-Any: T erased at override boundary  # noqa: ARG002 — override hook
         """Default heuristic: stop when the server returned a partial page."""
 
         return len(items) >= self._page_size()
@@ -93,7 +93,7 @@ class OffsetMethod(PaginatedMethod[T], Generic[T]):
     def _advance(self) -> Self:
         return self.model_copy(update={"offset": self.offset + self.limit})
 
-    def _has_next(self, items: list[Any], response: Any) -> bool:  # noqa: ARG002 — override hook
+    def _has_next(self, items: list[Any], response: Any) -> bool:  # typed-Any: T erased at override boundary  # noqa: ARG002 — override hook
         if len(items) < self.limit:
             return False
         return self.offset + self.limit < self.__max_offset__
@@ -115,7 +115,7 @@ class PageMethod(PaginatedMethod[T], Generic[T]):
     def _advance(self) -> Self:
         return self.model_copy(update={"page": self.page + 1})
 
-    def _has_next(self, items: list[Any], response: Any) -> bool:
+    def _has_next(self, items: list[Any], response: Any) -> bool:  # typed-Any: T erased at override boundary
         if len(items) < self.per_page:
             return False
         total = getattr(response, "total", None)

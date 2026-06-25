@@ -8,7 +8,7 @@ specialised events (`ItemPublished`, `ItemBlocked`, ...) plus a coarse
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from .messenger import BaseEvent
 
@@ -22,7 +22,7 @@ class ItemEvent(BaseEvent, event_name="items"):
     account_id: str
     item_id: int
 
-    def __init__(self, *, account_id: str, item_id: int, **kwargs: Any) -> None:
+    def __init__(self, *, account_id: str, item_id: int, **kwargs: object) -> None:
         super().__init__()
         self.account_id = account_id
         self.item_id = item_id

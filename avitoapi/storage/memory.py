@@ -7,18 +7,17 @@ import copy
 import time
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import Any
 
 from .base import BaseStorage
 
 
 @dataclass(slots=True)
 class _Entry:
-    value: Any
+    value: object
     expires_at: float | None
 
 
-class MemoryStorage(BaseStorage[Any, str]):
+class MemoryStorage(BaseStorage[object, str]):
     """Thread-safe (asyncio.Lock) in-process K/V. Deep-copies on read and write.
 
     The deep-copy is intentional: it prevents the "caller mutates a dict still
@@ -40,7 +39,7 @@ class MemoryStorage(BaseStorage[Any, str]):
     def _full_key(self, key: str) -> str:
         return f"{self.namespace}:{key}" if self.namespace else key
 
-    async def get(self, key: str) -> Any | None:
+    async def get(self, key: str) -> object | None:
         full = self._full_key(key)
         async with self._lock:
             entry = self._data.get(full)
@@ -54,7 +53,7 @@ class MemoryStorage(BaseStorage[Any, str]):
     async def put(
         self,
         key: str,
-        value: Any,
+        value: object,
         *,
         ttl: timedelta | None = None,
     ) -> None:

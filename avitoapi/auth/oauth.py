@@ -47,7 +47,7 @@ class Token(BaseModel):
 class TokenCache:
     """Wraps :class:`BaseStorage` with token-shaped serialisation."""
 
-    def __init__(self, storage: BaseStorage[Any, str]) -> None:
+    def __init__(self, storage: BaseStorage[object, str]) -> None:
         self._storage = storage.namespaced("oauth")
 
     async def get(self, key: str) -> Token | None:
@@ -56,7 +56,7 @@ class TokenCache:
             return None
         try:
             return Token.model_validate(raw)
-        except Exception:
+        except Exception:  # noqa: BLE001 — corrupt cached token: drop it and re-issue
             await self._storage.delete(key)
             return None
 
@@ -66,7 +66,7 @@ class TokenCache:
         await self._storage.put(key, self._serialize(token), ttl=ttl)
 
     @staticmethod
-    def _serialize(token: Token) -> dict[str, Any]:
+    def _serialize(token: Token) -> dict[str, Any]:  # typed-Any: token dict contains datetime/frozenset (non-JSON until serialized)
         """``SecretStr`` masks itself in ``model_dump`` — round-trip it explicitly.
 
         Keep native types (``datetime``, ``str``, ``frozenset``) so
@@ -250,7 +250,7 @@ class OAuthInjectorMiddleware(RequestMiddleware):
     def __init__(
         self,
         oauth: OAuthClient,
-        cache_key_builder: Callable[[Any], str],
+        cache_key_builder: Callable[[Any], str],  # typed-Any: key builder accepts any client type
     ) -> None:
         self.oauth = oauth
         self._cache_key_builder = cache_key_builder
@@ -265,18 +265,32 @@ class OAuthInjectorMiddleware(RequestMiddleware):
         cache_key = self._cache_key_builder(ctx.client)
         token = await self._ensure_token(cache_key)
         prepared.headers["Authorization"] = f"Bearer {token.access_token.get_secret_value()}"
+        # A token_expired 403 reaches us either as a raised ForbiddenError (when an
+        # inner middleware already converted the status) or as a raw 403 response
+        # (when this injector runs closest to the wire). Handle both so reauth works
+        # regardless of where the injector sits in the middleware chain.
         try:
-            return await handler(prepared, ctx)
+            raw = await handler(prepared, ctx)
         except ForbiddenError as exc:
             if not OAuthClient.is_token_expired_403(exc.body):
                 raise
-            log.info("oauth.token_expired_403", cache_key=cache_key)
-            await self.oauth.cache.invalidate(cache_key)
-            refreshed = await self._ensure_token(cache_key, force=True)
-            prepared.headers["Authorization"] = (
-                f"Bearer {refreshed.access_token.get_secret_value()}"
-            )
-            return await handler(prepared, ctx)
+            return await self._reauth_and_retry(handler, prepared, ctx, cache_key)
+        if raw.status == 403 and OAuthClient.is_token_expired_403(raw.body):
+            return await self._reauth_and_retry(handler, prepared, ctx, cache_key)
+        return raw
+
+    async def _reauth_and_retry(
+        self,
+        handler: RequestHandler,
+        prepared: PreparedRequest,
+        ctx: RequestContext,
+        cache_key: str,
+    ) -> RawResponse:
+        log.info("oauth.token_expired_403", cache_key=cache_key)
+        await self.oauth.cache.invalidate(cache_key)
+        refreshed = await self._ensure_token(cache_key, force=True)
+        prepared.headers["Authorization"] = f"Bearer {refreshed.access_token.get_secret_value()}"
+        return await handler(prepared, ctx)
 
     async def _ensure_token(self, cache_key: str, *, force: bool = False) -> Token:
         lock = self._locks.setdefault(cache_key, asyncio.Lock())

@@ -5,15 +5,13 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING, Any
 
-from ..exceptions import ConnectionError as SDKConnectionError
-from ..exceptions import TimeoutError as SDKTimeoutError
-from ..exceptions import TransportError
+from ..exceptions import AvitoConnectionError, AvitoTimeoutError, TransportError
 from ._models import PreparedRequest, RawResponse
 from .base import BaseSession
 
 if TYPE_CHECKING:
     from ..config import ClientConfig
-    from ..utils.proxy._base import BaseProxyTransport
+    from ..transport.proxy._base import BaseProxyTransport
 
 
 class HttpxSession(BaseSession):
@@ -56,10 +54,10 @@ class HttpxSession(BaseSession):
             "timeout": prepared.timeout_s,
         }
         if prepared.body is not None:
-            if isinstance(prepared.body, (dict, list)):
+            if isinstance(prepared.body, dict | list):
                 kwargs["content"] = json.dumps(prepared.body)
                 prepared.headers.setdefault("Content-Type", "application/json")
-            elif isinstance(prepared.body, (bytes, bytearray)):
+            elif isinstance(prepared.body, bytes | bytearray):
                 kwargs["content"] = bytes(prepared.body)
             else:
                 kwargs["content"] = str(prepared.body)
@@ -71,9 +69,9 @@ class HttpxSession(BaseSession):
                 **kwargs,
             )
         except httpx.TimeoutException as exc:
-            raise SDKTimeoutError(str(exc)) from exc
+            raise AvitoTimeoutError(str(exc)) from exc
         except httpx.ConnectError as exc:
-            raise SDKConnectionError(str(exc)) from exc
+            raise AvitoConnectionError(str(exc)) from exc
         except httpx.HTTPError as exc:
             raise TransportError(f"{type(exc).__name__}: {exc}") from exc
 

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
 
 
 @dataclass(slots=True)
@@ -21,7 +20,7 @@ class ErrorContext:
     request_id: str = ""
     account_id: str | None = None
     breaker_path: str | None = None
-    extras: dict[str, Any] = field(default_factory=dict)
+    extras: dict[str, object] = field(default_factory=dict)
 
 
 class SDKError(Exception):
@@ -77,11 +76,11 @@ class TransportError(SDKError):
     default_message = "Transport-level failure"
 
 
-class ConnectionError(TransportError):
+class AvitoConnectionError(TransportError):
     default_message = "Connection error"
 
 
-class TimeoutError(TransportError):
+class AvitoTimeoutError(TransportError):
     default_message = "Request timed out"
 
 
@@ -290,7 +289,7 @@ class PathResolutionError(ProtocolError):
 
 
 class ModelNotBoundError(MethodNotBoundError):
-    """Subclass alias so :class:`BoundModel` callers can catch either name."""
+    """Subclass alias so :class:`AvitoObject` callers can catch either name."""
 
     default_message = "Model has no client bound"
 
@@ -310,8 +309,8 @@ class InvalidStateTransition(SDKError):
         self,
         detail: str | None = None,
         *,
-        current: Any = None,
-        target: Any = None,
+        current: object | None = None,
+        target: object | None = None,
         context: ErrorContext | None = None,
     ) -> None:
         super().__init__(detail, context=context)
@@ -331,6 +330,31 @@ class RunawayPagination(PaginationError, RuntimeError):
     """Raised when a paginator exceeds the configured ``max_pages`` guard."""
 
     default_message = "Paginator exceeded max_pages — runaway loop guard tripped"
+
+
+class AssetTooLargeError(SDKError):
+    """Raised when a downloaded asset exceeds :attr:`.AssetDownloader.max_bytes`.
+
+    Carries the offending ``url``, the configured ``limit``, and the ``reported``
+    byte count (from ``Content-Length`` or the actual payload length).
+    """
+
+    default_message = "Asset exceeds configured size limit"
+
+    def __init__(
+        self,
+        detail: str | None = None,
+        *,
+        url: str = "",
+        limit: int = 0,
+        reported: int = 0,
+        context: ErrorContext | None = None,
+    ) -> None:
+        msg = detail or f"Asset at {url!r} is {reported} bytes, limit is {limit}"
+        super().__init__(msg, context=context)
+        self.url = url
+        self.limit = limit
+        self.reported = reported
 
 
 _STATUS_MAP: dict[int, type[HTTPError]] = {

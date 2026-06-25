@@ -23,6 +23,8 @@ from collections.abc import Awaitable, Callable
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
+    from stagecraft import StageRunState
+
     from ..routers.context import CtxPipeline, EventContext
     from ..routers.middleware import MiddlewareChain
 
@@ -39,13 +41,13 @@ class QueueMetadataCheckpointStore:
     def __init__(self, ctx: EventContext) -> None:
         self._ctx = ctx
 
-    async def load(self, key: str) -> dict[str, Any] | None:
+    async def load(self, key: str) -> dict[str, Any] | None:  # typed-Any: stagecraft CheckpointStore Protocol boundary
         raw = self._ctx.queue.metadata.get(key)
         if isinstance(raw, dict):
             return raw
         return None
 
-    async def save(self, key: str, data: dict[str, Any]) -> None:
+    async def save(self, key: str, data: dict[str, Any]) -> None:  # typed-Any: stagecraft CheckpointStore Protocol boundary
         self._ctx.queue.metadata[key] = data
         await self._ctx.queue.persist_metadata()
 
@@ -66,7 +68,7 @@ class _CtxPipelineStateView:
         self._pipeline_ns: CtxPipeline = ctx.pipeline
 
     @property
-    def outputs(self) -> dict[str, Any]:
+    def outputs(self) -> dict[str, Any]:  # typed-Any: stagecraft StageRunState Protocol boundary
         return self._ctx.outputs
 
     @property
@@ -105,8 +107,8 @@ class AvitoapiStateProvider:
     state across stages.
     """
 
-    def get_state(self, ctx: EventContext) -> _CtxPipelineStateView:
-        return _CtxPipelineStateView(ctx)
+    def get_state(self, ctx: Any) -> StageRunState:
+        return _CtxPipelineStateView(ctx)  # type: ignore[return-value]  # structural subtype: all StageRunState members present
 
 
 class MiddlewareChainAdapter:
@@ -119,7 +121,7 @@ class MiddlewareChainAdapter:
 
     __slots__ = ("_chain",)
 
-    def __init__(self, chain: MiddlewareChain) -> None:
+    def __init__(self, chain: MiddlewareChain[Any, Any]) -> None:
         self._chain = chain
 
     def wrap(

@@ -36,7 +36,7 @@ so the rest of the event queue contract still holds.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from stagecraft import (
     Backoff,
@@ -49,20 +49,19 @@ from stagecraft import (
     FailureHook,
     ParallelGroup,
     PartitionFn,
-)
-from stagecraft import Pipeline as _SCPipeline
-from stagecraft import (
     PipelineCheckpoint,
     PipelineHooks,
     PipelineStageError,
     RetryPolicy,
     RunHook,
+    RunOutcome,
     Stage,
     StageFn,
     StageHook,
     pipeline_stage,
     stage_name_of,
 )
+from stagecraft import Pipeline as _SCPipeline
 
 from .router import PipelineRouter
 from .runner import PipelineRunner, stages_in_layers
@@ -75,14 +74,14 @@ if TYPE_CHECKING:
 def Pipeline(  # noqa: N802 — preserves pre-lift-out class-shaped name
     name: str,
     *,
-    event_filter: "Filter | None" = None,
-    stages: "list[Stage] | None" = None,
+    event_filter: Filter | None = None,
+    stages: list[Stage[Any, Any, Any]] | None = None,
     auto_ack: bool = True,
     auto_complete: bool | None = None,
     saga: bool = False,
-    partition_by: "PartitionFn[Event] | None" = None,
-    hooks: PipelineHooks | None = None,
-) -> _SCPipeline:
+    partition_by: PartitionFn[Event] | None = None,
+    hooks: PipelineHooks[Any, Any] | None = None,
+) -> _SCPipeline[Any, Any]:
     """Construct a :class:`stagecraft.Pipeline` with avitoapi defaults.
 
     Accepts ``auto_ack`` as a back-compat alias for stagecraft's
@@ -119,6 +118,7 @@ __all__ = [
     "PipelineStageError",
     "RetryPolicy",
     "RunHook",
+    "RunOutcome",
     "Stage",
     "StageFn",
     "StageHook",

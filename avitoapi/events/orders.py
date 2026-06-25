@@ -11,7 +11,7 @@ subscribe to the lifecycle or a single transition.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from .messenger import BaseEvent
 
@@ -25,7 +25,7 @@ class OrderEvent(BaseEvent, event_name="orders"):
     account_id: str
     order_id: str
 
-    def __init__(self, *, account_id: str, order_id: str, **kwargs: Any) -> None:
+    def __init__(self, *, account_id: str, order_id: str, **kwargs: object) -> None:
         super().__init__()
         self.account_id = account_id
         self.order_id = order_id

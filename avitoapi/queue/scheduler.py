@@ -15,9 +15,10 @@ import contextlib
 import time
 from collections.abc import Awaitable, Callable
 from datetime import timedelta
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from ..logging import get_logger
+from ..types import JsonObject
 
 if TYPE_CHECKING:
     from ..events._base import Event
@@ -128,7 +129,7 @@ async def enqueue_later(
     event: Event,
     *,
     delay: timedelta | float,
-    metadata: dict[str, Any] | None = None,
+    metadata: JsonObject | None = None,
     priority: int = 0,
 ) -> QueuedEvent:
     """Convenience wrapper around :meth:`EventQueue.enqueue` with relative delay."""

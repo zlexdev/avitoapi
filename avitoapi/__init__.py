@@ -143,9 +143,9 @@ from .routers import (
     MiddlewareChain,
     Router,
 )
-from .sessions.proxy_middleware import ProxyErrorMiddleware, RetryMiddleware
-from .types import HealthState, HealthStatus, HostKey
-from .utils.proxy import (
+from .sessions.proxy_middleware import ProxyErrorMiddleware, RequestMiddleware
+from .sessions.retry_middleware import RetryMiddleware
+from .transport.proxy import (
     KEEP,
     BaseProxyTransport,
     CallbackProxyTransport,
@@ -161,6 +161,7 @@ from .utils.proxy import (
     parse_proxy,
     parse_proxy_list,
 )
+from .types import HealthState, HealthStatus, HostKey
 
 __version__ = "0.1.0"
 
@@ -287,6 +288,7 @@ __all__ = [
     "QueueWorker",
     "QueuedEvent",
     "RateLimitedError",
+    "RequestMiddleware",
     "RetryMiddleware",
     "RetryPolicy",
     "ReviewAnswered",

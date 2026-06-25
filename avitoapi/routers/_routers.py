@@ -26,9 +26,9 @@ event class (and, for messenger sub-types, on the message's
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable
-from typing import Any
+from collections.abc import Awaitable, Callable, Iterable
 
+from ..events._base import Event
 from ..events.autoload import AutoloadFailed, AutoloadReportReady
 from ..events.balance import (
     BalanceChanged,
@@ -92,7 +92,7 @@ def _isinst(cls: type) -> Filter:
     return lambda ev: isinstance(ev, cls)
 
 
-def _msg_of(kind: Any) -> Filter:
+def _msg_of(kind: object) -> Filter:
     """``NewMessage`` filter narrowing to one :class:`MessageType` variant."""
 
     return lambda ev: isinstance(ev, NewMessage) and getattr(ev.message, "type", None) == kind
@@ -201,78 +201,77 @@ class Router:
 
     # Observer attributes (populated by ``install_observers``). Declared as
     # class-level type hints so IDEs offer completion before construction runs.
-    new_message: EventObserver
-    text_message: EventObserver
-    image_message: EventObserver
-    link_message: EventObserver
-    item_message: EventObserver
-    location_message: EventObserver
-    voice_message: EventObserver
-    call_message: EventObserver
-    file_message: EventObserver
-    system_message: EventObserver
-    app_call_message: EventObserver
-    deleted_message: EventObserver
-    unknown_message: EventObserver
-    message_read: EventObserver
-    chat_archived: EventObserver
-    chat_blacklisted: EventObserver
-    voice_file_resolved: EventObserver
+    new_message: EventObserver[NewMessage]
+    text_message: EventObserver[NewMessage]
+    image_message: EventObserver[NewMessage]
+    link_message: EventObserver[NewMessage]
+    item_message: EventObserver[NewMessage]
+    location_message: EventObserver[NewMessage]
+    voice_message: EventObserver[NewMessage]
+    call_message: EventObserver[NewMessage]
+    file_message: EventObserver[NewMessage]
+    system_message: EventObserver[NewMessage]
+    app_call_message: EventObserver[NewMessage]
+    deleted_message: EventObserver[NewMessage]
+    unknown_message: EventObserver[NewMessage]
+    message_read: EventObserver[MessageRead]
+    chat_archived: EventObserver[ChatArchived]
+    chat_blacklisted: EventObserver[ChatBlacklisted]
+    voice_file_resolved: EventObserver[VoiceFileResolved]
 
-    order_status_changed: EventObserver
-    order_created: EventObserver
-    order_confirmed: EventObserver
-    order_shipped: EventObserver
-    order_delivered: EventObserver
-    order_completed: EventObserver
-    order_cancelled: EventObserver
-    order_refunded: EventObserver
+    order_status_changed: EventObserver[OrderStatusChanged]
+    order_created: EventObserver[OrderCreated]
+    order_confirmed: EventObserver[OrderConfirmed]
+    order_shipped: EventObserver[OrderShipped]
+    order_delivered: EventObserver[OrderDelivered]
+    order_completed: EventObserver[OrderCompleted]
+    order_cancelled: EventObserver[OrderCancelled]
+    order_refunded: EventObserver[OrderRefunded]
 
-    parcel_status_changed: EventObserver
-    parcel_handed_over: EventObserver
-    parcel_delivered: EventObserver
-    parcel_returned: EventObserver
-    announcement_tracked: EventObserver
+    parcel_status_changed: EventObserver[ParcelStatusChanged]
+    parcel_handed_over: EventObserver[ParcelHandedOver]
+    parcel_delivered: EventObserver[ParcelDelivered]
+    parcel_returned: EventObserver[ParcelReturned]
+    announcement_tracked: EventObserver[AnnouncementTracked]
 
-    review_received: EventObserver
-    review_answered: EventObserver
+    review_received: EventObserver[ReviewReceived]
+    review_answered: EventObserver[ReviewAnswered]
 
-    autoload_report_ready: EventObserver
-    autoload_failed: EventObserver
+    autoload_report_ready: EventObserver[AutoloadReportReady]
+    autoload_failed: EventObserver[AutoloadFailed]
 
-    call_received: EventObserver
-    call_ended: EventObserver
-    call_recording_ready: EventObserver
+    call_received: EventObserver[CallReceived]
+    call_ended: EventObserver[CallEnded]
+    call_recording_ready: EventObserver[CallRecordingReady]
 
-    balance_changed: EventObserver
-    balance_topped_up: EventObserver
-    balance_low: EventObserver
-    bonus_received: EventObserver
+    balance_changed: EventObserver[BalanceChanged]
+    balance_topped_up: EventObserver[BalanceToppedUp]
+    balance_low: EventObserver[BalanceLow]
+    bonus_received: EventObserver[BonusReceived]
 
-    item_status_changed: EventObserver
-    item_published: EventObserver
-    item_blocked: EventObserver
-    item_unblocked: EventObserver
-    item_sold: EventObserver
-    item_archived: EventObserver
+    item_status_changed: EventObserver[ItemStatusChanged]
+    item_published: EventObserver[ItemPublished]
+    item_blocked: EventObserver[ItemBlocked]
+    item_unblocked: EventObserver[ItemUnblocked]
+    item_sold: EventObserver[ItemSold]
+    item_archived: EventObserver[ItemArchived]
 
-    on_startup: EventObserver
-    on_shutdown: EventObserver
-    on_token_refreshed: EventObserver
-    on_auth_failed: EventObserver
-    on_webhook_error: EventObserver
-    on_poll_error: EventObserver
+    on_startup: EventObserver[Startup]
+    on_shutdown: EventObserver[Shutdown]
+    on_token_refreshed: EventObserver[TokenRefreshed]
+    on_auth_failed: EventObserver[AuthFailed]
+    on_webhook_error: EventObserver[WebhookError]
+    on_poll_error: EventObserver[PollError]
 
     def __init__(self, name: str = "avito") -> None:
         self.name = name
         self.parent: Router | None = None
         self.sub_routers: list[Router] = []
-        self._managers: dict[str, HandlerManager] = {}
-        self.outer_middleware = MiddlewareChain()
-        self.inner_middleware = MiddlewareChain()
+        self._managers: dict[str, HandlerManager[Event]] = {}
+        self.outer_middleware: MiddlewareChain[EventContext, bool] = MiddlewareChain()
+        self.inner_middleware: MiddlewareChain[EventContext, bool] = MiddlewareChain()
         install_observers(self)
 
-    # ---- composition -------------------------------------------------------
 
     def include_router(self, router: Router) -> Router:
         """Attach a sub-router; events propagate to children after the parent's own handlers."""
@@ -283,6 +282,11 @@ class Router:
             )
         router.parent = self
         self.sub_routers.append(router)
+        # Merge child observer handler lists into parent for introspection.
+        for name, child_mgr in router._managers.items():
+            parent_mgr = self._managers.get(name)
+            if parent_mgr is not None:
+                parent_mgr.handlers.extend(child_mgr.handlers)
         return router
 
     def include_routers(self, *routers: Router) -> None:
@@ -296,14 +300,13 @@ class Router:
         for child in self.sub_routers:
             yield from child.iter_routers()
 
-    # ---- handler API ------------------------------------------------------
 
-    def _manager(self, name: str, event_filter: Filter | None) -> HandlerManager:
-        manager = HandlerManager(name=name, event_filter=event_filter)
+    def _manager(self, name: str, event_filter: Filter | None) -> HandlerManager[Event]:
+        manager: HandlerManager[Event] = HandlerManager(name=name, event_filter=event_filter)
         self._managers[name] = manager
         return manager
 
-    def manager(self, name: str, *, event_filter: Filter | None = None) -> HandlerManager:
+    def manager(self, name: str, *, event_filter: Filter | None = None) -> HandlerManager[Event]:
         """Public alias — create / fetch a manager by route name."""
 
         existing = self._managers.get(name)
@@ -316,12 +319,11 @@ class Router:
 
         return self.manager(name)(*filters)
 
-    # ---- propagation ------------------------------------------------------
 
-    async def propagate(self, event: Any, ctx: EventContext) -> bool:
+    async def propagate(self, event: Event, ctx: EventContext) -> bool:
         """Walk every manager (self → children); return ``True`` if any handler fired."""
 
-        async def _run(_event: Any, _ctx: EventContext) -> bool:
+        async def _run(_event: Event, _ctx: EventContext) -> bool:
             fired = False
             for manager in self._managers.values():
                 if not manager.applies(_event):
@@ -334,15 +336,15 @@ class Router:
                     fired = True
             return fired
 
-        wrapped = self.outer_middleware.wrap(_run)  # type: ignore[arg-type]
+        wrapped = self.outer_middleware.wrap(_run)
         result = await wrapped(event, ctx)
         if result:
             ctx.handled = True
         return bool(result)
 
     @staticmethod
-    def _call_one(manager: HandlerManager):  # noqa: ANN205 — closure helper
-        async def _terminal(event: Any, ctx: EventContext) -> bool:
+    def _call_one(manager: HandlerManager[Event]) -> Callable[[Event, EventContext], Awaitable[bool]]:
+        async def _terminal(event: Event, ctx: EventContext) -> bool:
             return await manager.trigger(event, ctx)
 
         return _terminal

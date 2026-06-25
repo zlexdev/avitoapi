@@ -11,11 +11,14 @@ surface, plus :meth:`bind` for avitoapi's outer-middleware contract.
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from typing import TYPE_CHECKING, Any
 
 from stagecraft import PipelineRouter as _SCPipelineRouter
 
+from ..events._base import Event
+from ..routers.context import EventContext
+from ..routers.middleware import BaseMiddleware
 from ._adapters import (
     AvitoapiStateProvider,
     MiddlewareChainAdapter,
@@ -25,11 +28,13 @@ from ._adapters import (
 
 if TYPE_CHECKING:
     from stagecraft import Pipeline, StageFn
+    from stagecraft import PipelineRunner as _SCPipelineRunner
 
+    from ..dispatcher import Dispatcher
     from ..routers.observer import Filter
 
 
-class PipelineRouter(_SCPipelineRouter):
+class PipelineRouter(_SCPipelineRouter[Event, EventContext]):
     """Collection of named :class:`Pipeline`s mounted on a Dispatcher.
 
     Example::
@@ -45,7 +50,7 @@ class PipelineRouter(_SCPipelineRouter):
         router.bind(dispatcher)
     """
 
-    def pipeline(  # type: ignore[override] — back-compat: accept auto_ack alias
+    def pipeline(  # noqa: D102  # back-compat: accept auto_ack alias
         self,
         name: str,
         *,
@@ -53,7 +58,7 @@ class PipelineRouter(_SCPipelineRouter):
         auto_ack: bool = True,
         auto_complete: bool | None = None,
         saga: bool = False,
-    ) -> Pipeline:
+    ) -> Pipeline[Event, EventContext]:
         return super().pipeline(
             name,
             event_filter=event_filter,
@@ -65,10 +70,10 @@ class PipelineRouter(_SCPipelineRouter):
         self,
         pipeline_name: str,
         stage_name: str,
-    ) -> Callable[[StageFn], StageFn]:
+    ) -> Callable[[StageFn[Event, EventContext, Any]], StageFn[Event, EventContext, Any]]:  # typed-Any: stagecraft ResultT boundary — parent signature uses Any here
         return self.pipeline(pipeline_name).stage(stage_name)
 
-    def bind(self, dispatcher: Any) -> None:
+    def bind(self, dispatcher: Dispatcher) -> None:
         """Subscribe to a dispatcher — every event runs through every matching pipeline.
 
         Pipelines fire AFTER the standard observer chain (so plain
@@ -83,13 +88,13 @@ class PipelineRouter(_SCPipelineRouter):
 
         router = self
 
-        class _PipelineMiddleware:
+        class _PipelineMiddleware(BaseMiddleware[EventContext, bool]):
             async def __call__(
                 self,
-                handler: Callable[..., Any],
-                event: Any,
-                ctx: Any,
-            ) -> Any:
+                handler: Callable[[Event, EventContext], Awaitable[bool]],
+                event: Event,
+                ctx: EventContext,
+            ) -> bool:
                 result = await handler(event, ctx)
                 stage_middleware = (
                     MiddlewareChainAdapter(dispatcher.inner_middleware)
@@ -115,7 +120,12 @@ class PipelineRouter(_SCPipelineRouter):
         dispatcher.outer_middleware.register(_PipelineMiddleware())
 
 
-def _build_per_ctx_runner(pipeline, ctx, *, stage_middleware):
+def _build_per_ctx_runner(
+    pipeline: Pipeline[Event, EventContext],
+    ctx: EventContext,
+    *,
+    stage_middleware: MiddlewareChainAdapter | None,
+) -> _SCPipelineRunner[Event, EventContext]:
     """Construct a stagecraft.PipelineRunner bound to one ``ctx``."""
 
     from stagecraft import PipelineRunner as _SCPipelineRunner  # noqa: PLC0415

@@ -12,7 +12,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field, RootModel
 
-from ._base import BoundModel
+from ._base import AvitoObject, AvitoRootObject
 
 
 class AvailableOffer(BaseModel):
@@ -57,7 +57,7 @@ class OfferConfirmation(BaseModel):
     error: str | None = Field(default=None, description="Human-readable failure reason.")
 
 
-class OfferConfirmationList(RootModel[list[OfferConfirmation]], BoundModel):
+class OfferConfirmationList(AvitoRootObject[list[OfferConfirmation]]):
     """Top-level array envelope for multi-confirm responses."""
 
     root: list[OfferConfirmation] = Field(default_factory=list)
@@ -86,7 +86,7 @@ class OfferCreateResult(BaseModel):
     )
 
 
-class OfferCreateResultList(RootModel[list[OfferCreateResult]], BoundModel):
+class OfferCreateResultList(AvitoRootObject[list[OfferCreateResult]]):
     """Top-level array envelope for multi-create responses."""
 
     root: list[OfferCreateResult] = Field(default_factory=list)
@@ -131,10 +131,9 @@ class OfferStatList(RootModel[list[OfferStat]]):
         return len(self.root)
 
 
-class OfferTariffInfo(BoundModel):
+class OfferTariffInfo(AvitoObject):
     """Tariff envelope returned by ``POST /special-offers/v1/tariffInfo``."""
 
-    model_config = ConfigDict(populate_by_name=True, strict=False, extra="allow")
 
     daily_limit: int | None = Field(
         default=None,

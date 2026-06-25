@@ -7,11 +7,13 @@ from typing import TYPE_CHECKING
 from ..logging import get_logger
 from ._models import PreparedRequest, RawResponse, RequestContext
 from .base import BaseSession
+from .headers_middleware import DefaultHeadersMiddleware
 from .middleware import RequestMiddleware, RequestMiddlewareManager
+from .retry_middleware import RetryMiddleware
 
 if TYPE_CHECKING:
     from ..config import ClientConfig
-    from ..utils.proxy._base import BaseProxyTransport
+    from ..transport.proxy._base import BaseProxyTransport
 
 log = get_logger(__name__)
 
@@ -28,7 +30,7 @@ def create_default_session(
     impersonation, so Cloudflare-protected hosts may challenge it.
     """
 
-    from ..utils.proxy._base import NoProxyTransport
+    from ..transport.proxy._base import NoProxyTransport
 
     transport = proxy_transport or NoProxyTransport()
     try:
@@ -44,10 +46,12 @@ def create_default_session(
 
 __all__ = [
     "BaseSession",
+    "DefaultHeadersMiddleware",
     "PreparedRequest",
     "RawResponse",
     "RequestContext",
     "RequestMiddleware",
     "RequestMiddlewareManager",
+    "RetryMiddleware",
     "create_default_session",
 ]

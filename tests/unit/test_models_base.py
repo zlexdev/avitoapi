@@ -1,11 +1,11 @@
-"""Unit tests for ``avitoapi.models._base.BoundModel``.
+"""Unit tests for ``avitoapi.models._base.AvitoObject``.
 
 Coverage:
 - ``as_(client)`` sets ``_client`` and returns self.
 - ``_require_client`` raises ``MethodNotBoundError`` when unbound.
-- ``as_(client)`` recursively binds nested ``BoundModel`` children.
-- Recursive bind walks lists of ``BoundModel``.
-- Recursive bind walks dicts of ``BoundModel`` values.
+- ``as_(client)`` recursively binds nested ``AvitoObject`` children.
+- Recursive bind walks lists of ``AvitoObject``.
+- Recursive bind walks dicts of ``AvitoObject`` values.
 - A model with ``_client`` set returns it from ``_require_client``.
 """
 
@@ -13,24 +13,24 @@ from __future__ import annotations
 
 import pytest
 from avitoapi.exceptions import MethodNotBoundError
-from avitoapi.models._base import BoundModel
+from avitoapi.models._base import AvitoObject
 
 
-class _Child(BoundModel):
+class _Child(AvitoObject):
     name: str
 
 
-class _Parent(BoundModel):
+class _Parent(AvitoObject):
     name: str
     child: _Child | None = None
 
 
-class _ListParent(BoundModel):
+class _ListParent(AvitoObject):
     name: str
     children: list[_Child] = []
 
 
-class _DictParent(BoundModel):
+class _DictParent(AvitoObject):
     name: str
     children: dict[str, _Child] = {}
 
@@ -73,7 +73,7 @@ def test_as_sets_client_attribute() -> None:
     assert model._client is sentinel
 
 
-# ---- recursive bind: nested BoundModel ------------------------------------
+# ---- recursive bind: nested AvitoObject ------------------------------------
 
 
 def test_as_recursively_binds_nested_bound_model_child() -> None:
@@ -95,7 +95,7 @@ def test_as_with_none_child_does_not_raise() -> None:
     assert parent._client is sentinel
 
 
-# ---- recursive bind: list of BoundModel -----------------------------------
+# ---- recursive bind: list of AvitoObject -----------------------------------
 
 
 def test_as_recursively_binds_list_of_bound_models() -> None:
@@ -116,7 +116,7 @@ def test_as_with_empty_list_does_not_raise() -> None:
     assert parent._client is sentinel
 
 
-# ---- recursive bind: dict of BoundModel -----------------------------------
+# ---- recursive bind: dict of AvitoObject -----------------------------------
 
 
 def test_as_recursively_binds_dict_value_bound_models() -> None:
@@ -140,15 +140,15 @@ def test_as_with_empty_dict_does_not_raise() -> None:
 # ---- recursive bind: deeply nested ----------------------------------------
 
 
-class _Grandchild(BoundModel):
+class _Grandchild(AvitoObject):
     label: str
 
 
-class _Middle(BoundModel):
+class _Middle(AvitoObject):
     grandchild: _Grandchild
 
 
-class _Root(BoundModel):
+class _Root(AvitoObject):
     middle: _Middle
 
 

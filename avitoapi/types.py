@@ -4,7 +4,17 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import StrEnum
-from typing import NewType
+from typing import NewType, TypeAlias
+
+# Recursive JSON value — the precise type of any decoded JSON. Use instead of ``Any``
+# for genuinely free-form wire payloads (HTTP bodies, opaque Avito bags).
+JSONValue: TypeAlias = (
+    "dict[str, JSONValue] | list[JSONValue] | str | int | float | bool | None"
+)
+
+# Free-form JSON object passthrough — use only when the upstream schema is genuinely
+# opaque (e.g. Avito returns a volatile payload bag). Prefer typed Pydantic models.
+JsonObject: TypeAlias = dict[str, "JSONValue"]
 
 HostKey = NewType("HostKey", str)
 """Logical host identifier (e.g. ``HostKey("www")``). Resolved to a base URL by ClientConfig."""

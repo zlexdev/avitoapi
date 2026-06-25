@@ -5,18 +5,20 @@ from __future__ import annotations
 import pytest
 from avitoapi import ProxyErrorMiddleware, RetryMiddleware
 from avitoapi.exceptions import (
-    ConnectionError as SDKConnectionError,
+    AvitoConnectionError as SDKConnectionError,
+)
+from avitoapi.exceptions import (
+    AvitoTimeoutError as SDKTimeoutError,
 )
 from avitoapi.exceptions import (
     ProxyBanned,
     ProxyConnectionError,
     ProxyError,
-)
-from avitoapi.exceptions import (
-    TimeoutError as SDKTimeoutError,
+    ProxyExhausted,
 )
 from avitoapi.sessions._models import PreparedRequest, RawResponse, RequestContext
-from avitoapi.utils.proxy._base import Proxy, ProxyAcquireContext
+from avitoapi.transport.proxy._base import Proxy, ProxyAcquireContext
+from avitoapi.transport.retry import RetryPolicy
 from pydantic import AnyUrl
 
 
@@ -68,7 +70,7 @@ async def test_proxy_error_middleware_passes_through_without_proxy():
 
 
 async def test_retry_middleware_retries_proxy_error_until_max():
-    mw = RetryMiddleware(max_retries=2, initial_s=0.001)
+    mw = RetryMiddleware(RetryPolicy(max_retries=2, initial_s=0.001))
     ctx = _ctx_with_proxy()
     prepared = PreparedRequest(host="www", http_method="POST", url="/x")
     calls = {"n": 0}
@@ -83,24 +85,22 @@ async def test_retry_middleware_retries_proxy_error_until_max():
 
 
 async def test_retry_middleware_gives_up_on_proxy_exhausted():
-    mw = RetryMiddleware(max_retries=5, initial_s=0.001)
+    mw = RetryMiddleware(RetryPolicy(max_retries=5, initial_s=0.001))
     ctx = _ctx_with_proxy()
     prepared = PreparedRequest(host="www", http_method="POST", url="/x")
     calls = {"n": 0}
 
     async def _failing(_prep, _ctx):
         calls["n"] += 1
-        from avitoapi.exceptions import ProxyExhausted
-
         raise ProxyExhausted("nothing left")
 
-    with pytest.raises(Exception):  # ProxyExhausted falls under give_up_on
+    with pytest.raises(ProxyExhausted):
         await mw(_failing, prepared, ctx)
     assert calls["n"] == 1
 
 
 async def test_retry_middleware_does_not_retry_unknown_errors():
-    mw = RetryMiddleware(max_retries=3, initial_s=0.001)
+    mw = RetryMiddleware(RetryPolicy(max_retries=3, initial_s=0.001))
     ctx = _ctx_with_proxy()
     prepared = PreparedRequest(host="www", http_method="GET", url="/x")
     calls = {"n": 0}
@@ -109,13 +109,13 @@ async def test_retry_middleware_does_not_retry_unknown_errors():
         calls["n"] += 1
         raise ValueError("not a proxy issue")
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="not a proxy issue"):
         await mw(_failing, prepared, ctx)
     assert calls["n"] == 1
 
 
 async def test_retry_middleware_returns_response_on_success():
-    mw = RetryMiddleware(max_retries=2, initial_s=0.001)
+    mw = RetryMiddleware(RetryPolicy(max_retries=2, initial_s=0.001))
     ctx = _ctx_with_proxy()
     prepared = PreparedRequest(host="www", http_method="GET", url="/x")
     expected = RawResponse(status=200, body=b"ok")

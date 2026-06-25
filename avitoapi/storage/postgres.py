@@ -15,7 +15,7 @@ from __future__ import annotations
 import json
 import re
 from datetime import UTC, datetime, timedelta
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from .base import BaseStorage
 
@@ -37,7 +37,7 @@ CREATE INDEX IF NOT EXISTS {table}_expires_at_idx
 """
 
 
-class PostgresStorage(BaseStorage[Any, str]):
+class PostgresStorage(BaseStorage[object, str]):
     """Async-Postgres-backed K/V over :mod:`asyncpg`.
 
     Install via ``pip install avitoapi[postgres]``. Accepts either an
@@ -110,7 +110,7 @@ class PostgresStorage(BaseStorage[Any, str]):
             await conn.execute(ddl)
         self._schema_ready = True
 
-    async def get(self, key: str) -> Any | None:
+    async def get(self, key: str) -> object | None:
         pool = await self._pool()
         full = self._full_key(key)
         async with pool.acquire() as conn:
@@ -127,15 +127,15 @@ class PostgresStorage(BaseStorage[Any, str]):
         value = row["value"]
         if isinstance(value, str):
             try:
-                return json.loads(value)
+                return json.loads(value)  # type: ignore[no-any-return]  # json.loads stubs return Any
             except json.JSONDecodeError:
                 return value
-        return value
+        return value  # type: ignore[no-any-return]  # asyncpg Record value typed Any in stubs
 
     async def put(
         self,
         key: str,
-        value: Any,
+        value: object,
         *,
         ttl: timedelta | None = None,
     ) -> None:
@@ -183,7 +183,7 @@ class PostgresStorage(BaseStorage[Any, str]):
             pool = await self._pool()
             async with pool.acquire() as conn:
                 value = await conn.fetchval("SELECT 1")
-            return value == 1
+            return bool(value == 1)
         except Exception:  # noqa: BLE001 — boundary probe, surface every failure
             return False
 
