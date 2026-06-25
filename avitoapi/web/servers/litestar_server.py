@@ -52,7 +52,7 @@ class LitestarWebApp(BaseWebApp):
         from litestar import Request, Response, route  # noqa: PLC0415 — lazy
 
         # litestar @route decorator strips function type
-        @route(path=webhook.path, http_method=[webhook.http_method])  # type: ignore[misc]  # litestar decorator strips type
+        @route(path=webhook.path, http_method=[webhook.http_method])  # type: ignore[untyped-decorator]  # litestar decorator strips type
         async def _handler(request: Request[Any, Any, Any]) -> Response[Any]:
             try:
                 body = await request.json()

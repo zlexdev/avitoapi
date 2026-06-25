@@ -229,7 +229,7 @@ class AvitoWebhookHandler:
                 try:
                     return OrderStatus(str(raw))
                 except ValueError:
-                    return next(iter(OrderStatus))  # type: ignore[return-value]  # StrEnum iter typed as str in mypy
+                    return next(iter(OrderStatus))
 
             return OrderStatusChanged(
                 account_id=account_id,
@@ -263,7 +263,7 @@ class AvitoWebhookHandler:
                 try:
                     return ItemStatus(str(raw))
                 except ValueError:
-                    return next(iter(ItemStatus))  # type: ignore[return-value]  # StrEnum iter typed as str in mypy
+                    return next(iter(ItemStatus))
 
             return ItemStatusChanged(
                 account_id=account_id,
