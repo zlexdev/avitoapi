@@ -2,11 +2,12 @@
 
 Parses an Avito webhook body into a typed event and forwards it to a
 Dispatcher (or fallback router) through a configurable
-:class:`~avitoapi.routers.MiddlewareChain`. The three standard middlewares
+:class:`~avitoapi.routers.MiddlewareChain`. The two standard middlewares
 (:class:`~avitoapi.web.middlewares.HMACSignatureMiddleware`,
-:class:`~avitoapi.web.middlewares.WebhookIdempotencyMiddleware`,
 :class:`~avitoapi.web.middlewares.WebhookFastReturnMiddleware`) are accepted
-in ``__init__`` and composed automatically.
+in ``__init__`` and composed automatically. Deduplication is handled once, at
+the dispatch boundary (``Dispatcher.dedup``), not here — it covers every event
+kind, not just messenger.
 
 The handler intentionally accepts a plain ``dict`` instead of a framework
 request object so it can be unit-tested without a web server.
@@ -40,12 +41,14 @@ from ..events.orders import (
     OrderStatus,
     OrderStatusChanged,
 )
+from ..logging import get_logger
 from ..routers.middleware import MiddlewareChain, NextHandler
 from ..types import JsonObject
 from .middlewares.context import WebhookRequestContext
 from .middlewares.fast_return import WebhookFastReturnMiddleware
 from .middlewares.hmac_signature import HMACSignatureMiddleware
-from .middlewares.idempotency import WebhookIdempotencyMiddleware
+
+log = get_logger(__name__)
 
 
 class AvitoWebhookParseError(ValueError):
@@ -60,11 +63,13 @@ class AvitoWebhookHandler:
     ``(status_code, body)`` tuples — the caller is responsible for translating
     them into the framework-native response (aiohttp, FastAPI, Litestar).
 
-    Middleware chain order (when all three are provided):
+    Middleware chain order (when both are provided):
 
     1. :class:`~avitoapi.web.middlewares.HMACSignatureMiddleware` — verify signature.
-    2. :class:`~avitoapi.web.middlewares.WebhookIdempotencyMiddleware` — dedup.
-    3. :class:`~avitoapi.web.middlewares.WebhookFastReturnMiddleware` — async dispatch.
+    2. :class:`~avitoapi.web.middlewares.WebhookFastReturnMiddleware` — async dispatch.
+
+    Dedup is not in this chain — the dispatcher dedups every event by
+    ``event.dedup_key`` (see :attr:`avitoapi.Dispatcher.dedup`).
     """
 
     def __init__(
@@ -73,7 +78,6 @@ class AvitoWebhookHandler:
         *,
         mount_path: str = "/messenger",
         hmac_middleware: HMACSignatureMiddleware | None = None,
-        idempotency_middleware: WebhookIdempotencyMiddleware | None = None,
         fast_return_middleware: WebhookFastReturnMiddleware | None = None,
     ) -> None:
         self.dispatcher = dispatcher
@@ -81,8 +85,6 @@ class AvitoWebhookHandler:
         self._middleware_chain: MiddlewareChain[Any, Any] = MiddlewareChain()
         if hmac_middleware is not None:
             self._middleware_chain.register(hmac_middleware)
-        if idempotency_middleware is not None:
-            self._middleware_chain.register(idempotency_middleware)
         if fast_return_middleware is not None:
             self._middleware_chain.register(fast_return_middleware)
 
@@ -176,9 +178,9 @@ class AvitoWebhookHandler:
         if kind == "message":
             if not account_id or not chat_id:
                 raise AvitoWebhookParseError("missing account_id or chat_id")
-            # Webhook delivers the message as a raw dict; the typed Message union is
-            # only built on the REST path. NewMessage stores it verbatim.
-            return NewMessage(account_id=account_id, chat_id=chat_id, message=value)  # type: ignore[arg-type]
+            # Webhook delivers the message as a raw dict; NewMessage.message is a
+            # left_to_right union so the dict is stored verbatim (REST builds a Message).
+            return NewMessage(account_id=account_id, chat_id=chat_id, message=value)
         if kind == "message_read":
             if not account_id or not chat_id:
                 raise AvitoWebhookParseError("missing account_id or chat_id")
@@ -229,7 +231,8 @@ class AvitoWebhookHandler:
                 try:
                     return OrderStatus(str(raw))
                 except ValueError:
-                    return next(iter(OrderStatus))
+                    log.warning("webhook.unknown_order_status", raw=str(raw), order_id=order_id)
+                    return OrderStatus.UNKNOWN
 
             return OrderStatusChanged(
                 account_id=account_id,
@@ -261,7 +264,8 @@ class AvitoWebhookHandler:
                 try:
                     return ItemStatus(str(raw))
                 except ValueError:
-                    return next(iter(ItemStatus))
+                    log.warning("webhook.unknown_item_status", raw=str(raw), item_id=item_id)
+                    return ItemStatus.UNKNOWN
 
             return ItemStatusChanged(
                 account_id=account_id,
@@ -274,18 +278,27 @@ class AvitoWebhookHandler:
         raise AvitoWebhookParseError(f"unknown event kind: {kind!r}")
 
     def _make_dispatch_terminal(self) -> NextHandler[Any, Any]:
-        async def _terminal(event: Any, _ctx: Any) -> tuple[int, JsonObject]:
-            await self._dispatch(event)
+        async def _terminal(event: Any, ctx: Any) -> tuple[int, JsonObject]:
+            source_meta = {
+                "transport": "webhook",
+                "webhook_id": getattr(ctx, "webhook_id", ""),
+            }
+            await self._dispatch(event, source_meta)
             return (200, {"ok": True})
 
         return _terminal
 
-    async def _dispatch(self, event: Event) -> None:
+    async def _dispatch(self, event: Event, source_meta: dict[str, str] | None = None) -> None:
         for attr in ("event_entry", "feed_event", "dispatch", "propagate_event"):
             handler = getattr(self.dispatcher, attr, None)
-            if handler is not None:
+            if handler is None:
+                continue
+            try:
+                await handler(event, source_meta=source_meta)
+            except TypeError:
+                # Duck-typed target (test fake / bare router) that only accepts the event.
                 await handler(event)
-                return
+            return
         # Last-resort: drive a bare Router instance.
         router = getattr(self.dispatcher, "router", None)
         if router is None:
