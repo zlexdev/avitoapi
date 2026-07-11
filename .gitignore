@@ -53,3 +53,6 @@ Thumbs.db
 # codegen: local pre-regen backup (originals live in git history)
 avitoapi/_backup_handwritten/
 avitoapi/codegen/_spec_cache/
+
+# local planning artifacts
+.plans/
