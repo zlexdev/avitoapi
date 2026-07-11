@@ -1,9 +1,9 @@
-"""Unit tests for ``avitoapi.Client`` — facade, lifecycle, ``__call__``, ``get_self``.
+"""Unit tests for ``avitoapi.Client`` — facade, lifecycle, ``__call__``, ``get_user_info_self``.
 
 Coverage:
-- ``Client.__call__(GetSelf())`` returns a bound ``Account`` via the funnel.
+- ``Client.__call__(GetUserInfoSelf())`` returns a bound ``UserInfoSelf`` via the funnel.
 - ``async with Client(...)`` opens + closes the session exactly once.
-- ``client.get_self()`` returns ``Account`` with ``account._client is client``.
+- ``client.get_user_info_self()`` returns ``UserInfoSelf`` with ``account._client is client``.
 - 403 + token_expired during a call triggers re-auth + retry via the injector.
 """
 
@@ -11,22 +11,21 @@ from __future__ import annotations
 
 from typing import Any
 
-from avitoapi import Account, Client
+from avitoapi import Client
 from avitoapi.config import ClientConfig
-from avitoapi.methods.accounts import GetSelf
+from avitoapi.methods.user import GetUserInfoSelf
+from avitoapi.models.user import UserInfoSelf
 from avitoapi.storage.memory import MemoryStorage
 
 from tests._fake_session import FakeResponse, FakeSession
-
-# ---- __call__ + funnel ----------------------------------------------------
 
 
 async def test_client_call_returns_account_when_invoked_with_get_self(
     client: Client,
 ) -> None:
-    account = await client(GetSelf())
+    account = await client(GetUserInfoSelf())
 
-    assert isinstance(account, Account)
+    assert isinstance(account, UserInfoSelf)
     assert account.id == 12345
     assert account.name == "Test Seller"
 
@@ -34,36 +33,30 @@ async def test_client_call_returns_account_when_invoked_with_get_self(
 async def test_client_call_binds_returned_model_to_self(
     client: Client,
 ) -> None:
-    account = await client(GetSelf())
+    account = await client(GetUserInfoSelf())
 
     assert account._client is client
-
-
-# ---- get_self -------------------------------------------------------------
 
 
 async def test_get_self_returns_account_with_expected_fields(
     client: Client,
     accounts_self_payload: dict[str, Any],
 ) -> None:
-    account = await client.get_self()
+    account = await client.get_user_info_self()
 
     assert account.id == accounts_self_payload["id"]
     assert account.name == accounts_self_payload["name"]
     assert account.email == accounts_self_payload["email"]
     assert account.phone == accounts_self_payload["phone"]
-    assert str(account.profile_url).rstrip("/") == accounts_self_payload["profile_url"].rstrip("/")
+    assert account.profile_url == accounts_self_payload["profile_url"]
 
 
 async def test_get_self_returns_account_bound_to_client(
     client: Client,
 ) -> None:
-    account = await client.get_self()
+    account = await client.get_user_info_self()
 
     assert account._client is client
-
-
-# ---- lifecycle ------------------------------------------------------------
 
 
 async def test_client_async_with_opens_and_closes_session(
@@ -71,7 +64,7 @@ async def test_client_async_with_opens_and_closes_session(
     fake_session: FakeSession,
     accounts_self_payload: dict[str, Any],
 ) -> None:
-    fake_session.register(GetSelf, body=accounts_self_payload)
+    fake_session.register(GetUserInfoSelf, body=accounts_self_payload)
     state: dict[str, int] = {"opens": 0, "closes": 0}
 
     original_open = fake_session.open
@@ -97,9 +90,6 @@ async def test_client_async_with_opens_and_closes_session(
 
     assert state["opens"] == 1
     assert state["closes"] == 1
-
-
-# ---- reauth on 403 token_expired through the funnel -----------------------
 
 
 async def test_client_reauths_and_retries_when_call_returns_token_expired_403(
@@ -128,7 +118,7 @@ async def test_client_reauths_and_retries_when_call_returns_token_expired_403(
             return FakeResponse(body=oauth_token_expired_payload, status=403)
         return FakeResponse(body=accounts_self_payload, status=200)
 
-    fake.register_responder(GetSelf, get_self_responder)
+    fake.register_responder(GetUserInfoSelf, get_self_responder)
 
     cache = TokenCache(storage=storage)
     oauth = OAuthClient(config=client_config, http=fake, cache=cache)
@@ -139,8 +129,8 @@ async def test_client_reauths_and_retries_when_call_returns_token_expired_403(
     fake.request_middlewares.register(injector)
 
     async with Client(config=client_config, session=fake, storage=storage) as client:
-        account = await client.get_self()
+        account = await client.get_user_info_self()
 
-    assert isinstance(account, Account)
+    assert isinstance(account, UserInfoSelf)
     assert account.id == 12345
     assert attempts["n"] == 2

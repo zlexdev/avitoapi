@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from datetime import timedelta
 from typing import (  # typed-Any: BaseMethod[Any] = heterogeneous method holder (return type erased at protocol layer)
     TYPE_CHECKING,
@@ -31,11 +32,12 @@ _BODYLESS_VERBS: frozenset[str] = frozenset({"GET", "HEAD", "DELETE", "OPTIONS"}
 class RestProtocol(Protocol):
     """Conventional REST: ``__http_method__`` + ``__endpoint__`` + field routing.
 
-    Routing rules (overridable per method-class):
+    Routing rules:
 
-    * ``__path_fields__`` — fill ``{name}`` placeholders in the endpoint.
-    * ``__query_fields__`` — explicit override; default routes by verb.
-    * ``__body_fields__`` — explicit override; default routes by verb.
+    * Path fields are derived from ``{name}`` placeholders in ``__endpoint__`` — the
+      method-class needs a field per placeholder; no ``__path_fields__`` declaration.
+    * Path values are dumped by field name; query/body by alias (so camelCase wire names
+      from the spec are honoured), with the path fields excluded.
     * GET / HEAD / DELETE / OPTIONS — non-path fields go to query.
     * POST / PUT / PATCH — non-path fields go to the JSON body.
 
@@ -59,24 +61,6 @@ class RestProtocol(Protocol):
             raise MethodDeclarationError(
                 f"{method_cls.__name__}: __endpoint__ must start with '/' (got {endpoint!r})",
             )
-        if getattr(method_cls, "__pre_encoded_fields__", frozenset()):
-            cls._check_validators_for_pre_encoded(method_cls)
-
-    @staticmethod
-    def _check_validators_for_pre_encoded(method_cls: type[BaseMethod[Any]]) -> None:
-        decorators = getattr(method_cls, "__pydantic_decorators__", None)
-        validators = getattr(decorators, "field_validators", {}) if decorators else {}
-        validated = {
-            field
-            for decorator in validators.values()
-            for field in getattr(decorator.info, "fields", ())
-        }
-        missing = set(method_cls.__pre_encoded_fields__) - validated
-        if missing:
-            raise MethodDeclarationError(
-                f"{method_cls.__name__}: __pre_encoded_fields__={sorted(missing)} "
-                "declared but no matching field_validator found.",
-            )
 
     async def build_request(
         self,
@@ -91,10 +75,10 @@ class RestProtocol(Protocol):
 
         http_method = self._get_http_method(method)
         endpoint = self._get_endpoint(method)
-        payload = self._dump(method)
+        path_names = self._path_fields(endpoint)
 
-        path = self._render_path(method, endpoint, payload)
-        query, body = self._route_fields(method, http_method, payload)
+        path = self._render_path(method, endpoint, path_names)
+        query, body = self._route_fields(method, http_method, path_names)
 
         base_url = config.base_url(host)
         url = f"{base_url}{path}"
@@ -159,49 +143,38 @@ class RestProtocol(Protocol):
         return endpoint
 
     @staticmethod
-    def _dump(method: BaseMethod[Any]) -> JsonObject:
-        data = method.model_dump(mode="json", exclude_none=True, by_alias=False)
-        return {k: v for k, v in data.items() if not k.startswith("_")}
+    def _path_fields(endpoint: str) -> tuple[str, ...]:
+        """Field names filling ``{placeholder}`` segments of the endpoint template."""
+
+        return tuple(re.findall(r"{(\w+)}", endpoint))
 
     @staticmethod
     def _render_path(
         method: BaseMethod[Any],
         endpoint: str,
-        payload: dict[str, Any],
+        path_names: tuple[str, ...],
     ) -> str:
-        path_fields = method.__path_fields__
-        if not path_fields:
+        if not path_names:
             return endpoint
+        # path segments use the python field name (by_alias=False), never the wire alias
+        values = method.model_dump(mode="json", by_alias=False, include=set(path_names))
         try:
-            rendered = endpoint.format_map({name: payload[name] for name in path_fields})
+            return endpoint.format_map(values)
         except KeyError as exc:
             missing = exc.args[0]
             raise PathResolutionError(
                 f"{type(method).__name__}: missing field {missing!r} for path {endpoint!r}",
             ) from exc
-        return rendered
 
     @staticmethod
     def _route_fields(
         method: BaseMethod[Any],
         http_method: str,
-        payload: dict[str, Any],
+        path_names: tuple[str, ...],
     ) -> tuple[JsonObject, Any]:
-        remaining = {k: v for k, v in payload.items() if k not in method.__path_fields__}
-        if method.__query_fields__ is not None or method.__body_fields__ is not None:
-            query = {
-                k: v
-                for k, v in remaining.items()
-                if method.__query_fields__ and k in method.__query_fields__
-            }
-            body_fields = method.__body_fields__
-            body_dict = (
-                {k: v for k, v in remaining.items() if body_fields and k in body_fields}
-                if body_fields
-                else None
-            )
-            return query, (body_dict if body_dict else None)
-
+        # query/body use wire aliases; path fields are excluded by field name
+        data = method.model_dump(mode="json", exclude_none=True, by_alias=True, exclude=set(path_names))
+        remaining = {k: v for k, v in data.items() if not k.startswith("_")}
         if http_method in _BODYLESS_VERBS:
             return remaining, None
         return {}, (remaining if remaining else None)

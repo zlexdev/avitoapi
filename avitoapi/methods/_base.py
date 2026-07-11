@@ -24,11 +24,8 @@ class BaseMethod(BaseModel, Generic[T_co]):
     to ``__protocol__``. The default :class:`RestProtocol` honours:
 
     * ``__http_method__`` — ``"GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD"``.
-    * ``__endpoint__`` — path template, may contain ``{name}`` placeholders.
-    * ``__path_fields__`` — frozenset of field names filling path placeholders.
-    * ``__query_fields__`` / ``__body_fields__`` — optional explicit routing.
-    * ``__pre_encoded_fields__`` — names that must be wire-encoded already; the
-      framework refuses to import a subclass missing the matching validator.
+    * ``__endpoint__`` — path template, may contain ``{name}`` placeholders; the
+      protocol fills each placeholder from the field of the same name.
     * ``__idempotent_mutation__`` — auto-inject ``Idempotency-Key`` for retries.
     * ``__retry_safe__`` — mark a non-GET method safe to retry.
     * ``__multipart__`` / ``__binary_response__`` — non-JSON wire shape.
@@ -41,7 +38,7 @@ class BaseMethod(BaseModel, Generic[T_co]):
     * ``__breaker_path__`` — circuit-breaker scope (default = ``__endpoint__``).
     """
 
-    model_config = ConfigDict(strict=True)
+    model_config = ConfigDict(strict=True, populate_by_name=True)
 
     __host__: ClassVar[str] = "www"
     __returning__: ClassVar[type[BaseModel] | None] = None
@@ -50,10 +47,6 @@ class BaseMethod(BaseModel, Generic[T_co]):
 
     __http_method__: ClassVar[str | None] = None
     __endpoint__: ClassVar[str | None] = None
-    __path_fields__: ClassVar[frozenset[str]] = frozenset()
-    __query_fields__: ClassVar[frozenset[str] | None] = None
-    __body_fields__: ClassVar[frozenset[str] | None] = None
-    __pre_encoded_fields__: ClassVar[frozenset[str]] = frozenset()
     __idempotent_mutation__: ClassVar[bool] = False
     __retry_safe__: ClassVar[bool] = False
     __multipart__: ClassVar[bool] = False

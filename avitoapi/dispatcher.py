@@ -7,19 +7,27 @@ attached directly on the dispatcher — handlers can register without an
 intermediate router unless they want plugin-style isolation.
 
 Owns the side-stores aiogram users expect: per-account :class:`Client`
-registry, FSM storage, idempotency store, dead-letter queue. All
-in-memory by default — pass real backends for multi-process deploys.
+registry, FSM storage, dead-letter queue. All in-memory by default —
+pass real backends for multi-process deploys.
 """
 
 from __future__ import annotations
 
 import asyncio
+import time
 from collections.abc import Awaitable, Callable
 from typing import TYPE_CHECKING, Any
 
 from .events._base import Event
 from .logging import get_logger
-from .queue import BaseEventQueue, EventQueue, QueuedEvent
+from .queue import (
+    BaseDeadLetterQueue,
+    BaseEventQueue,
+    DeadLetter,
+    EventQueue,
+    MemoryDeadLetterQueue,
+    QueuedEvent,
+)
 from .routers import CtxQueue, EventContext, Router
 from .storage.memory import MemoryStorage
 
@@ -28,46 +36,6 @@ if TYPE_CHECKING:
     from .storage.base import BaseStorage
 
 log = get_logger(__name__)
-
-
-class InMemoryIdempotencyStore:
-    """Tiny dedup store. Keys live in-process; reset on restart."""
-
-    def __init__(self) -> None:
-        self._seen: set[str] = set()
-        self._lock = asyncio.Lock()
-
-    async def seen(self, key: str) -> bool:
-        async with self._lock:
-            if key in self._seen:
-                return True
-            self._seen.add(key)
-            return False
-
-    async def forget(self, key: str) -> None:
-        async with self._lock:
-            self._seen.discard(key)
-
-
-class InMemoryDeadLetterQueue:
-    """Per-process DLQ. Stores ``(event, exception)`` pairs for inspection."""
-
-    def __init__(self) -> None:
-        self._items: list[tuple[Event, BaseException]] = []
-        self._lock = asyncio.Lock()
-
-    async def push(self, event: Event, exc: BaseException) -> None:
-        async with self._lock:
-            self._items.append((event, exc))
-
-    async def pop_all(self) -> list[tuple[Event, BaseException]]:
-        async with self._lock:
-            out = list(self._items)
-            self._items.clear()
-            return out
-
-    def __len__(self) -> int:
-        return len(self._items)
 
 
 class Dispatcher(Router):
@@ -82,9 +50,8 @@ class Dispatcher(Router):
     * :meth:`propagate_event` — propagate against a context you already built.
     * :meth:`replay_pending` — drain unacked events from the queue at startup.
 
-    Side-stores (``accounts``, ``fsm_storage``, ``idempotency_storage``,
-    ``dlq``, ``web``, ``event_queue``) are plain attributes so callers can
-    swap them at runtime.
+    Side-stores (``accounts``, ``fsm_storage``, ``dlq``, ``web``,
+    ``event_queue``) are plain attributes so callers can swap them at runtime.
     """
 
     def __init__(
@@ -96,8 +63,7 @@ class Dispatcher(Router):
         super().__init__(name=name)
         self.accounts: dict[str, Client] = {}
         self.fsm_storage: BaseStorage[object, str] | None = None
-        self.idempotency_storage: InMemoryIdempotencyStore | Any = InMemoryIdempotencyStore()  # typed-Any: replaceable backend, no ABC yet
-        self.dlq: InMemoryDeadLetterQueue | Any = InMemoryDeadLetterQueue()  # typed-Any: replaceable DLQ, local class has event/exc push
+        self.dlq: BaseDeadLetterQueue = MemoryDeadLetterQueue()
         self.web: object | None = None
         self.event_queue: BaseEventQueue = event_queue or EventQueue(MemoryStorage())
         self._inflight: set[asyncio.Task[Any]] = set()  # typed-Any: heterogeneous background tasks
@@ -175,7 +141,15 @@ class Dispatcher(Router):
                 event_type=type(queued.event).__name__,
                 message_id=queued.message_id,
             )
-            await self.dlq.push(queued.event, exc)
+            await self.dlq.push(
+                DeadLetter(
+                    message_id=queued.message_id,
+                    event=queued.event,
+                    attempts=queued.attempts,
+                    failed_at=time.time(),
+                    reason=str(exc),
+                ),
+            )
             raise
 
     def spawn(self, coro: Awaitable[Any]) -> asyncio.Task[Any]:  # typed-Any: heterogeneous coroutine/task return types
@@ -202,23 +176,20 @@ def make_dispatcher(
     *,
     accounts: list[Client],
     fsm_storage: BaseStorage[object, str] | None = None,
-    idempotency_storage: InMemoryIdempotencyStore | None = None,  # typed-Any: no ABC yet
-    dlq: InMemoryDeadLetterQueue | Any | None = None,  # typed-Any: replaceable DLQ
+    dlq: BaseDeadLetterQueue | None = None,
     web: object | None = None,
     log_level: str = "INFO",
 ) -> Dispatcher:
     """Build a Dispatcher attached to the given :class:`Client` instances.
 
-    Defaults match the in-process shape: in-memory FSM, in-memory idempotency
-    store, in-memory DLQ. Pass real backends for multi-process deploys.
+    Defaults match the in-process shape: in-memory FSM + DLQ. Pass real backends
+    for multi-process deploys.
     """
     _ = log_level  # accepted for API compatibility — logging is configured via structlog at app entry
     dispatcher = Dispatcher()
     dispatcher.accounts = {acc.account_id or "_anon": acc for acc in accounts}
     if fsm_storage is not None:
         dispatcher.fsm_storage = fsm_storage
-    if idempotency_storage is not None:
-        dispatcher.idempotency_storage = idempotency_storage
     if dlq is not None:
         dispatcher.dlq = dlq
     if web is not None:
@@ -233,7 +204,5 @@ DispatcherCallback = Callable[[Event], Awaitable[Any]]  # typed-Any: callback re
 __all__ = [
     "Dispatcher",
     "DispatcherCallback",
-    "InMemoryDeadLetterQueue",
-    "InMemoryIdempotencyStore",
     "make_dispatcher",
 ]

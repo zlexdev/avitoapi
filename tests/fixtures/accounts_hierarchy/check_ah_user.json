@@ -1,5 +1,6 @@
 {
-  "isAhUser": true,
-  "companyId": 99001,
-  "role": "owner"
+  "avitoCompanyId": 99001,
+  "isChief": true,
+  "isCompany": false,
+  "isEmployee": true
 }

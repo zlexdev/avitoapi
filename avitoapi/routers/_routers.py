@@ -64,6 +64,7 @@ from ..events.messenger import (
     ChatArchived,
     ChatBlacklisted,
     MessageRead,
+    MessageType,
     NewMessage,
     VoiceFileResolved,
 )
@@ -105,8 +106,6 @@ def install_observers(router_like: Router) -> None:  # noqa: PLR0915 — flat by
     declarative manifest, splitting it into per-domain helpers would hide
     the surface behind indirection without buying clarity.
     """
-
-    from ..models.messenger import MessageType  # noqa: PLC0415 — lazy to avoid cycle
 
     r = router_like
     r.new_message = r._manager("messenger.new_message", _isinst(NewMessage))

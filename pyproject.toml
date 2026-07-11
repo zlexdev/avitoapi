@@ -26,7 +26,6 @@ dependencies = [
     "curl_cffi>=0.7",
     "structlog>=24",
     "email-validator>=2.1",
-    "stagecraft @ git+https://${GH_TOKEN}@github.com/zlexdev/stagecraft.git@v0.1.0",
 ]
 
 [project.optional-dependencies]
@@ -81,6 +80,8 @@ ignore = [
     "B027",     # empty abstract default OK on ABC hook methods
     "RUF012",   # mutable class default — explicit override on Pydantic models
     "RUF100",   # let project decide on individual noqa lines
+    "RUF001", "RUF002", "RUF003",  # ambiguous Cyrillic — intentional (Russian API domain)
+    "PLC2401",  # non-ASCII identifiers — Avito enum values are Russian
 ]
 
 [tool.ruff.lint.per-file-ignores]

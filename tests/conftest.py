@@ -24,12 +24,11 @@ from avitoapi.auth.oauth import (
 )
 from avitoapi.client import Client
 from avitoapi.config import ClientConfig
-from avitoapi.methods.accounts import GetSelf
+from avitoapi.methods.user import GetUserInfoSelf
 from avitoapi.storage.memory import MemoryStorage
 
 from tests._fake_session import FIXTURE_DIR, FakeSession
 
-# ---- pytest-asyncio ---------------------------------------------------------
 
 pytest_plugins = ("pytest_asyncio",)
 
@@ -40,9 +39,6 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item
         if isinstance(item, pytest.Function):
             if pytest_asyncio.is_async_test(item):
                 item.add_marker(pytest.mark.asyncio)
-
-
-# ---- sample / fixture loaders ----------------------------------------------
 
 
 @pytest.fixture(scope="session")
@@ -74,9 +70,6 @@ def accounts_self_payload(load_fixture: Callable[[str], dict[str, Any]]) -> dict
     return load_fixture("accounts_self.json")
 
 
-# ---- config ----------------------------------------------------------------
-
-
 @pytest.fixture
 def client_config() -> ClientConfig:
     """Minimal valid config — no live secrets, just enough for the builder to construct."""
@@ -87,9 +80,6 @@ def client_config() -> ClientConfig:
         backoff_initial_s=0.001,
         backoff_max_s=0.01,
     )
-
-
-# ---- session / storage / oauth wiring --------------------------------------
 
 
 @pytest.fixture
@@ -136,11 +126,11 @@ async def client(
     """A fully-wired Client ready for ``async with`` usage.
 
     Pre-registers the OAuth token endpoint and the accounts-self fixture so
-    most tests can just ``await client.get_self()`` without extra setup.
+    most tests can just ``await client.get_user_info_self()`` without extra setup.
     """
     fake_session.register_route("POST", "/token", body=oauth_token_payload)
     fake_session.register_route("GET", "/token/", body=oauth_token_payload)
-    fake_session.register(GetSelf, body=accounts_self_payload)
+    fake_session.register(GetUserInfoSelf, body=accounts_self_payload)
 
     fake_session.request_middlewares.register(oauth_injector)
 

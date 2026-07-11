@@ -30,19 +30,11 @@ exhaustive surface docs see each module's `_MODULE.md`.
 | 06  | [FSM (state machines)](06-fsm.md)               | `StatesGroup`, `FSMContext`, conversation flows, custom storage backends.            |
 | 07  | [Circuit breaker](07-circuit-breaker.md)        | Per-endpoint breakers, per-account isolation, lifecycle, manual reset.               |
 
-## Persistence & pipelines
+## Persistence
 
 | #   | Page                                            | What you'll learn                                                                    |
 |-----|-------------------------------------------------|--------------------------------------------------------------------------------------|
 | 08  | [Persistent queue](08-queue.md)                 | At-least-once delivery, leases / DLQ / scheduler / worker pool, partition-by.        |
-| 09  | [Pipelines (basics)](09-pipeline.md)            | Stages, retry, timeout, `when`, `output`, lifecycle hooks, resume semantics.         |
-| 10  | [Pipelines — saga](10-pipeline-saga.md)         | `saga=True`, compensate per stage, crash mid-rollback recovery, `CompensationFailed`.|
-| 11  | [Pipelines — DAG](11-pipeline-dag.md)           | `depends_on` topological layers, `ParallelGroup`, picking between the two.           |
-
-> Pipelines 09–11 use the [`stagecraft`](https://github.com/zlexdev/stagecraft)
-> library under the hood — `avitoapi.pipeline` is a thin adapter that
-> re-exports the same surface and wires it to `EventContext`. Imports
-> from `avitoapi` are unchanged.
 
 ## Surface
 

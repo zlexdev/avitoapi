@@ -8,12 +8,25 @@ specialised events (`ItemPublished`, `ItemBlocked`, ...) plus a coarse
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING
+from enum import StrEnum
 
 from .messenger import BaseEvent
 
-if TYPE_CHECKING:
-    from ..models.items import ItemStatus
+
+class ItemStatus(StrEnum):
+    """Server-side item lifecycle status.
+
+    Minimal local enum: the generated ``ItemInfoAvitoStatus`` (``avitoapi.enums.items``)
+    is missing ``ARCHIVED`` — a value this module's own :class:`ItemArchived` event
+    relies on — so mapping onto it would silently mis-decode archived transitions.
+    """
+
+    ACTIVE = "active"
+    ARCHIVED = "archived"
+    BLOCKED = "blocked"
+    REMOVED = "removed"
+    REJECTED = "rejected"
+    OLD = "old"
 
 
 class ItemEvent(BaseEvent, event_name="items"):

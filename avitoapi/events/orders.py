@@ -11,12 +11,29 @@ subscribe to the lifecycle or a single transition.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING
+from enum import StrEnum
 
 from .messenger import BaseEvent
 
-if TYPE_CHECKING:
-    from ..models.orders import OrderStatus
+
+class OrderStatus(StrEnum):
+    """DBS order lifecycle status.
+
+    Minimal local enum: ``models/orders.py`` (the old DBS Order model) was
+    dropped as a codegen orphan, and the generated ``enums.order_management.Status``
+    uses an unrelated vocabulary (``ready_to_ship``/``in_transit``/...) for a
+    different order surface — it shares no values with the 7 states this
+    module's phase-specific events (:class:`OrderShipped`, :class:`OrderCompleted`, ...)
+    are keyed on.
+    """
+
+    NEW = "new"
+    CONFIRMED = "confirmed"
+    SHIPPED = "shipped"
+    DELIVERED = "delivered"
+    COMPLETED = "completed"
+    CANCELLED = "cancelled"
+    REFUNDED = "refunded"
 
 
 class OrderEvent(BaseEvent, event_name="orders"):

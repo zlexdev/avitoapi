@@ -8,7 +8,6 @@ from avitoapi import (
     Dispatcher,
     EventContext,
     EventQueue,
-    HandlerType,
 )
 from avitoapi.storage.memory import MemoryStorage
 
@@ -53,14 +52,13 @@ async def test_dispatcher_calls_atomic_completed_to_drop_event():
     triggered = []
 
     async def _handler(event, ctx: EventContext):
-        triggered.append((event.value, ctx.queue.message_id, ctx.handler_type))
+        triggered.append((event.value, ctx.queue.message_id))
         await ctx.atomic_completed()
 
     dispatcher._manager("test.pinged", lambda ev: isinstance(ev, _Pinged)).register(_handler)
     await dispatcher.feed_event(_Pinged(value=7))
     assert triggered
     assert triggered[0][0] == 7
-    assert triggered[0][2] is HandlerType.HANDLER
     assert await dispatcher.event_queue.pending_count() == 0
 
 

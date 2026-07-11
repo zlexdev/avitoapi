@@ -167,5 +167,4 @@ the full hierarchy.
 
 * **Multiple sellers** → [02-multi-account.md](02-multi-account.md)
 * **Routing + filters** → [03-router.md](03-router.md), [04-filters.md](04-filters.md)
-* **Pipelines + saga** → [09-pipeline.md](09-pipeline.md), [10-pipeline-saga.md](10-pipeline-saga.md)
 * **Webhooks (4 backends)** → [12-webhooks.md](12-webhooks.md)

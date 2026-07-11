@@ -16,16 +16,13 @@ from typing import Any, ClassVar
 import pytest
 from avitoapi.exceptions import MethodDeclarationError, MethodNotBoundError
 from avitoapi.methods._base import BaseMethod
-from avitoapi.methods.accounts import GetSelf
-from avitoapi.models.accounts import Account
+from avitoapi.methods.user import GetUserInfoSelf
+from avitoapi.models.user import UserInfoSelf
 from pydantic import BaseModel
 
 
 class _Stub(BaseModel):
     id: int = 1
-
-
-# ---- __path__ rejection ----------------------------------------------------
 
 
 def test_subclass_with_path_attribute_raises_method_declaration_error() -> None:
@@ -35,9 +32,6 @@ def test_subclass_with_path_attribute_raises_method_declaration_error() -> None:
             __http_method__: ClassVar[str] = "GET"
             __endpoint__: ClassVar[str] = "/x"
             __path__: ClassVar[str] = "/x"  # type: ignore[misc]
-
-
-# ---- generic / returning reconciliation -----------------------------------
 
 
 def test_subclass_with_generic_only_auto_binds_returning() -> None:
@@ -69,21 +63,15 @@ def test_subclass_with_contradictory_generic_and_returning_raises() -> None:
             __returning__: ClassVar[type[BaseModel]] = _Other
 
 
-# ---- naked await raises ---------------------------------------------------
-
-
 async def test_bare_method_await_raises_method_not_bound_error() -> None:
-    method = GetSelf()
+    method = GetUserInfoSelf()
 
     with pytest.raises(MethodNotBoundError):
         await method
 
 
-# ---- as_(client).emit(client) round-trip ----------------------------------
-
-
 async def test_as_attaches_client_and_returns_self() -> None:
-    method = GetSelf()
+    method = GetUserInfoSelf()
     sentinel = object()
 
     returned = method.as_(sentinel)
@@ -93,7 +81,7 @@ async def test_as_attaches_client_and_returns_self() -> None:
 
 
 async def test_as_with_different_client_overrides_previous() -> None:
-    method = GetSelf()
+    method = GetUserInfoSelf()
     first = object()
     second = object()
 
@@ -108,11 +96,11 @@ async def test_emit_routes_through_session_make_request(
     accounts_self_payload: dict[str, Any],
 ) -> None:
     """as_(client) + emit(client) must produce the same result as ``await client(method)``."""
-    method = GetSelf().as_(client)
+    method = GetUserInfoSelf().as_(client)
 
     result = await method.emit(client)
 
-    assert isinstance(result, Account)
+    assert isinstance(result, UserInfoSelf)
     assert result.id == accounts_self_payload["id"]
 
 
@@ -120,9 +108,9 @@ async def test_await_after_bind_works(
     client: Any,
     accounts_self_payload: dict[str, Any],
 ) -> None:
-    method = GetSelf().as_(client)
+    method = GetUserInfoSelf().as_(client)
 
     result = await method
 
-    assert isinstance(result, Account)
+    assert isinstance(result, UserInfoSelf)
     assert result.id == accounts_self_payload["id"]

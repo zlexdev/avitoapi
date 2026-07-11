@@ -125,24 +125,3 @@ async def image(event, ctx): ...
 This is the recommended shape for filters used across multiple modules
 — define them once next to the event types and import.
 
----
-
-## Pipeline-stage filters (`when=`)
-
-The same predicate shape gates individual pipeline stages — see
-[09-pipeline.md](09-pipeline.md):
-
-```python
-from avitoapi import Pipeline, F
-
-pipeline = Pipeline(name="ship-order")
-
-@pipeline.stage("notify-sms", when=F.preferences.sms == True)
-async def sms(event, ctx): ...
-
-@pipeline.stage("notify-email", when=F.preferences.email == True)
-async def email(event, ctx): ...
-```
-
-Stages whose `when` returns `False` are marked complete (skipped) and
-the pipeline advances — no exception, no replay.
