@@ -30,7 +30,7 @@ class HandlerType(StrEnum):
     """Origin of the current handler frame, exposed on :class:`EventContext`.
 
     * :attr:`HANDLER` — plain ``@router.observer`` registration.
-    * :attr:`PIPELINE` — invocation came through a :class:`avitoapi.pipeline.Pipeline`.
+    * :attr:`PIPELINE` — invocation came through a multi-stage pipeline runner.
     """
 
     HANDLER = "handler"

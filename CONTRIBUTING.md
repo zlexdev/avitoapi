@@ -7,13 +7,6 @@ uv pip install -e ".[dev]"
 cp .env.example .env   # fill AVITO_CLIENT_ID / AVITO_CLIENT_SECRET for live calls
 ```
 
-The `pipeline` package pulls [`stagecraft`](https://github.com/zlexdev/stagecraft) from a private
-repo. If you work on pipelines/sagas, export a GitHub PAT scoped `Contents: Read` first:
-
-```bash
-export GH_TOKEN="<your token>"
-```
-
 ## Checks (run before every PR)
 
 ```bash
