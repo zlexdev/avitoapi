@@ -10,14 +10,14 @@
 - [`auth/`](auth\_MODULE_AUTO.md) — Authentication helpers. See ``_MODULE.md``. (1 py, 4 cls, 1 fn)
 - [`breaker/`](breaker\_MODULE_AUTO.md) — Circuit breaker registry — keyed by ``(host, path, account_id)``. (1 py, 4 cls)
 - [`channels/`](channels\_MODULE_AUTO.md) — Push channels — bounded producer→dispatcher pipes with an overflow policy. (3 py, 6 cls)
-- [`codegen/`](codegen\_MODULE_AUTO.md) — avitoapi codegen — the auto-builder. (16 py, 18 cls, 81 fn)
+- [`codegen/`](codegen\_MODULE_AUTO.md) — avitoapi codegen — the auto-builder. (16 py, 18 cls, 85 fn)
 - [`enums/`](enums\_MODULE_AUTO.md) — Auto-generated domain enums — one module per Avito API domain (see ``avitoapi.codegen``). (25 py, 479 cls)
 - [`events/`](events\_MODULE_AUTO.md) — Typed Avito events flowing through the Dispatcher. (10 py, 56 cls)
 - [`fanout/`](fanout\_MODULE_AUTO.md) — Fanout — merge many supervised event sources into one dispatcher. (3 py, 6 cls)
 - [`fsm/`](fsm\_MODULE_AUTO.md) — FSM primitives — in-package implementation, no external dependency. (2 py, 9 cls)
 - [`idempotency/`](idempotency\_MODULE_AUTO.md) — Accept-once idempotency: :class:`IdempotencyStore` + event-level :class:`DedupFilter`. (2 py, 2 cls, 1 fn)
 - [`methods/`](methods\_MODULE_AUTO.md) — Per-domain method-classes. See ``_MODULE.md``. (26 py, 247 cls)
-- [`models/`](models\_MODULE_AUTO.md) — Per-domain Pydantic response DTOs. See ``_MODULE.md``. (29 py, 1486 cls, 3 fn)
+- [`models/`](models\_MODULE_AUTO.md) — Per-domain Pydantic response DTOs. See ``_MODULE.md``. (29 py, 1374 cls, 3 fn)
 - [`pagination/`](pagination\_MODULE_AUTO.md) — Declarative pagination — methods carry pagination fields, ``Client`` auto-dispatches. (2 py, 6 cls, 1 fn)
 - [`protocol/`](protocol\_MODULE_AUTO.md) — Wire-protocol abstraction. See ``_MODULE.md``. (2 py, 2 cls)
 - [`queue/`](queue\_MODULE_AUTO.md) — Persistent event queue with at-least-once delivery + lease semantics. (6 py, 15 cls, 4 fn)
@@ -71,6 +71,9 @@ cls Client(AccountsHierarchyFacade, AdsFacade, AuctionFacade, AuthFacade, Autolo
     # Initialise pooled resources. Idempotent.
   async close() -> None
     # Tear down session + storage. Idempotent.
+  async execute(method: BaseMethod[TR) -> TR
+  paginate(method: PaginatedMethod[TR) -> MethodPaginator[Any]
+    # Wrap a paginated method in a :class:`MethodPaginator` (await first page / async-for all).
   request_middlewares() -> RequestMiddlewareManager
     # Manager for request-side middlewares (auth, tracing, custom logging).
   oauth() -> OAuthClient

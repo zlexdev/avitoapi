@@ -61,8 +61,6 @@ cls CreativeIdsResponse(AvitoObject)
 
 cls DataResponse(AvitoObject)
 
-cls DaysResponse(AvitoObject)
-
 cls EmployeeIdResponse(AvitoObject)
 
 cls ErrorResponse(AvitoObject)
@@ -96,14 +94,10 @@ cls SizesResponse(AvitoObject)
 
 cls StatusResponse(AvitoObject)
 
-cls StorageExtendedToResponse(AvitoObject)
-
 cls SuccessResponse(AvitoObject)
 
 cls TaskIdResponse(AvitoObject)
   # Идентификатор задачи проверки ИНН клиентов
-
-cls TextResponse(AvitoObject)
 
 cls ValidatingErrorError(AvitoObject)
 
@@ -1834,6 +1828,8 @@ cls ChangeParcelResultReply(AvitoObject)
 
 cls ChangeParcelResultRequest(AvitoObject)
 
+cls ChangeParcelResultRequestOptions(AvitoObject)
+
 cls ChangeParcelsApplication(AvitoObject)
 
 cls ChangeParcelsClient(AvitoObject)
@@ -2211,6 +2207,8 @@ cls CreateSandboxParcelV22Receiver(AvitoObject)
   # CreateSandboxParcelV22Receiver response model.
 
 cls CreateSandboxParcelV22Sender(AvitoObject)
+
+cls ChangeParcelResultOptions(AvitoObject)
 
 cls AddAreasRequest(RootModel[list[Area]])
   # Root wrapper for a top-level ``list[Area]`` response.
@@ -2730,12 +2728,16 @@ cls SearchVacancyResponse(AvitoObject)
 
 cls VacancyCreateV2Contacts(AvitoObject)
 
+cls VacancyCreateV2Hierarchy(AvitoObject)
+
 cls VacancyCreateV2Location(AvitoObject)
   # Геолокация вакансии (как минимум одно из значений)
 
 cls VacancyCreateV2Salary(AvitoObject)
 
 cls VacancyUpdateV2Contacts(AvitoObject)
+
+cls VacancyUpdateV2Hierarchy(AvitoObject)
 
 cls VacancyUpdateV2Location(AvitoObject)
   # Геолокация вакансии (как минимум одно из значений)
@@ -2831,7 +2833,7 @@ cls WorkerClass(RootModel[list[WorkerClassRoot]])
 
 
 cls Chat(AvitoObject)
-  send_message(message: TextResponse? = None, type_: PostSendMessageType? = None) -> PostSendMessage
+  send_message(message: PostSendMessageMessage? = None, type_: PostSendMessageType? = None) -> PostSendMessage
     # Build an awaitable :class:`PostSendMessage` bound to this object (await to execute).
   send_image_message(image_id: str) -> PostSendImageMessage
     # Build an awaitable :class:`PostSendImageMessage` bound to this object (await to execute).
@@ -2905,6 +2907,8 @@ cls SendImageMessageRequestBody(AvitoObject)
 
 cls SendMessageRequestBody(AvitoObject)
 
+cls SendMessageRequestBodyMessage(AvitoObject)
+
 cls WebhookSubscribeRequestBody(AvitoObject)
 
 cls PostSendMessageResponse(AvitoObject)
@@ -2912,6 +2916,8 @@ cls PostSendMessageResponse(AvitoObject)
 
 cls PostSendMessageResponseContent(AvitoObject)
   # PostSendMessageResponseContent response model.
+
+cls PostSendMessageMessage(AvitoObject)
 
 cls PostSendImageMessageResponse(AvitoObject)
   # PostSendImageMessageResponse response model.
@@ -3173,6 +3179,8 @@ cls BaseParamsFeesPets(AvitoObject)
 
 cls BaseParamsInstant(AvitoObject)
 
+cls BaseParamsRefund(AvitoObject)
+
 cls ConflictedInterval(AvitoObject)
 
 cls ConflictedIntervalInterval(AvitoObject)
@@ -3222,6 +3230,8 @@ cls PostBaseParamsFeesCleaning(AvitoObject)
 cls PostBaseParamsFeesPets(AvitoObject)
 
 cls PostBaseParamsInstant(AvitoObject)
+
+cls PostBaseParamsRefund(AvitoObject)
 
 ```
 
