@@ -7,6 +7,7 @@ from datetime import date
 
 from ..enums.avito_promo import (
     LinkType,
+    StatsAccountsItemsSortOrder,
     StatsAccountsSpendingsSpendingTypes,
     StatsMetric,
     StatsMetricsGrouping,
@@ -75,15 +76,31 @@ class AvitoPromoFacade(FacadeBase):
         return await self(AgencyTransaction(transaction_id=transaction_id))
 
     async def agency_clients(
-        self, limit: int, extra: AgencyClientsExtra | None = None, offset: int | None = None
+        self,
+        limit: int,
+        advance: bool | None = None,
+        balance: bool | None = None,
+        statistics: bool | None = None,
+        subscription: bool | None = None,
+        offset: int | None = None,
     ) -> AgencyClientsResponse:
         """Получение списка клиентов via ``POST /api/1/agency/clients``.
 
         Args:
-            extra: Настройка дополнительной информации о клиентах
             limit: Ограничение количества сущностей в выборке
         """
-        return await self(AgencyClients(extra=extra, limit=limit, offset=offset))
+        return await self(
+            AgencyClients(
+                extra=AgencyClientsExtra(
+                    advance=advance,
+                    balance=balance,
+                    statistics=statistics,
+                    subscription=subscription,
+                ),
+                limit=limit,
+                offset=offset,
+            )
+        )
 
     async def agency_clients_target_create(
         self, inn_list: list[str]
@@ -135,31 +152,34 @@ class AvitoPromoFacade(FacadeBase):
         date_to: date,
         grouping: StatsMetricsGrouping,
         metrics: list[StatsMetric],
+        key: StatsMetric,
+        order: StatsAccountsItemsSortOrder,
         user_id: int | None = None,
-        filter: StatsAccountsItemsFilter | None = None,
+        category_ids: list[int] | None = None,
+        employee_ids: list[int] | None = None,
         limit: int | None = None,
         offset: int | None = None,
-        sort: StatsAccountsItemsSort | None = None,
     ) -> StatsAccountsItemsResponse:
         """Получение статистических показателей клиента via ``POST /stats/v2/accounts/{user_id}/items``.
 
         Args:
             user_id: Идентификатор пользователя клиента
-            filter: Набор ограничений, по которым будут отфильтрованы данные статистики
             metrics: Набор показателей, которые должны быть в статистике
-            sort: Сортировка данных статистики
+            order: Порядок сортировки
         """
         return await self(
             StatsAccountsItems(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 date_from=date_from,
                 date_to=date_to,
-                filter=filter,
+                filter=StatsAccountsItemsFilter(
+                    category_ids=category_ids, employee_ids=employee_ids
+                ),
                 grouping=grouping,
                 limit=limit,
                 metrics=metrics,
                 offset=offset,
-                sort=sort,
+                sort=StatsAccountsItemsSort(key=key, order=order),
             )
         )
 
@@ -170,13 +190,13 @@ class AvitoPromoFacade(FacadeBase):
         grouping: StatsSpendingsGrouping,
         spending_types: list[StatsAccountsSpendingsSpendingTypes],
         user_id: int | None = None,
-        filter: StatsAccountsSpendingsFilter | None = None,
+        category_ids: list[int] | None = None,
+        item_ids: list[int] | None = None,
     ) -> StatsAccountsSpendingsResponse:
         """Получение статистики расходов клиента via ``POST /stats/v2/accounts/{user_id}/spendings``.
 
         Args:
             user_id: Идентификатор пользователя клиента
-            filter: Набор ограничений, по которым будут отфильтрованы данные статистики
             spending_types: Набор категорий расходов клиента
         """
         return await self(
@@ -184,7 +204,7 @@ class AvitoPromoFacade(FacadeBase):
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 date_from=date_from,
                 date_to=date_to,
-                filter=filter,
+                filter=StatsAccountsSpendingsFilter(category_ids=category_ids, item_ids=item_ids),
                 grouping=grouping,
                 spending_types=spending_types,
             )

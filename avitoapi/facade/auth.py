@@ -19,7 +19,7 @@ from ._base import FacadeBase
 class AuthFacade(FacadeBase):
     """``Client`` mixin — Авторизация endpoints."""
 
-    async def get_access_token(
+    async def access_token(
         self, client_id: str, client_secret: str, grant_type: str
     ) -> GetAccessTokenResponse:
         """Получение access token via ``POST /token``."""
@@ -27,7 +27,7 @@ class AuthFacade(FacadeBase):
             GetAccessToken(client_id=client_id, client_secret=client_secret, grant_type=grant_type)
         )
 
-    async def get_access_token_authorization_code(
+    async def access_token_authorization_code(
         self, client_id: str, client_secret: str, code: str, grant_type: str
     ) -> GetAccessTokenAuthorizationCodeResponse:
         """Получение access token via ``POST /token‎``."""

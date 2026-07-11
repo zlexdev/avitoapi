@@ -17,11 +17,11 @@ from ._base import FacadeBase
 class CpxpromoFacade(FacadeBase):
     """``Client`` mixin — Настройка цены целевого действия endpoints."""
 
-    async def get_bids(self, item_id: int) -> GetBidsOut:
+    async def bids(self, item_id: int) -> GetBidsOut:
         """Получение детализированной информации о действующих и доступных ценах за целевые действия и бюджетах via ``GET /cpxpromo/1/getBids/{item_id}``."""
         return await self(GetBids(item_id=item_id))
 
-    async def get_promotions_by_item_ids(self, item_ids: list[int]) -> GetPromotionsByItemIdsOut:
+    async def promotions_by_item_ids(self, item_ids: list[int]) -> GetPromotionsByItemIdsOut:
         """Получение текущих цен за целевое действие и бюджетов по нескольким объявлениям via ``POST /cpxpromo/1/getPromotionsByItemIds``."""
         return await self(GetPromotionsByItemIds(item_ids=item_ids))
 

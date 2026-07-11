@@ -89,14 +89,14 @@ class Client(
 
     Two execution surfaces, both routed through ``session.make_request(client, method)``:
 
-    * ``await client.get_user_info_self()`` — flat method (the common path), bound via the
+    * ``await client.user_info_self()`` — flat method (the common path), bound via the
       generated ``*Facade`` mixins listed as bases.
     * ``await client(SomeMethod())`` — universal, accepts any :class:`BaseMethod`.
 
     Construct inside an async context::
 
         async with Client(config=ClientConfig.from_env()) as client:
-            me = await client.get_user_info_self()
+            me = await client.user_info_self()
 
     Shared infra (session pool, storage, proxy transport) can be injected so
     multi-account dashboards share one HTTP client and one storage backend

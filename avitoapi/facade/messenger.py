@@ -42,11 +42,11 @@ from ._base import FacadeBase
 class MessengerFacade(FacadeBase):
     """``Client`` mixin — Мессенджер endpoints."""
 
-    async def post_send_message(
+    async def send_message(
         self,
         chat_id: str,
         user_id: int | None = None,
-        message: PostSendMessageMessage | None = None,
+        text: str | None = None,
         type_: PostSendMessageType | None = None,
     ) -> PostSendMessageResponse:
         """Отправка сообщения via ``POST /messenger/v1/accounts/{user_id}/chats/{chat_id}/messages``.
@@ -54,18 +54,19 @@ class MessengerFacade(FacadeBase):
         Args:
             user_id: Идентификатор пользователя (клиента)
             chat_id: Идентификатор чата (клиента)
+            text: Текст сообщения (максимум 1000 символов)
             type_: Тип сообщения
         """
         return await self(
             PostSendMessage(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 chat_id=chat_id,
-                message=message,
+                message=PostSendMessageMessage(text=text),
                 type_=type_,
             )
         )
 
-    async def post_send_image_message(
+    async def send_image_message(
         self, chat_id: str, image_id: str, user_id: int | None = None
     ) -> PostSendImageMessageResponse:
         """Отправка сообщения с изображением via ``POST /messenger/v1/accounts/{user_id}/chats/{chat_id}/messages/image``.
@@ -114,7 +115,7 @@ class MessengerFacade(FacadeBase):
             )
         )
 
-    async def get_voice_files(self, voice_ids: list[str], user_id: int | None = None) -> VoiceFiles:
+    async def voice_files(self, voice_ids: list[str], user_id: int | None = None) -> VoiceFiles:
         """Получение голосовых сообщений via ``GET /messenger/v1/accounts/{user_id}/getVoiceFiles``.
 
         Args:
@@ -142,11 +143,11 @@ class MessengerFacade(FacadeBase):
             )
         )
 
-    async def get_subscriptions(self) -> GetSubscriptionsResponse:
+    async def subscriptions(self) -> GetSubscriptionsResponse:
         """Получение подписок (webhooks) via ``POST /messenger/v1/subscriptions``."""
         return await self(GetSubscriptions())
 
-    async def post_webhook_unsubscribe(self, url: str) -> PostWebhookUnsubscribeResponse:
+    async def webhook_unsubscribe(self, url: str) -> PostWebhookUnsubscribeResponse:
         """Отключение уведомлений (webhooks) via ``POST /messenger/v1/webhook/unsubscribe``.
 
         Args:
@@ -154,7 +155,7 @@ class MessengerFacade(FacadeBase):
         """
         return await self(PostWebhookUnsubscribe(url=url))
 
-    async def post_blacklist_v2(
+    async def blacklist_v2(
         self, user_id: int | None = None, users: list[PostBlacklistV2Users] | None = None
     ) -> None:
         """Добавление пользователя в blacklist via ``POST /messenger/v2/accounts/{user_id}/blacklist``.
@@ -168,7 +169,7 @@ class MessengerFacade(FacadeBase):
             )
         )
 
-    async def get_chats_v2(
+    async def chats_v2(
         self,
         user_id: int | None = None,
         item_ids: list[int] | None = None,
@@ -198,7 +199,7 @@ class MessengerFacade(FacadeBase):
             )
         )
 
-    async def get_chat_by_id_v2(self, chat_id: str, user_id: int | None = None) -> Chat:
+    async def chat_by_id_v2(self, chat_id: str, user_id: int | None = None) -> Chat:
         """Получение информации по чату via ``GET /messenger/v2/accounts/{user_id}/chats/{chat_id}``.
 
         Args:
@@ -211,7 +212,7 @@ class MessengerFacade(FacadeBase):
             )
         )
 
-    async def get_messages_v3(
+    async def messages_v3(
         self, chat_id: str, user_id: int | None = None, limit: int = 100, offset: int = 0
     ) -> Messages:
         """Получение списка сообщений V3 via ``GET /messenger/v3/accounts/{user_id}/chats/{chat_id}/messages/``.
@@ -231,7 +232,7 @@ class MessengerFacade(FacadeBase):
             )
         )
 
-    async def post_webhook_v3(self, url: str) -> PostWebhookV3Response:
+    async def webhook_v3(self, url: str) -> PostWebhookV3Response:
         """Включение уведомлений V3 (webhooks) via ``POST /messenger/v3/webhook``.
 
         Args:

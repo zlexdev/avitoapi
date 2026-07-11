@@ -26,6 +26,7 @@ from ..models.common import TZDatetime
 from ..models.order_management import (
     AcceptReturnOrderRecipient,
     ApplyTransitionParams,
+    ApplyTransitionParamsCnc,
     GetDeliveryCourierConfirmationResponse,
     Marking,
     OrderAcceptReturnOrderResponse,
@@ -55,36 +56,44 @@ class OrderManagementFacade(FacadeBase):
     async def accept_return_order(
         self,
         order_id: str | None = None,
-        recipient: AcceptReturnOrderRecipient | None = None,
+        name: str | None = None,
+        phone: str | None = None,
         terminal_number: str | None = None,
     ) -> OrderAcceptReturnOrderResponse:
         """Выбор отделения отделения Почты России для получения возврата via ``POST /order-management/1/order/acceptReturnOrder``.
 
         Args:
             order_id: ID заказа в Авито
-            recipient: Данные человека, который будет забирать возвратную посылку
+            name: ФИО получателя
+            phone: Номер телефона человека, который будет забирать возвратную посылку
             terminal_number: Номер отделения Почты России, куда придёт возвратная посылка.
         """
         return await self(
             AcceptReturnOrder(
-                order_id=order_id, recipient=recipient, terminal_number=terminal_number
+                order_id=order_id,
+                recipient=AcceptReturnOrderRecipient(name=name, phone=phone),
+                terminal_number=terminal_number,
             )
         )
 
     async def apply_transition(
         self,
         order_id: str | None = None,
-        params: ApplyTransitionParams | None = None,
+        cnc: ApplyTransitionParamsCnc | None = None,
         transition: ApplyTransitionTransition | None = None,
     ) -> OrderApplyTransitionResponse:
         """Изменение статуса заказа via ``POST /order-management/1/order/applyTransition``.
 
         Args:
             order_id: ID заказа в Авито
-            params: Дополнительные параметры доставки
+            cnc: Параметры для подготовки заказа с самовывозом
             transition: Название перехода. * `confirm` - подтверждение заказа; * `reject` - отмена заказа; * `perform` - подтверждение отправки заказа (RDBS); * `receive` - подтверждение доставки заказа (RDBS, CNC).
         """
-        return await self(ApplyTransition(order_id=order_id, params=params, transition=transition))
+        return await self(
+            ApplyTransition(
+                order_id=order_id, params=ApplyTransitionParams(cnc=cnc), transition=transition
+            )
+        )
 
     async def check_confirmation_code_order_management(
         self, confirm_code: str | None = None, parcel_id: str | None = None
@@ -124,7 +133,7 @@ class OrderManagementFacade(FacadeBase):
             )
         )
 
-    async def get_courier_delivery_range(
+    async def courier_delivery_range(
         self, order_id: str, address: str | None = None
     ) -> GetDeliveryCourierConfirmationResponse:
         """Метод получения доступных временных промежутков приезда курьера via ``GET /order-management/1/order/getCourierDeliveryRange``.
@@ -184,7 +193,7 @@ class OrderManagementFacade(FacadeBase):
             SetOrderTrackingNumber(order_id=order_id, tracking_number=tracking_number)
         )
 
-    async def get_orders(
+    async def orders(
         self,
         ids: list[str] | None = None,
         statuses: list[Status] | None = None,

@@ -8,6 +8,7 @@ from datetime import date
 from ..enums.items import (
     GetItemsInfoStatus,
     Groupings,
+    ItemAnalyticsSortOrder,
     PutItemVasPackageV2PackageId,
     PutItemVasVasId,
     SpendingsGroupings,
@@ -63,7 +64,7 @@ class ItemsFacade(FacadeBase):
             )
         )
 
-    async def post_calls_stats(
+    async def calls_stats(
         self,
         date_from: str,
         date_to: str,
@@ -87,7 +88,7 @@ class ItemsFacade(FacadeBase):
             )
         )
 
-    async def get_item_info(self, item_id: int, user_id: int | None = None) -> ItemInfoAvito:
+    async def item_info(self, item_id: int, user_id: int | None = None) -> ItemInfoAvito:
         """Получение информации по объявлению via ``GET /core/v1/accounts/{user_id}/items/{item_id}/``.
 
         Args:
@@ -118,7 +119,7 @@ class ItemsFacade(FacadeBase):
             )
         )
 
-    def get_items_info(
+    def items_info(
         self,
         status: GetItemsInfoStatus = "active",
         updated_at_from: str | None = None,
@@ -205,9 +206,11 @@ class ItemsFacade(FacadeBase):
         limit: int,
         metrics: list[str],
         offset: int,
+        key: str,
+        order: ItemAnalyticsSortOrder,
         user_id: int | None = None,
-        filter: ItemAnalyticsFilter | None = None,
-        sort: ItemAnalyticsSort | None = None,
+        category_ids: list[int] | None = None,
+        employee_ids: list[int] | None = None,
     ) -> AnalyticsResponse:
         """Получение статистических показателей по профилю via ``POST /stats/v2/accounts/{user_id}/items``.
 
@@ -215,23 +218,25 @@ class ItemsFacade(FacadeBase):
             user_id: Идентификатор пользователя (клиента)
             date_from: Дата (в формате YYYY-MM-DD), с которой (включительно) надо получить статистику
             date_to: Дата (в формате YYYY-MM-DD), по которую (включительно) надо получить статистику
-            filter: Набор ограничений, по которым нужно отфильтровать данные
+            category_ids: Идентификаторы категорий [ Справочник идентификаторов категорий ](https://www.avito.st/s/openapi/catalog-categories.xml)
+            employee_ids: Идентификаторы сотрудников [ Метод получения идентификаторов сотрудников ](https://developers.avito.ru/api-catalog/accounts-hierarchy/documentation#operation/getEmployeesV1)
             limit: Инструмент пагинации для ограничения количества сущностей в response;
             metrics: Набор доступных показателей, которые должны присутствовать в ответе
             offset: инструмент пагинации или смещение, с которого начинается выборка данных;
-            sort: Сортировка по заданному показателю
+            key: Показатель статистики, по которому нужно отсортировать;
+            order: Порядок сортировки (asc, desc);
         """
         return await self(
             ItemAnalytics(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 date_from=date_from,
                 date_to=date_to,
-                filter=filter,
+                filter=ItemAnalyticsFilter(category_ids=category_ids, employee_ids=employee_ids),
                 grouping=grouping,
                 limit=limit,
                 metrics=metrics,
                 offset=offset,
-                sort=sort,
+                sort=ItemAnalyticsSort(key=key, order=order),
             )
         )
 
@@ -242,7 +247,9 @@ class ItemsFacade(FacadeBase):
         grouping: SpendingsGroupings,
         spending_types: list[str],
         user_id: int | None = None,
-        filter: AccountSpendingsFilter | None = None,
+        category_ids: list[int] | None = None,
+        item_ids: list[int] | None = None,
+        location_ids: list[int] | None = None,
     ) -> SpendingsResponse:
         """Получение статистики расходов профиля via ``POST /stats/v2/accounts/{user_id}/spendings``.
 
@@ -250,7 +257,9 @@ class ItemsFacade(FacadeBase):
             user_id: Идентификатор пользователя (клиента)
             date_from: Дата начала периода статистики расходов в формате YYYY-MM-DD
             date_to: Дата конца периода статистики расходов в формате YYYY-MM-DD
-            filter: Набор ограничений, по которым необходимо отфильтровать расходы
+            category_ids: Идентификаторы категорий [ Справочник идентификаторов категорий ](https://www.avito.st/s/openapi/catalog-categories.xml)
+            item_ids: Идентификаторы объявлений
+            location_ids: Идентификаторы населенных пунктов
             spending_types: Набор необходимых типов расходов
         """
         return await self(
@@ -258,7 +267,9 @@ class ItemsFacade(FacadeBase):
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 date_from=date_from,
                 date_to=date_to,
-                filter=filter,
+                filter=AccountSpendingsFilter(
+                    category_ids=category_ids, item_ids=item_ids, location_ids=location_ids
+                ),
                 grouping=grouping,
                 spending_types=spending_types,
             )

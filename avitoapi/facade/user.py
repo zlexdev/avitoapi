@@ -13,7 +13,7 @@ from ._base import FacadeBase
 class UserFacade(FacadeBase):
     """``Client`` mixin — Информация о пользователе endpoints."""
 
-    async def post_operations_history(
+    async def operations_history(
         self, date_time_from: TZDatetime, date_time_to: TZDatetime
     ) -> ResponseOperationsHistory:
         """Получение истории операций пользователя via ``POST /core/v1/accounts/operations_history/``.
@@ -26,11 +26,11 @@ class UserFacade(FacadeBase):
             PostOperationsHistory(date_time_from=date_time_from, date_time_to=date_time_to)
         )
 
-    async def get_user_info_self(self) -> UserInfoSelf:
+    async def user_info_self(self) -> UserInfoSelf:
         """Получение информации об авторизованном пользователе via ``GET /core/v1/accounts/self``."""
         return await self(GetUserInfoSelf())
 
-    async def get_user_balance(self, user_id: int | None = None) -> Balance:
+    async def user_balance(self, user_id: int | None = None) -> Balance:
         """Получение баланса кошелька пользователя via ``GET /core/v1/accounts/{user_id}/balance/``.
 
         Args:

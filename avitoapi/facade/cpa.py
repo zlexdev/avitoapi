@@ -34,7 +34,7 @@ from ._base import FacadeBase
 class CpaFacade(FacadeBase):
     """``Client`` mixin — CPA Авито endpoints."""
 
-    async def get_call(self, call_id: int) -> None:
+    async def call(self, call_id: int) -> None:
         """Запись звонка (deprecated) via ``GET /cpa/v1/call/{call_id}``.
 
         Args:
@@ -62,9 +62,7 @@ class CpaFacade(FacadeBase):
         """
         return await self(ChatsByTime(date_time_from=date_time_from, limit=limit, offset=offset))
 
-    async def post_create_complaint(
-        self, call_id: int, message: str
-    ) -> PostCreateComplaintResponse:
+    async def create_complaint(self, call_id: int, message: str) -> PostCreateComplaintResponse:
         """Создание жалобы для звонков via ``POST /cpa/v1/createComplaint``.
 
         Args:
@@ -100,7 +98,7 @@ class CpaFacade(FacadeBase):
         """Баланс (deprecated) via ``POST /cpa/v2/balanceInfo``."""
         return await self(BalanceInfoV2())
 
-    async def get_call_by_id_v2(self, call_id: int) -> GetCallByIdV2Response:
+    async def call_by_id_v2(self, call_id: int) -> GetCallByIdV2Response:
         """Звонок via ``POST /cpa/v2/callById``.
 
         Args:
@@ -108,7 +106,7 @@ class CpaFacade(FacadeBase):
         """
         return await self(GetCallByIdV2(call_id=call_id))
 
-    async def get_calls_by_time_v2(
+    async def calls_by_time_v2(
         self, date_time_from: str, limit: int, offset: int | None = None
     ) -> GetCallsByTimeV2Response:
         """Звонки по времени via ``POST /cpa/v2/callsByTime``.

@@ -18,6 +18,8 @@ from ..models.short_term_rental import (
     ParamPriceItemRealty,
     PostBaseParamsDiscount,
     PostBaseParamsFees,
+    PostBaseParamsFeesCleaning,
+    PostBaseParamsFeesPets,
     PostBaseParamsInstant,
     PostBaseParamsRefund,
     PostRealtyPricesResponse,
@@ -56,7 +58,7 @@ class ShortTermRentalFacade(FacadeBase):
             )
         )
 
-    async def get_realty_bookings(
+    async def realty_bookings(
         self,
         item_id: int,
         date_start: date,
@@ -86,7 +88,7 @@ class ShortTermRentalFacade(FacadeBase):
             )
         )
 
-    async def post_realty_prices(
+    async def realty_prices(
         self,
         item_id: int,
         user_id: int | None = None,
@@ -128,17 +130,20 @@ class ShortTermRentalFacade(FacadeBase):
             PutIntervals(skip_error=skip_error, intervals=intervals, item_id=item_id, source=source)
         )
 
-    async def post_base_params(
+    async def base_params(
         self,
         item_id: int,
         discount: list[PostBaseParamsDiscount] | None = None,
         extra_guest_fee: int | None = None,
         extra_guest_threshold: int | None = None,
-        fees: PostBaseParamsFees | None = None,
-        instant: PostBaseParamsInstant | None = None,
+        cleaning: PostBaseParamsFeesCleaning | None = None,
+        pets: PostBaseParamsFeesPets | None = None,
+        active: bool | None = None,
+        max_days: int | None = None,
+        min_days: int | None = None,
         minimal_duration: int | None = None,
         night_price: int | None = None,
-        refund: PostBaseParamsRefund | None = None,
+        days: int | None = None,
     ) -> None:
         """Установка базовых параметров via ``POST /realty/v1/items/{item_id}/base``.
 
@@ -147,11 +152,14 @@ class ShortTermRentalFacade(FacadeBase):
             discount: Скидки при бронировании от threshold ночей
             extra_guest_fee: Доплата за гостя (рубли)
             extra_guest_threshold: Порог гостей, при котором цена - night_price
-            fees: Настройки доплат
-            instant: Параметры мгновенного бронирования
+            cleaning: Доплата за уборку после выезда
+            pets: Доплата за проживание с питомцем
+            active: Включено ли мгновенное бронирование
+            max_days: Максимальное количество дней до заселения для работы МБ (если нет, то без ограничений)
+            min_days: Минимальное количество дней до заселения для работы МБ (если нет, то без ограничений)
             minimal_duration: Минимальная продолжительность (ночи)
             night_price: Цена проживания за ночь (рубли)
-            refund: Параметры возврата
+            days: Количество дней до заезда, когда за отмену налагается штраф
         """
         return await self(
             PostBaseParams(
@@ -159,10 +167,10 @@ class ShortTermRentalFacade(FacadeBase):
                 discount=discount,
                 extra_guest_fee=extra_guest_fee,
                 extra_guest_threshold=extra_guest_threshold,
-                fees=fees,
-                instant=instant,
+                fees=PostBaseParamsFees(cleaning=cleaning, pets=pets),
+                instant=PostBaseParamsInstant(active=active, max_days=max_days, min_days=min_days),
                 minimal_duration=minimal_duration,
                 night_price=night_price,
-                refund=refund,
+                refund=PostBaseParamsRefund(days=days),
             )
         )

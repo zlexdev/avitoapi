@@ -6,12 +6,18 @@ from __future__ import annotations
 from datetime import date
 
 from ..enums.ads import (
+    CampaignPaymentModel,
+    CampaignStatus,
+    CampaignType,
     ContractAction,
     ContractCounterpartyType,
     ContractSubject,
     ContractType,
+    CreativesStatus,
+    GroupsStatus,
     LegalRole,
     LegalType,
+    Paces,
     UserRole,
 )
 from ..methods.ads import (
@@ -47,6 +53,7 @@ from ..models.ads import (
     ContractsFilter,
     CreativesFilter,
     CreteIntermediaryIn,
+    DateRange,
     EmptyResponse,
     GroupsFilter,
     V1CreateAccountContact,
@@ -81,7 +88,8 @@ class AdsFacade(FacadeBase):
     async def v1_create_account(
         self,
         account_id: int,
-        contact: V1CreateAccountContact,
+        name: str,
+        phone: str,
         inn: str,
         legal_address: str,
         legal_type: LegalType,
@@ -95,7 +103,8 @@ class AdsFacade(FacadeBase):
 
         Args:
             actual_address: Фактический адрес. Если не передан, используется legalAddress.
-            contact: Контактное лицо
+            name: ФИО контактного лица
+            phone: Контактный телефон
             inn: ИНН организации или ИП
             kpp: КПП организации
             legal_address: Юридический адрес или адрес регистрации
@@ -107,7 +116,7 @@ class AdsFacade(FacadeBase):
             V1CreateAccount(
                 account_id=account_id,
                 actual_address=actual_address,
-                contact=contact,
+                contact=V1CreateAccountContact(name=name, phone=phone),
                 inn=inn,
                 kpp=kpp,
                 legal_address=legal_address,
@@ -127,16 +136,30 @@ class AdsFacade(FacadeBase):
         return await self(V1AddUser(account_id=account_id, role=role, user_id=user_id))
 
     async def v1_get_advertisers_list(
-        self, account_id: int, filter: AdvertiserFilter, limit: int, page: int
+        self,
+        account_id: int,
+        limit: int,
+        page: int,
+        ids: list[int] | None = None,
+        inns: list[str] | None = None,
+        roles: list[LegalRole] | None = None,
     ) -> V1GetAdvertisersListOut:
         """Получить список рекламодателей по фильтрам via ``POST /ads/v1/account/{account_id}/advertisers``.
 
         Args:
+            ids: Список ID рекламодателей
+            inns: Список ИНН рекламодателей
+            roles: Список ролей рекламодателей
             limit: Количество записей на странице
             page: Номер страницы
         """
         return await self(
-            V1GetAdvertisersList(account_id=account_id, filter=filter, limit=limit, page=page)
+            V1GetAdvertisersList(
+                account_id=account_id,
+                filter=AdvertiserFilter(ids=ids, inns=inns, roles=roles),
+                limit=limit,
+                page=page,
+            )
         )
 
     async def v1_get_account_balance_by_id(self, account_id: int) -> V1GetAccountBalanceByIdOut:
@@ -157,16 +180,53 @@ class AdsFacade(FacadeBase):
         )
 
     async def v1_get_campaigns_list(
-        self, account_id: int, filter: CampaignsFilter, limit: int, page: int
+        self,
+        account_id: int,
+        limit: int,
+        page: int,
+        additional_agreement_ids: list[int] | None = None,
+        advertisers: list[int] | None = None,
+        campaign_types: list[CampaignType] | None = None,
+        contract_ids: list[int] | None = None,
+        created_at: DateRange | None = None,
+        ids: list[int] | None = None,
+        managers: list[int] | None = None,
+        payment_models: list[CampaignPaymentModel] | None = None,
+        statuses: list[CampaignStatus] | None = None,
+        time_frame: DateRange | None = None,
     ) -> V1GetCampaignsListOut:
         """Получить список кампаний по фильтрам via ``POST /ads/v1/account/{account_id}/campaigns``.
 
         Args:
+            additional_agreement_ids: Список ID дополнительных соглашений
+            advertisers: Список ID рекламодателей
+            campaign_types: Список типов кампаний
+            contract_ids: Список ID договоров
+            ids: Список ID кампаний
+            managers: Список ID менеджеров
+            payment_models: Список моделей оплаты
+            statuses: Список статусов кампаний
             limit: Количество записей на странице
             page: Номер страницы
         """
         return await self(
-            V1GetCampaignsList(account_id=account_id, filter=filter, limit=limit, page=page)
+            V1GetCampaignsList(
+                account_id=account_id,
+                filter=CampaignsFilter(
+                    additional_agreement_ids=additional_agreement_ids,
+                    advertisers=advertisers,
+                    campaign_types=campaign_types,
+                    contract_ids=contract_ids,
+                    created_at=created_at,
+                    ids=ids,
+                    managers=managers,
+                    payment_models=payment_models,
+                    statuses=statuses,
+                    time_frame=time_frame,
+                ),
+                limit=limit,
+                page=page,
+            )
         )
 
     async def v1_get_creatives_statistic(
@@ -251,16 +311,32 @@ class AdsFacade(FacadeBase):
         return await self(V1GetChildAccountsWithBalancesList(account_id=account_id))
 
     async def v1_get_contracts_list(
-        self, account_id: int, filter: ContractsFilter, limit: int, page: int
+        self,
+        account_id: int,
+        limit: int,
+        page: int,
+        clients: AdvertiserFilter | None = None,
+        contractors: AdvertiserFilter | None = None,
+        ids: list[int] | None = None,
+        numbers: list[str] | None = None,
     ) -> V1GetContractsListOut:
         """Получить список договоров по фильтрам via ``POST /ads/v1/account/{account_id}/contracts``.
 
         Args:
+            ids: Список ID договоров
+            numbers: Список номеров договоров
             limit: Количество записей на странице
             page: Номер страницы
         """
         return await self(
-            V1GetContractsList(account_id=account_id, filter=filter, limit=limit, page=page)
+            V1GetContractsList(
+                account_id=account_id,
+                filter=ContractsFilter(
+                    clients=clients, contractors=contractors, ids=ids, numbers=numbers
+                ),
+                limit=limit,
+                page=page,
+            )
         )
 
     async def v1_create_advertiser(
@@ -310,7 +386,14 @@ class AdsFacade(FacadeBase):
         type_: ContractType,
         cid: str | None = None,
         date_: date | None = None,
-        intermediary: CreteIntermediaryIn | None = None,
+        actual_address: str | None = None,
+        inn: str | None = None,
+        kpp: str | None = None,
+        legal_address: str | None = None,
+        legal_type: LegalType | None = None,
+        long_name: str | None = None,
+        ogrn: str | None = None,
+        short_name: str | None = None,
         is_funds_allocation_to_principal: bool | None = None,
         is_reporting_required: bool | None = None,
         number: str | None = None,
@@ -324,6 +407,13 @@ class AdsFacade(FacadeBase):
             advertiser_id: Id рекламодателя. Указываем только рекламодателей которые не являются аккаунтом. Если рекламодатель и аккаунт одно и тоже ЮЛ, договор создавать не надо
             cid: CID внешнего договора, заполняется только для type = external.
             date_: Дата в формате YYYY-MM-DD. Можно не передавать только для type = external.
+            actual_address: Почтовый адрес
+            inn: ИНН ЮЛ/ИП
+            kpp: КПП ЮЛ, для ИП не передаем
+            legal_address: Юридически адрес
+            long_name: Полное имя ЮЛ/ИП
+            ogrn: ОГРНИП для ИП, ОРГН для ЮЛ
+            short_name: Короткое имя ЮЛ/ИП
             is_funds_allocation_to_principal: Денежные средства на размещение рекламы идут в сторону принципала
             is_reporting_required: На исполнителе лежит обязанность отчитываться по креативам
             number: Номер договора. Можно не передавать только для type = external.
@@ -336,7 +426,16 @@ class AdsFacade(FacadeBase):
                 cid=cid,
                 date_=date_,
                 description=description,
-                intermediary=intermediary,
+                intermediary=CreteIntermediaryIn(
+                    actual_address=actual_address,
+                    inn=inn,
+                    kpp=kpp,
+                    legal_address=legal_address,
+                    legal_type=legal_type,
+                    long_name=long_name,
+                    ogrn=ogrn,
+                    short_name=short_name,
+                ),
                 is_funds_allocation_to_principal=is_funds_allocation_to_principal,
                 is_reporting_required=is_reporting_required,
                 number=number,
@@ -365,16 +464,51 @@ class AdsFacade(FacadeBase):
         )
 
     async def v1_get_creatives_list(
-        self, account_id: int, filter: CreativesFilter, limit: int, page: int
+        self,
+        account_id: int,
+        limit: int,
+        page: int,
+        advertisers: list[int] | None = None,
+        campaign_ids: list[int] | None = None,
+        campaign_types: list[CampaignType] | None = None,
+        group_ids: list[int] | None = None,
+        ids: list[int] | None = None,
+        managers: list[int] | None = None,
+        payment_models: list[CampaignPaymentModel] | None = None,
+        statuses: list[CreativesStatus] | None = None,
+        time_frame: DateRange | None = None,
     ) -> V1GetCreativesListOut:
         """Получить список креативов по фильтрам via ``POST /ads/v1/account/{account_id}/creatives``.
 
         Args:
+            advertisers: Список ID рекламодателей
+            campaign_ids: Список ID кампаний
+            campaign_types: Список типов кампаний
+            group_ids: Список ID групп
+            ids: Список ID креативов
+            managers: Список ID менеджеров
+            payment_models: Список моделей оплаты
+            statuses: Список статусов креативов
             limit: Количество записей на странице
             page: Номер страницы
         """
         return await self(
-            V1GetCreativesList(account_id=account_id, filter=filter, limit=limit, page=page)
+            V1GetCreativesList(
+                account_id=account_id,
+                filter=CreativesFilter(
+                    advertisers=advertisers,
+                    campaign_ids=campaign_ids,
+                    campaign_types=campaign_types,
+                    group_ids=group_ids,
+                    ids=ids,
+                    managers=managers,
+                    payment_models=payment_models,
+                    statuses=statuses,
+                    time_frame=time_frame,
+                ),
+                limit=limit,
+                page=page,
+            )
         )
 
     async def v1_delete_user(self, account_id: int, user_id: int | None = None) -> EmptyResponse:
@@ -416,16 +550,48 @@ class AdsFacade(FacadeBase):
         return await self(V1ChangePrice(account_id=account_id, group_id=group_id, price=price))
 
     async def v1_get_groups_list(
-        self, account_id: int, filter: GroupsFilter, limit: int, page: int
+        self,
+        account_id: int,
+        limit: int,
+        page: int,
+        advertisers: list[int] | None = None,
+        campaign_ids: list[int] | None = None,
+        ids: list[int] | None = None,
+        managers: list[int] | None = None,
+        paces: list[Paces] | None = None,
+        payment_models: list[CampaignPaymentModel] | None = None,
+        statuses: list[GroupsStatus] | None = None,
+        time_frame: DateRange | None = None,
     ) -> V1GetGroupsListOut:
         """Получить список групп по фильтрам via ``POST /ads/v1/account/{account_id}/groups``.
 
         Args:
+            advertisers: Список ID рекламодателей
+            campaign_ids: Список ID кампаний
+            ids: Список ID групп
+            managers: Список ID менеджеров
+            paces: Скорости показов
+            payment_models: Список моделей оплаты
+            statuses: Список статусов групп
             limit: Количество записей на странице
             page: Номер страницы
         """
         return await self(
-            V1GetGroupsList(account_id=account_id, filter=filter, limit=limit, page=page)
+            V1GetGroupsList(
+                account_id=account_id,
+                filter=GroupsFilter(
+                    advertisers=advertisers,
+                    campaign_ids=campaign_ids,
+                    ids=ids,
+                    managers=managers,
+                    paces=paces,
+                    payment_models=payment_models,
+                    statuses=statuses,
+                    time_frame=time_frame,
+                ),
+                limit=limit,
+                page=page,
+            )
         )
 
     async def v1_set_user_role(

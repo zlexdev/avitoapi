@@ -57,6 +57,16 @@ from ..models.autoteka import (
     ValuationBySpecificationLocation,
     ValuationBySpecificationResponseBodyAutoteka,
     ValuationBySpecificationSpecification,
+    ValuationBySpecificationSpecificationBodyType,
+    ValuationBySpecificationSpecificationBrand,
+    ValuationBySpecificationSpecificationColor,
+    ValuationBySpecificationSpecificationComplectation,
+    ValuationBySpecificationSpecificationDoorsCount,
+    ValuationBySpecificationSpecificationGeneration,
+    ValuationBySpecificationSpecificationModel,
+    ValuationBySpecificationSpecificationModification,
+    ValuationBySpecificationSpecificationOwnersCount,
+    ValuationBySpecificationSpecificationYear,
 )
 from ._base import FacadeBase
 
@@ -74,7 +84,7 @@ class AutotekaFacade(FacadeBase):
         """
         return await self(CatalogsResolve(fields_value_ids=fields_value_ids))
 
-    async def get_leads(
+    async def leads(
         self, subscription_id: int, last_id: int | None = None, limit: int | None = None
     ) -> ResponseGetLeads:
         """Получение событий сервиса Сигнал via ``POST /autoteka/v1/get-leads/``.
@@ -129,11 +139,11 @@ class AutotekaFacade(FacadeBase):
             )
         )
 
-    async def get_active_package(self) -> GetActivePackageResponseBodyAutoteka:
+    async def active_package(self) -> GetActivePackageResponseBodyAutoteka:
         """Запрос остатка отчётов пользователя via ``GET /autoteka/v1/packages/active_package``."""
         return await self(GetActivePackage())
 
-    async def post_preview_by_vin(self, vin: str) -> RequestPreviewResponseBodyAutoteka:
+    async def preview_by_vin(self, vin: str) -> RequestPreviewResponseBodyAutoteka:
         """Превью по VIN или номеру кузова via ``POST /autoteka/v1/previews``.
 
         Args:
@@ -141,7 +151,7 @@ class AutotekaFacade(FacadeBase):
         """
         return await self(PostPreviewByVin(vin=vin))
 
-    async def get_preview(self, preview_id: int) -> GetPreviewResponseBodyAutoteka:
+    async def preview(self, preview_id: int) -> GetPreviewResponseBodyAutoteka:
         """Получение превью по его ID via ``GET /autoteka/v1/previews/{preview_id}``.
 
         Args:
@@ -149,7 +159,7 @@ class AutotekaFacade(FacadeBase):
         """
         return await self(GetPreview(preview_id=preview_id))
 
-    async def post_report(self, preview_id: int) -> CreateReportResponseBodyAutoteka:
+    async def report(self, preview_id: int) -> CreateReportResponseBodyAutoteka:
         """Отчет по превью via ``POST /autoteka/v1/reports``.
 
         Args:
@@ -157,7 +167,7 @@ class AutotekaFacade(FacadeBase):
         """
         return await self(PostReport(preview_id=preview_id))
 
-    async def post_report_by_vehicle_id(self, vehicle_id: str) -> CreateReportResponseBodyAutoteka:
+    async def report_by_vehicle_id(self, vehicle_id: str) -> CreateReportResponseBodyAutoteka:
         """Отчет по идентификатору авто (vin/frame) via ``POST /autoteka/v1/reports-by-vehicle-id``.
 
         Args:
@@ -165,7 +175,7 @@ class AutotekaFacade(FacadeBase):
         """
         return await self(PostReportByVehicleId(vehicle_id=vehicle_id))
 
-    async def get_report_list(
+    async def report_list(
         self, last_report_id: int | None = None, limit: int | None = None, vin: str | None = None
     ) -> GetReportsListResponseDataAutoteka:
         """Получение списка отчётов via ``GET /autoteka/v1/reports/list/``.
@@ -177,7 +187,7 @@ class AutotekaFacade(FacadeBase):
         """
         return await self(GetReportList(last_report_id=last_report_id, limit=limit, vin=vin))
 
-    async def get_report2(self, report_id: int) -> GetReportAsync:
+    async def report2(self, report_id: int) -> GetReportAsync:
         """Получение отчета по его ID via ``GET /autoteka/v1/reports/{report_id}``.
 
         Args:
@@ -185,13 +195,13 @@ class AutotekaFacade(FacadeBase):
         """
         return await self(GetReport2(report_id=report_id))
 
-    async def post_preview_by_external_item(
+    async def preview_by_external_item(
         self, item_id: str | None = None, site: str | None = None
     ) -> RequestPreviewResponseBodyAutoteka:
         """Превью по ID объявления другой площадки via ``POST /autoteka/v1/request-preview-by-external-item``."""
         return await self(PostPreviewByExternalItem(item_id=item_id, site=site))
 
-    async def post_preview_by_item_id(self, item_id: int) -> RequestPreviewResponseBodyAutoteka:
+    async def preview_by_item_id(self, item_id: int) -> RequestPreviewResponseBodyAutoteka:
         """Превью по ID объявления Авито via ``POST /autoteka/v1/request-preview-by-item-id``.
 
         Args:
@@ -199,9 +209,7 @@ class AutotekaFacade(FacadeBase):
         """
         return await self(PostPreviewByItemId(item_id=item_id))
 
-    async def post_preview_by_reg_number(
-        self, reg_number: str
-    ) -> RequestPreviewResponseBodyAutoteka:
+    async def preview_by_reg_number(self, reg_number: str) -> RequestPreviewResponseBodyAutoteka:
         """Превью по государственному номеру via ``POST /autoteka/v1/request-preview-by-regnumber``.
 
         Args:
@@ -255,7 +263,7 @@ class AutotekaFacade(FacadeBase):
         """
         return await self(SpecificationGetById(specification_id=specification_id))
 
-    async def post_sync_create_report_by_reg_number(self, reg_number: str) -> GetReport:
+    async def sync_create_report_by_reg_number(self, reg_number: str) -> GetReport:
         """Синхронное создание отчета по ГРЗ via ``POST /autoteka/v1/sync/create-by-regnumber``.
 
         Args:
@@ -263,7 +271,7 @@ class AutotekaFacade(FacadeBase):
         """
         return await self(PostSyncCreateReportByRegNumber(reg_number=reg_number))
 
-    async def post_sync_create_report_by_vin(self, vin: str) -> GetReport:
+    async def sync_create_report_by_vin(self, vin: str) -> GetReport:
         """Синхронное создание отчёта по VIN или номеру кузова via ``POST /autoteka/v1/sync/create-by-vin``.
 
         Args:
@@ -271,7 +279,7 @@ class AutotekaFacade(FacadeBase):
         """
         return await self(PostSyncCreateReportByVin(vin=vin))
 
-    async def post_teaser(self, vehicle_id: str) -> CreateTeaserResponseBodyAutoteka:
+    async def teaser(self, vehicle_id: str) -> CreateTeaserResponseBodyAutoteka:
         """Тизер по идентификатору авто (vin/frame) via ``POST /autoteka/v1/teasers``.
 
         Args:
@@ -279,7 +287,7 @@ class AutotekaFacade(FacadeBase):
         """
         return await self(PostTeaser(vehicle_id=vehicle_id))
 
-    async def get_teaser(self, teaser_id: int) -> TeaserResponse:
+    async def teaser_autoteka(self, teaser_id: int) -> TeaserResponse:
         """Получение тизера по ID тизера via ``GET /autoteka/v1/teasers/{teaser_id}``.
 
         Args:
@@ -289,27 +297,58 @@ class AutotekaFacade(FacadeBase):
 
     async def valuation_by_specification(
         self,
-        specification: ValuationBySpecificationSpecification,
-        location: ValuationBySpecificationLocation | None = None,
+        lat: float,
+        long: float,
+        brand: ValuationBySpecificationSpecificationBrand,
+        generation: ValuationBySpecificationSpecificationGeneration,
+        model: ValuationBySpecificationSpecificationModel,
+        modification: ValuationBySpecificationSpecificationModification,
+        owners_count: ValuationBySpecificationSpecificationOwnersCount,
+        year: ValuationBySpecificationSpecificationYear,
         mileage: int | None = None,
+        body_type: ValuationBySpecificationSpecificationBodyType | None = None,
+        color: ValuationBySpecificationSpecificationColor | None = None,
+        complectation: ValuationBySpecificationSpecificationComplectation | None = None,
+        doors_count: ValuationBySpecificationSpecificationDoorsCount | None = None,
         vehicle_id: str | None = None,
     ) -> ValuationBySpecificationResponseBodyAutoteka:
         """Получение оценки по параметрам via ``POST /autoteka/v1/valuation/by-specification``.
 
         Args:
             mileage: Пробег в км
+            body_type: Тип ТС
+            brand: Марка
+            color: Цвет
+            complectation: Комплектация
+            doors_count: Количество дверей
+            generation: Поколение Для оценки нового авто, параметр является необязательным, в таком случае возможно заполнение `{\"label\": \"\", \"valueId\": 0}`
+            model: Модель
+            modification: Модификация Для оценки нового авто, параметр является необязательным, в таком случае возможно заполнение `{\"label\": \"\", \"valueId\": 0}`
+            owners_count: Количество владельцев Для оценки нового авто, параметр является необязательным, в таком случае возможно заполнение `{\"label\": \"\", \"valueId\": 0}`
+            year: Год выпуска
             vehicle_id: Идентификатор авто (vin/frame).
         """
         return await self(
             ValuationBySpecification(
-                location=location,
+                location=ValuationBySpecificationLocation(lat=lat, long=long),
                 mileage=mileage,
-                specification=specification,
+                specification=ValuationBySpecificationSpecification(
+                    body_type=body_type,
+                    brand=brand,
+                    color=color,
+                    complectation=complectation,
+                    doors_count=doors_count,
+                    generation=generation,
+                    model=model,
+                    modification=modification,
+                    owners_count=owners_count,
+                    year=year,
+                ),
                 vehicle_id=vehicle_id,
             )
         )
 
-    async def get_access_token_autoteka(
+    async def access_token_autoteka(
         self, grant_type: str, client_id: str, client_secret: str
     ) -> GetAccessTokenResponse:
         """Получение access token via ``POST /token``.

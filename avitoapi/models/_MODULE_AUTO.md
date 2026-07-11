@@ -2777,13 +2777,23 @@ cls AddBlacklistRequestBodyUsersContext(AvitoObject)
 
 cls AuthError(AvitoObject)
 
+cls AuthErrorError(AvitoObject)
+
 cls BadRequestError(AvitoObject)
+
+cls BadRequestErrorError(AvitoObject)
 
 cls ForbiddenError(AvitoObject)
 
+cls ForbiddenErrorError(AvitoObject)
+
 cls NotFoundError(AvitoObject)
 
+cls NotFoundErrorError(AvitoObject)
+
 cls PurchasingError(AvitoObject)
+
+cls PurchasingErrorError(AvitoObject)
 
 cls SendImageMessageRequestBody(AvitoObject)
 
@@ -2793,7 +2803,11 @@ cls SendMessageRequestBodyMessage(AvitoObject)
 
 cls ServiceError(AvitoObject)
 
+cls ServiceErrorError(AvitoObject)
+
 cls ServiceUnavailableError(AvitoObject)
+
+cls ServiceUnavailableErrorError(AvitoObject)
 
 cls ValidatingError(AvitoObject)
 

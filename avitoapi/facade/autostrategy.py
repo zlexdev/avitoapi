@@ -23,6 +23,7 @@ from ..models.autostrategy import (
     GetAutostrategyBudgetResponse,
     GetAutostrategyCampaignInfoResponse,
     GetAutostrategyCampaignsFilter,
+    GetAutostrategyCampaignsFilterByUpdateTime,
     GetAutostrategyCampaignsOrderBy,
     GetAutostrategyStatResponse,
     StopAutostrategyCampaignResponse,
@@ -34,7 +35,7 @@ from ._base import FacadeBase
 class AutostrategyFacade(FacadeBase):
     """``Client`` mixin — Автостратегия endpoints."""
 
-    async def get_autostrategy_budget(
+    async def autostrategy_budget(
         self,
         campaign_type: GetAutostrategyBudgetCampaignType,
         finish_time: TZDatetime | None = None,
@@ -139,7 +140,7 @@ class AutostrategyFacade(FacadeBase):
             )
         )
 
-    async def get_autostrategy_campaign_info(
+    async def autostrategy_campaign_info(
         self, campaign_id: int
     ) -> GetAutostrategyCampaignInfoResponse:
         """Получение полной информации о кампании via ``POST /autostrategy/v1/campaign/info``.
@@ -160,10 +161,10 @@ class AutostrategyFacade(FacadeBase):
         """
         return await self(StopAutostrategyCampaign(campaign_id=campaign_id, version=version))
 
-    async def get_autostrategy_campaigns(
+    async def autostrategy_campaigns(
         self,
         limit: int,
-        filter: GetAutostrategyCampaignsFilter | None = None,
+        by_update_time: GetAutostrategyCampaignsFilterByUpdateTime | None = None,
         offset: int | None = None,
         order_by: list[GetAutostrategyCampaignsOrderBy] | None = None,
         status_id: list[int] | None = None,
@@ -171,7 +172,7 @@ class AutostrategyFacade(FacadeBase):
         """Получение списка кампаний via ``POST /autostrategy/v1/campaigns``.
 
         Args:
-            filter: Фильтр
+            by_update_time: Фильтрация кампаний по дате обновления
             limit: Ограничение на выборку
             offset: Смещение выборки, по умолчанию равно 0
             order_by: Поля, по которым будет произведена сортировка, и тип сортировки
@@ -179,11 +180,15 @@ class AutostrategyFacade(FacadeBase):
         """
         return await self(
             GetAutostrategyCampaigns(
-                filter=filter, limit=limit, offset=offset, order_by=order_by, status_id=status_id
+                filter=GetAutostrategyCampaignsFilter(by_update_time=by_update_time),
+                limit=limit,
+                offset=offset,
+                order_by=order_by,
+                status_id=status_id,
             )
         )
 
-    async def get_autostrategy_stat(self, campaign_id: int) -> GetAutostrategyStatResponse:
+    async def autostrategy_stat(self, campaign_id: int) -> GetAutostrategyStatResponse:
         """Получение статистики по кампании via ``POST /autostrategy/v1/stat``.
 
         Args:

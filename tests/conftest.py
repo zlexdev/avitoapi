@@ -126,7 +126,7 @@ async def client(
     """A fully-wired Client ready for ``async with`` usage.
 
     Pre-registers the OAuth token endpoint and the accounts-self fixture so
-    most tests can just ``await client.get_user_info_self()`` without extra setup.
+    most tests can just ``await client.user_info_self()`` without extra setup.
     """
     fake_session.register_route("POST", "/token", body=oauth_token_payload)
     fake_session.register_route("GET", "/token/", body=oauth_token_payload)

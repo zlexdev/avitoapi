@@ -5,6 +5,7 @@ from __future__ import annotations
 from . import channels, events, exceptions, fanout, idempotency, routers
 from .client import Client
 from .config import ClientConfig
+from .dispatcher import Dispatcher, make_dispatcher
 from .exceptions import (
     AuthError,
     ForbiddenError,
@@ -41,6 +42,7 @@ __all__ = [
     "Client",
     "ClientConfig",
     "Currency",
+    "Dispatcher",
     "ForbiddenError",
     "HTTPError",
     "MethodNotBoundError",
@@ -69,5 +71,6 @@ __all__ = [
     "exceptions",
     "fanout",
     "idempotency",
+    "make_dispatcher",
     "routers",
 ]

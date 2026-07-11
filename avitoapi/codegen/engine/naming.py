@@ -58,6 +58,30 @@ def class_name_for_operation(operation_id: str) -> str:
     return pascal(operation_id)
 
 
+# Noise HTTP verbs stripped from facade method names (``post_send_message`` → ``send_message``).
+# ``delete_``/``put_``/``patch_`` are kept — the verb is semantically load-bearing there
+# (``delete_message`` must not collapse to ``message``).
+_STRIP_VERB_PREFIXES = ("get_", "post_")
+
+
+def facade_method_name(class_name: str) -> str:
+    """Ergonomic facade name: ``snake(class_name)`` with a noise verb prefix dropped.
+
+    ``PostSendMessage`` → ``send_message``; ``GetMessagesV3`` → ``messages_v3``.
+    Kept intact when stripping would leave an empty or digit-leading name.
+    Global uniqueness is enforced afterwards by :mod:`collisions`.
+    """
+
+    name = snake(class_name)
+    for verb in _STRIP_VERB_PREFIXES:
+        if name.startswith(verb):
+            stripped = name[len(verb) :]
+            if stripped and not stripped[0].isdigit():
+                return stripped
+            break
+    return name
+
+
 def enum_class_name(owner: str, field: str) -> str:
     """StrEnum name for an inline enum on ``owner.field``."""
 

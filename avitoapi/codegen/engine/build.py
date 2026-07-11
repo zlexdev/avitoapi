@@ -109,7 +109,7 @@ def build_domain(domain: Domain) -> GeneratedDomain:
         gen.methods.append(
             MethodSpec(
                 class_name=op.class_name,
-                method_name=naming.snake(op.class_name),
+                method_name=naming.facade_method_name(op.class_name),
                 operation_id=op.operation_id,
                 base=base,
                 generic_arg=generic,

@@ -1,9 +1,9 @@
-"""Unit tests for ``avitoapi.Client`` — facade, lifecycle, ``__call__``, ``get_user_info_self``.
+"""Unit tests for ``avitoapi.Client`` — facade, lifecycle, ``__call__``, ``user_info_self``.
 
 Coverage:
 - ``Client.__call__(GetUserInfoSelf())`` returns a bound ``UserInfoSelf`` via the funnel.
 - ``async with Client(...)`` opens + closes the session exactly once.
-- ``client.get_user_info_self()`` returns ``UserInfoSelf`` with ``account._client is client``.
+- ``client.user_info_self()`` returns ``UserInfoSelf`` with ``account._client is client``.
 - 403 + token_expired during a call triggers re-auth + retry via the injector.
 """
 
@@ -42,7 +42,7 @@ async def test_get_self_returns_account_with_expected_fields(
     client: Client,
     accounts_self_payload: dict[str, Any],
 ) -> None:
-    account = await client.get_user_info_self()
+    account = await client.user_info_self()
 
     assert account.id == accounts_self_payload["id"]
     assert account.name == accounts_self_payload["name"]
@@ -54,7 +54,7 @@ async def test_get_self_returns_account_with_expected_fields(
 async def test_get_self_returns_account_bound_to_client(
     client: Client,
 ) -> None:
-    account = await client.get_user_info_self()
+    account = await client.user_info_self()
 
     assert account._client is client
 
@@ -129,7 +129,7 @@ async def test_client_reauths_and_retries_when_call_returns_token_expired_403(
     fake.request_middlewares.register(injector)
 
     async with Client(config=client_config, session=fake, storage=storage) as client:
-        account = await client.get_user_info_self()
+        account = await client.user_info_self()
 
     assert isinstance(account, UserInfoSelf)
     assert account.id == 12345

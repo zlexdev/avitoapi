@@ -11,6 +11,6 @@ from ._base import FacadeBase
 class TariffFacade(FacadeBase):
     """``Client`` mixin — Тарифы endpoints."""
 
-    async def get_tariff_info(self) -> TariffInfo:
+    async def tariff_info(self) -> TariffInfo:
         """Информация по тарифу via ``GET /tariff/info/1``."""
         return await self(GetTariffInfo())
