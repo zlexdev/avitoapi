@@ -84,7 +84,7 @@ class AutotekaFacade(FacadeBase):
         """
         return await self.execute(CatalogsResolve(fields_value_ids=fields_value_ids))
 
-    async def leads(
+    async def get_leads(
         self, subscription_id: int, last_id: int | None = None, limit: int | None = None
     ) -> ResponseGetLeads:
         """Получение событий сервиса Сигнал via ``POST /autoteka/v1/get-leads/``.
@@ -141,7 +141,7 @@ class AutotekaFacade(FacadeBase):
             )
         )
 
-    async def active_package(self) -> GetActivePackageResponseBodyAutoteka:
+    async def get_active_package(self) -> GetActivePackageResponseBodyAutoteka:
         """Запрос остатка отчётов пользователя via ``GET /autoteka/v1/packages/active_package``."""
         return await self.execute(GetActivePackage())
 
@@ -153,7 +153,7 @@ class AutotekaFacade(FacadeBase):
         """
         return await self.execute(PostPreviewByVin(vin=vin))
 
-    async def preview(self, preview_id: int) -> GetPreviewResponseBodyAutoteka:
+    async def get_preview(self, preview_id: int) -> GetPreviewResponseBodyAutoteka:
         """Получение превью по его ID via ``GET /autoteka/v1/previews/{preview_id}``.
 
         Args:
@@ -177,7 +177,7 @@ class AutotekaFacade(FacadeBase):
         """
         return await self.execute(PostReportByVehicleId(vehicle_id=vehicle_id))
 
-    async def report_list(
+    async def get_report_list(
         self, last_report_id: int | None = None, limit: int | None = None, vin: str | None = None
     ) -> GetReportsListResponseDataAutoteka:
         """Получение списка отчётов via ``GET /autoteka/v1/reports/list/``.
@@ -191,7 +191,7 @@ class AutotekaFacade(FacadeBase):
             GetReportList(last_report_id=last_report_id, limit=limit, vin=vin)
         )
 
-    async def report2(self, report_id: int) -> GetReportAsync:
+    async def get_report2(self, report_id: int) -> GetReportAsync:
         """Получение отчета по его ID via ``GET /autoteka/v1/reports/{report_id}``.
 
         Args:
@@ -291,7 +291,7 @@ class AutotekaFacade(FacadeBase):
         """
         return await self.execute(PostTeaser(vehicle_id=vehicle_id))
 
-    async def teaser_autoteka(self, teaser_id: int) -> TeaserResponse:
+    async def get_teaser(self, teaser_id: int) -> TeaserResponse:
         """Получение тизера по ID тизера via ``GET /autoteka/v1/teasers/{teaser_id}``.
 
         Args:
@@ -352,7 +352,7 @@ class AutotekaFacade(FacadeBase):
             )
         )
 
-    async def access_token_autoteka(
+    async def get_access_token_autoteka(
         self, grant_type: str, client_id: str, client_secret: str
     ) -> GetAccessTokenResponse:
         """Получение access token via ``POST /token``.

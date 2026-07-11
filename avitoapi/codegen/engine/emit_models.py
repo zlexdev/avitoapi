@@ -17,7 +17,7 @@ def emit(gen: GeneratedDomain) -> str:
     text = _scan_text(gen)
     out = [
         render.GENERATED_HEADER,
-        render.module_doc(gen.title, "domain models"),
+        render.module_doc(gen.title, "domain models", see=gen.docs_url),
         "\nfrom __future__ import annotations\n",
         _import_block(gen, text),
         "\n",
@@ -85,7 +85,6 @@ def _render_model(gen: GeneratedDomain, model: ModelSpec) -> str:
         model.doc or f"{model.name} response model.",
         "Attributes",
         [(f.name, f.description) for f in model.fields],
-        note=f"See: {gen.docs_url}",
     )
     lines = [f"class {model.name}(AvitoObject):", doc.rstrip("\n")]
     for f in model.fields:

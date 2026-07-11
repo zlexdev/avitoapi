@@ -254,7 +254,7 @@ from avitoapi import (
 )
 
 try:
-    await client.user_info_self()
+    await client.get_user_info_self()
 except ProxyBanned as exc:
     log.warning("proxy banned", url=exc.proxy_url, count=exc.failure_count)
 except ProxyExhausted:

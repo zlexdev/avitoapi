@@ -11,7 +11,9 @@ from ._base import FacadeBase
 class AuctionFacade(FacadeBase):
     """``Client`` mixin — CPA-аукцион endpoints."""
 
-    async def user_bids(self, from_item_id: int = 0, batch_size: int = 200) -> GetUserBidsResponse:
+    async def get_user_bids(
+        self, from_item_id: int = 0, batch_size: int = 200
+    ) -> GetUserBidsResponse:
         """Получение информации о действующих и доступных ставках via ``GET /auction/1/bids``.
 
         Args:

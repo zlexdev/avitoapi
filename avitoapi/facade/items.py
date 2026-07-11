@@ -88,7 +88,7 @@ class ItemsFacade(FacadeBase):
             )
         )
 
-    async def item_info(self, item_id: int, user_id: int | None = None) -> ItemInfoAvito:
+    async def get_item_info(self, item_id: int, user_id: int | None = None) -> ItemInfoAvito:
         """Получение информации по объявлению via ``GET /core/v1/accounts/{user_id}/items/{item_id}/``.
 
         Args:
@@ -119,7 +119,7 @@ class ItemsFacade(FacadeBase):
             )
         )
 
-    def items_info(
+    def get_items_info(
         self,
         status: GetItemsInfoStatus = "active",
         updated_at_from: str | None = None,

@@ -58,7 +58,7 @@ class ShortTermRentalFacade(FacadeBase):
             )
         )
 
-    async def realty_bookings(
+    async def get_realty_bookings(
         self,
         item_id: int,
         date_start: date,

@@ -11,11 +11,11 @@ from ._base import FacadeBase
 class CalltrackingFacade(FacadeBase):
     """``Client`` mixin — CallTracking[КТ] endpoints."""
 
-    async def call_by_id(self, call_id: int) -> GetCallByIdResponse:
+    async def get_call_by_id(self, call_id: int) -> GetCallByIdResponse:
         """Звонок по идентификатору via ``POST /calltracking/v1/getCallById/``."""
         return await self.execute(GetCallById(call_id=call_id))
 
-    async def calls(
+    async def get_calls(
         self, date_time_from: str, limit: int, offset: int, date_time_to: str | None = None
     ) -> GetCallsResponse:
         """Звонки по времени via ``POST /calltracking/v1/getCalls/``.
@@ -32,7 +32,7 @@ class CalltrackingFacade(FacadeBase):
             )
         )
 
-    async def record_by_call_id(self, call_id: int) -> None:
+    async def get_record_by_call_id(self, call_id: int) -> None:
         """Получение аудиозаписи звонка по идентификатору via ``GET /calltracking/v1/getRecordByCallId/``.
 
         Args:

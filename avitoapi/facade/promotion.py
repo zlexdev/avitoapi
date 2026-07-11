@@ -30,7 +30,7 @@ from ._base import FacadeBase
 class PromotionFacade(FacadeBase):
     """``Client`` mixin — Продвижение endpoints."""
 
-    async def bbip_forecasts_by_items_v1(
+    async def get_bbip_forecasts_by_items_v1(
         self, items: list[BbipForecastRequestByItemV1]
     ) -> GetBbipForecastByItemsV1Resp:
         """BBIP. Прогноз продвижения via ``POST /promotion/v1/items/services/bbip/forecasts/get``.
@@ -50,7 +50,7 @@ class PromotionFacade(FacadeBase):
         """
         return await self.execute(CreateBbipOrderForItemsV1(items=items))
 
-    async def bbip_suggests_by_items_v1(
+    async def get_bbip_suggests_by_items_v1(
         self, item_ids: list[int] | None = None
     ) -> GetBbipSuggestsV1Resp:
         """BBIP. Варианты бюджета продвижения via ``POST /promotion/v1/items/services/bbip/suggests/get``.
@@ -60,11 +60,11 @@ class PromotionFacade(FacadeBase):
         """
         return await self.execute(GetBbipSuggestsByItemsV1(item_ids=item_ids))
 
-    async def dict_of_services_v1(self) -> GetDictOfServicesV1Resp:
+    async def get_dict_of_services_v1(self) -> GetDictOfServicesV1Resp:
         """Словарь типов услуг продвижения via ``POST /promotion/v1/items/services/dict``."""
         return await self.execute(GetDictOfServicesV1())
 
-    async def services_by_items_v1(
+    async def get_services_by_items_v1(
         self, item_ids: list[int] | None = None
     ) -> GetServicesByItemsV1Resp:
         """Список услуг продвижения via ``POST /promotion/v1/items/services/get``.
@@ -89,7 +89,7 @@ class PromotionFacade(FacadeBase):
             )
         )
 
-    async def order_status_v1(self, order_id: str | None = None) -> GetOrderStatusV1Resp:
+    async def get_order_status_v1(self, order_id: str | None = None) -> GetOrderStatusV1Resp:
         """Статус заявки via ``POST /promotion/v1/items/services/orders/status``.
 
         Args:

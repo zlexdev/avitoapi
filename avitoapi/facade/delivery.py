@@ -386,7 +386,7 @@ class DeliveryFacade(FacadeBase):
         """Запрет приёма посылки от отправителя via ``POST /delivery-sandbox/prohibitOrderAcceptance``."""
         return await self.execute(ProhibitOrderAcceptance(order_id=order_id))
 
-    async def sorting_center(self, delivery_providers: str) -> SortingCenterGet:
+    async def get_sorting_center(self, delivery_providers: str) -> SortingCenterGet:
         """Получить список сортировочных центров via ``GET /delivery-sandbox/sorting-center``.
 
         Args:
@@ -460,7 +460,7 @@ class DeliveryFacade(FacadeBase):
             )
         )
 
-    async def task(self, task_id: int) -> GetTaskReply:
+    async def get_task(self, task_id: int) -> GetTaskReply:
         """Получение информации по задаче via ``GET /delivery-sandbox/tasks/{task_id}``."""
         return await self.execute(GetTask(task_id=task_id))
 

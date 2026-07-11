@@ -34,11 +34,11 @@ class AccountsHierarchyFacade(FacadeBase):
         """Получение информации о статусе пользователя в ИА via ``GET /checkAhUserV2``."""
         return await self.execute(CheckAhUserV2())
 
-    async def ah_info_v1(self) -> GetAhInfoV1Response:
+    async def get_ah_info_v1(self) -> GetAhInfoV1Response:
         """Получение полной информации о статусе пользователя в ИА via ``GET /getAhInfoV1``."""
         return await self.execute(GetAhInfoV1())
 
-    async def employees_v1(self) -> GetEmployeesResult:
+    async def get_employees_v1(self) -> GetEmployeesResult:
         """Получение списка сотрудников иерархии via ``GET /getEmployeesV1``."""
         return await self.execute(GetEmployeesV1())
 

@@ -135,7 +135,7 @@ class OrderManagementFacade(FacadeBase):
             )
         )
 
-    async def courier_delivery_range(
+    async def get_courier_delivery_range(
         self, order_id: str, address: str | None = None
     ) -> GetDeliveryCourierConfirmationResponse:
         """Метод получения доступных временных промежутков приезда курьера via ``GET /order-management/1/order/getCourierDeliveryRange``.
@@ -195,7 +195,7 @@ class OrderManagementFacade(FacadeBase):
             SetOrderTrackingNumber(order_id=order_id, tracking_number=tracking_number)
         )
 
-    async def orders(
+    async def get_orders(
         self,
         ids: list[str] | None = None,
         statuses: list[Status] | None = None,

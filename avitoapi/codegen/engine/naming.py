@@ -58,16 +58,16 @@ def class_name_for_operation(operation_id: str) -> str:
     return pascal(operation_id)
 
 
-# Noise HTTP verbs stripped from facade method names (``post_send_message`` → ``send_message``).
-# ``delete_``/``put_``/``patch_`` are kept — the verb is semantically load-bearing there
-# (``delete_message`` must not collapse to ``message``).
-_STRIP_VERB_PREFIXES = ("get_", "post_")
+# Only ``post_`` is stripped from method names (``post_send_message`` → ``send_message``).
+# ``get_`` is kept (reads as an accessor and disambiguates read vs write); ``delete_``/
+# ``put_``/``patch_`` stay too — the verb is semantically load-bearing there.
+_STRIP_VERB_PREFIXES = ("post_",)
 
 
 def facade_method_name(class_name: str) -> str:
-    """Ergonomic facade name: ``snake(class_name)`` with a noise verb prefix dropped.
+    """Ergonomic facade name: ``snake(class_name)`` with the ``post_`` verb dropped.
 
-    ``PostSendMessage`` → ``send_message``; ``GetMessagesV3`` → ``messages_v3``.
+    ``PostSendMessage`` → ``send_message``; ``GetMessagesV3`` stays ``get_messages_v3``.
     Kept intact when stripping would leave an empty or digit-leading name.
     Global uniqueness is enforced afterwards by :mod:`collisions`.
     """

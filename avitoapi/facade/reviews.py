@@ -38,11 +38,11 @@ class ReviewsFacade(FacadeBase):
         """
         return await self.execute(RemoveReviewAnswerV1(answer_id=answer_id))
 
-    async def ratings_info_v1(self) -> GetRatingInfoResponse:
+    async def get_ratings_info_v1(self) -> GetRatingInfoResponse:
         """Получение информации о рейтинге пользователя via ``GET /ratings/v1/info``."""
         return await self.execute(GetRatingsInfoV1())
 
-    async def reviews_v1(self, offset: int, limit: int) -> GetReviewsResponse:
+    async def get_reviews_v1(self, offset: int, limit: int) -> GetReviewsResponse:
         """Получение списка активных отзывов на пользователя с пагинацией via ``GET /ratings/v1/reviews``.
 
         Args:

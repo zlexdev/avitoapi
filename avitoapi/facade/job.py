@@ -1105,11 +1105,11 @@ class JobFacade(FacadeBase):
             VacancyAutoRenewal2(vacancy_uuid=vacancy_uuid, auto_renewal=auto_renewal)
         )
 
-    async def dicts(self) -> None:
+    async def get_dicts(self) -> None:
         """Получение списка доступных словарей via ``GET /job/v2/vacancy/dict``."""
         return await self.execute(GetDicts())
 
-    async def dict_by_id(self, dictionary_id: str) -> None:
+    async def get_dict_by_id(self, dictionary_id: str) -> None:
         """Получение доступных значений списка по ID словаря via ``GET /job/v2/vacancy/dict/{dictionary_id}``.
 
         Args:

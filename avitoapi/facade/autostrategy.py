@@ -35,7 +35,7 @@ from ._base import FacadeBase
 class AutostrategyFacade(FacadeBase):
     """``Client`` mixin — Автостратегия endpoints."""
 
-    async def autostrategy_budget(
+    async def get_autostrategy_budget(
         self,
         campaign_type: GetAutostrategyBudgetCampaignType,
         finish_time: TZDatetime | None = None,
@@ -140,7 +140,7 @@ class AutostrategyFacade(FacadeBase):
             )
         )
 
-    async def autostrategy_campaign_info(
+    async def get_autostrategy_campaign_info(
         self, campaign_id: int
     ) -> GetAutostrategyCampaignInfoResponse:
         """Получение полной информации о кампании via ``POST /autostrategy/v1/campaign/info``.
@@ -163,7 +163,7 @@ class AutostrategyFacade(FacadeBase):
             StopAutostrategyCampaign(campaign_id=campaign_id, version=version)
         )
 
-    async def autostrategy_campaigns(
+    async def get_autostrategy_campaigns(
         self,
         limit: int,
         by_update_time: GetAutostrategyCampaignsFilterByUpdateTime | None = None,
@@ -190,7 +190,7 @@ class AutostrategyFacade(FacadeBase):
             )
         )
 
-    async def autostrategy_stat(self, campaign_id: int) -> GetAutostrategyStatResponse:
+    async def get_autostrategy_stat(self, campaign_id: int) -> GetAutostrategyStatResponse:
         """Получение статистики по кампании via ``POST /autostrategy/v1/stat``.
 
         Args:

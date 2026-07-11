@@ -26,11 +26,11 @@ class UserFacade(FacadeBase):
             PostOperationsHistory(date_time_from=date_time_from, date_time_to=date_time_to)
         )
 
-    async def user_info_self(self) -> UserInfoSelf:
+    async def get_user_info_self(self) -> UserInfoSelf:
         """Получение информации об авторизованном пользователе via ``GET /core/v1/accounts/self``."""
         return await self.execute(GetUserInfoSelf())
 
-    async def user_balance(self, user_id: int | None = None) -> Balance:
+    async def get_user_balance(self, user_id: int | None = None) -> Balance:
         """Получение баланса кошелька пользователя via ``GET /core/v1/accounts/{user_id}/balance/``.
 
         Args:

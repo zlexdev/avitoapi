@@ -115,7 +115,7 @@ class MessengerFacade(FacadeBase):
             )
         )
 
-    async def voice_files(self, voice_ids: list[str], user_id: int | None = None) -> VoiceFiles:
+    async def get_voice_files(self, voice_ids: list[str], user_id: int | None = None) -> VoiceFiles:
         """Получение голосовых сообщений via ``GET /messenger/v1/accounts/{user_id}/getVoiceFiles``.
 
         Args:
@@ -143,7 +143,7 @@ class MessengerFacade(FacadeBase):
             )
         )
 
-    async def subscriptions(self) -> GetSubscriptionsResponse:
+    async def get_subscriptions(self) -> GetSubscriptionsResponse:
         """Получение подписок (webhooks) via ``POST /messenger/v1/subscriptions``."""
         return await self.execute(GetSubscriptions())
 
@@ -169,7 +169,7 @@ class MessengerFacade(FacadeBase):
             )
         )
 
-    async def chats_v2(
+    async def get_chats_v2(
         self,
         user_id: int | None = None,
         item_ids: list[int] | None = None,
@@ -199,7 +199,7 @@ class MessengerFacade(FacadeBase):
             )
         )
 
-    async def chat_by_id_v2(self, chat_id: str, user_id: int | None = None) -> Chat:
+    async def get_chat_by_id_v2(self, chat_id: str, user_id: int | None = None) -> Chat:
         """Получение информации по чату via ``GET /messenger/v2/accounts/{user_id}/chats/{chat_id}``.
 
         Args:
@@ -212,7 +212,7 @@ class MessengerFacade(FacadeBase):
             )
         )
 
-    async def messages_v3(
+    async def get_messages_v3(
         self, chat_id: str, user_id: int | None = None, limit: int = 100, offset: int = 0
     ) -> Messages:
         """Получение списка сообщений V3 via ``GET /messenger/v3/accounts/{user_id}/chats/{chat_id}/messages/``.

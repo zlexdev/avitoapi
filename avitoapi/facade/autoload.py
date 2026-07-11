@@ -54,7 +54,7 @@ from ._base import FacadeBase
 class AutoloadFacade(FacadeBase):
     """``Client`` mixin — Автозагрузка endpoints."""
 
-    async def profile(self) -> GetProfileResponse:
+    async def get_profile(self) -> GetProfileResponse:
         """Получение профиля пользователя автозагрузки (deprecated) via ``GET /autoload/v1/profile``."""
         return await self.execute(GetProfile())
 
@@ -100,7 +100,7 @@ class AutoloadFacade(FacadeBase):
         """Получение дерева категорий via ``GET /autoload/v1/user-docs/tree``."""
         return await self.execute(UserDocsTree())
 
-    async def ad_ids_by_avito_ids(self, query: str) -> GetAdIdsByAvitoIdsResponse:
+    async def get_ad_ids_by_avito_ids(self, query: str) -> GetAdIdsByAvitoIdsResponse:
         """ID объявлений из файла via ``GET /autoload/v2/items/ad_ids``.
 
         Args:
@@ -108,7 +108,7 @@ class AutoloadFacade(FacadeBase):
         """
         return await self.execute(GetAdIdsByAvitoIds(query=query))
 
-    async def avito_ids_by_ad_ids(self, query: str) -> GetAvitoIdsByAdIdsResponse:
+    async def get_avito_ids_by_ad_ids(self, query: str) -> GetAvitoIdsByAdIdsResponse:
         """ID объявлений на Авито via ``GET /autoload/v2/items/avito_ids``.
 
         Args:
@@ -116,7 +116,7 @@ class AutoloadFacade(FacadeBase):
         """
         return await self.execute(GetAvitoIdsByAdIds(query=query))
 
-    async def profile_v2(self) -> GetProfileV2Response:
+    async def get_profile_v2(self) -> GetProfileV2Response:
         """Получение профиля пользователя автозагрузки via ``GET /autoload/v2/profile``."""
         return await self.execute(GetProfileV2())
 
@@ -145,7 +145,7 @@ class AutoloadFacade(FacadeBase):
             )
         )
 
-    async def reports_v2(
+    async def get_reports_v2(
         self,
         per_page: int = 50,
         page: int = 0,
@@ -164,7 +164,7 @@ class AutoloadFacade(FacadeBase):
             GetReportsV2(per_page=per_page, page=page, date_from=date_from, date_to=date_to)
         )
 
-    async def autoload_items_info_v2(self, query: str) -> GetAutoloadItemsInfoV2Response:
+    async def get_autoload_items_info_v2(self, query: str) -> GetAutoloadItemsInfoV2Response:
         """Объявления по ID в автозагрузке (deprecated) via ``GET /autoload/v2/reports/items``.
 
         Args:
@@ -172,11 +172,11 @@ class AutoloadFacade(FacadeBase):
         """
         return await self.execute(GetAutoloadItemsInfoV2(query=query))
 
-    async def last_completed_report(self) -> ReportAutoloadV2:
+    async def get_last_completed_report(self) -> ReportAutoloadV2:
         """Статистика по последней выгрузке (deprecated) via ``GET /autoload/v2/reports/last_completed_report``."""
         return await self.execute(GetLastCompletedReport())
 
-    async def report_by_id_v2(self, report_id: int) -> ReportAutoloadV2:
+    async def get_report_by_id_v2(self, report_id: int) -> ReportAutoloadV2:
         """Статистика по конкретной выгрузке (deprecated) via ``GET /autoload/v2/reports/{report_id}``.
 
         Args:
@@ -184,7 +184,7 @@ class AutoloadFacade(FacadeBase):
         """
         return await self.execute(GetReportByIdV2(report_id=report_id))
 
-    async def report_items_by_id(
+    async def get_report_items_by_id(
         self,
         report_id: int,
         per_page: int = 50,
@@ -207,7 +207,7 @@ class AutoloadFacade(FacadeBase):
             )
         )
 
-    async def report_items_fees_by_id(
+    async def get_report_items_fees_by_id(
         self,
         report_id: int,
         per_page: int = 100,
@@ -234,11 +234,11 @@ class AutoloadFacade(FacadeBase):
             )
         )
 
-    async def last_completed_report_v3(self) -> ReportAutoloadV3:
+    async def get_last_completed_report_v3(self) -> ReportAutoloadV3:
         """Статистика по последней выгрузке (deprecated) via ``GET /autoload/v3/reports/last_completed_report``."""
         return await self.execute(GetLastCompletedReportV3())
 
-    async def report_by_id_v3(self, report_id: int) -> ReportAutoloadV3:
+    async def get_report_by_id_v3(self, report_id: int) -> ReportAutoloadV3:
         """Статистика по конкретной выгрузке (deprecated) via ``GET /autoload/v3/reports/{report_id}``.
 
         Args:
@@ -246,7 +246,7 @@ class AutoloadFacade(FacadeBase):
         """
         return await self.execute(GetReportByIdV3(report_id=report_id))
 
-    async def uploads(
+    async def get_uploads(
         self,
         per_page: int = 10,
         page: int = 1,
@@ -265,11 +265,11 @@ class AutoloadFacade(FacadeBase):
             GetUploads(per_page=per_page, page=page, date_from=date_from, date_to=date_to)
         )
 
-    async def current_upload(self) -> UploadAutoloadV4:
+    async def get_current_upload(self) -> UploadAutoloadV4:
         """Текущая загрузка via ``GET /autoload/v4/uploads/current``."""
         return await self.execute(GetCurrentUpload())
 
-    async def current_upload_items(
+    async def get_current_upload_items(
         self,
         query: str | None = None,
         sections: str | None = None,
@@ -288,11 +288,11 @@ class AutoloadFacade(FacadeBase):
             GetCurrentUploadItems(query=query, sections=sections, per_page=per_page, page=page)
         )
 
-    async def last_successful_upload(self) -> UploadAutoloadV4:
+    async def get_last_successful_upload(self) -> UploadAutoloadV4:
         """Последняя успешно завершённая загрузка via ``GET /autoload/v4/uploads/last_successful``."""
         return await self.execute(GetLastSuccessfulUpload())
 
-    async def last_successful_upload_items(
+    async def get_last_successful_upload_items(
         self,
         query: str | None = None,
         sections: str | None = None,

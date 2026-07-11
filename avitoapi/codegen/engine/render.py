@@ -19,8 +19,11 @@ _TYPE_IMPORTS = {
 }
 
 
-def module_doc(title: str, kind: str) -> str:
-    return f'"""{title} — {kind} (auto-generated from the Avito OpenAPI spec)."""\n'
+def module_doc(title: str, kind: str, *, see: str | None = None) -> str:
+    body = f"{title} — {kind} (auto-generated from the Avito OpenAPI spec)."
+    if see:
+        body += f"\n\nSee: {see}"
+    return f'"""{body}"""\n'
 
 
 def docstring(lines: Iterable[str], indent: str = "    ") -> str:
