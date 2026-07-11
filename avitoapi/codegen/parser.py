@@ -132,7 +132,7 @@ def _flatten_body(op: dict[str, Any], resolver: Resolver) -> tuple[tuple[Prop, .
     rb = resolver.resolve(rb)
     content = rb.get("content", {})
     multipart = "multipart/form-data" in content
-    media = content.get("application/json") or content.get("multipart/form-data") or next(iter(content.values()), {})
+    media: dict[str, Any] = content.get("application/json") or content.get("multipart/form-data") or next(iter(content.values()), {})
     schema_node = media.get("schema", {})
     body_ref = Resolver.ref_name(schema_node["$ref"]) if "$ref" in schema_node else None
     resolved = resolver.resolve(schema_node)

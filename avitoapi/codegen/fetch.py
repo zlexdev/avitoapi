@@ -38,7 +38,8 @@ def _get(url: str) -> str:
     req = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT})  # noqa: S310 — fixed https host
     try:
         with urllib.request.urlopen(req, timeout=_TIMEOUT) as resp:  # noqa: S310
-            return resp.read().decode("utf-8")
+            body: bytes = resp.read()
+            return body.decode("utf-8")
     except (urllib.error.URLError, TimeoutError) as exc:
         raise SpecFetchError(f"failed to fetch {url}: {exc}") from exc
 
@@ -55,7 +56,8 @@ def fetch_spec(slug: str, *, use_cache: bool = True) -> dict[str, Any]:
 
     cache = _CACHE_DIR / f"{slug}.json"
     if use_cache and cache.exists():
-        return json.loads(cache.read_text(encoding="utf-8"))
+        cached: dict[str, Any] = json.loads(cache.read_text(encoding="utf-8"))
+        return cached
 
     envelope = json.loads(_get(INFO_ENDPOINT.format(slug=slug)))
     swagger = envelope.get("swagger")
