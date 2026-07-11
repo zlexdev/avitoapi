@@ -100,6 +100,27 @@ The catch-all still fires on every new message — there is no
 
 ---
 
+## Stopping propagation
+
+Default is broadcast — every matching handler on an event runs. A
+handler can opt out for the rest of the chain by calling
+`ctx.stop_propagation()` or raising `CancelPropagation`:
+
+```python
+from avitoapi.routers import CancelPropagation
+
+@router.new_message(F.message.text.contains("/start"))
+async def on_start(event, ctx) -> None:
+    ...
+    ctx.stop_propagation()  # or: raise CancelPropagation
+
+@router.new_message()
+async def fallback(event, ctx) -> None:
+    ...  # skipped if on_start already stopped propagation
+```
+
+---
+
 ## Custom routes (string keys)
 
 For non-event triggers (debug pings, custom signals) the bare

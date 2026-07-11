@@ -40,14 +40,14 @@ from avitoapi import Client, ClientConfig
 async def main() -> None:
     # Reads AVITO_CLIENT_ID / AVITO_CLIENT_SECRET from the environment.
     async with Client(config=ClientConfig.from_env()) as client:
-        me = await client.get_user_info_self()
+        me = await client.user_info_self()
         print(me.id, me.name, me.email)
 
 
 asyncio.run(main())
 ```
 
-Every operation is a real `async def` on `Client` (`await client.get_user_info_self()`), typed
+Every operation is a real `async def` on `Client` (`await client.user_info_self()`), typed
 end to end: the call returns a `UserInfoSelf` model, not a raw dict. Browse the full method
 catalogue in [`docs/api-surface.md`](docs/api-surface.md), or step through
 [`docs/cookbook/01-quickstart.md`](docs/cookbook/01-quickstart.md).
@@ -64,8 +64,8 @@ Simplest entry point: construct a `Client`, `await` operations, get typed models
 from avitoapi import Client, ClientConfig
 
 async with Client(config=ClientConfig.from_env()) as client:
-    me = await client.get_user_info_self()
-    balance = await client.get_user_balance(user_id=me.id)
+    me = await client.user_info_self()
+    balance = await client.user_balance(user_id=me.id)
     print(me.name, balance)
 ```
 
@@ -124,7 +124,7 @@ class OrdersPoller(PollingRunner):
         self._client = client
 
     async def poll(self, cursor):
-        page = await self._client.get_orders(cursor=cursor)
+        page = await self._client.orders(cursor=cursor)
         events = [OrderStatusChanged(order_id=o.id, status=o.status) for o in page.orders]
         return PollBatch(events=events, cursor=page.next_cursor)
 
@@ -132,7 +132,16 @@ class OrdersPoller(PollingRunner):
 await OrdersPoller(dp, client).start()  # mirrors BaseWebhookRunner.start()/stop()
 ```
 
-A runnable end-to-end bot lives in [`examples/echo_bot/`](examples/echo_bot/).
+A runnable end-to-end bot lives in [`examples/echo_bot.py`](examples/echo_bot.py).
+
+### Channels & fan-out — merging multiple sources
+
+`avitoapi.channels` gives handlers a bounded, backpressure-aware publish
+surface (`dispatcher.channels.register(MemoryEventChannel(...))` +
+`await dispatcher.publish(name, event)`); `avitoapi.fanout.SourceHub`
+supervises several event sources (webhook + pollers + custom feeds) into
+one dispatcher with health tracking and restart policy. See the module
+docs under `avitoapi/channels/` and `avitoapi/fanout/`.
 
 ## Regenerating the SDK from the spec
 
