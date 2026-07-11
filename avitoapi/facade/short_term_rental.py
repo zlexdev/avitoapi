@@ -49,7 +49,7 @@ class ShortTermRentalFacade(FacadeBase):
             bookings: Список броней для выбранного объекта недвижимости (объявления)
             source: Название PMS системы
         """
-        return await self(
+        return await self.execute(
             PutBookingsInfo(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 item_id=item_id,
@@ -77,7 +77,7 @@ class ShortTermRentalFacade(FacadeBase):
             date_end: Фильтр, ограничивающий выборку по верхней границе дат, не в прошлом
             with_unpaid: Флаг, позволяющий получить неоплаченные брони (возвращаются в статусе pending)
         """
-        return await self(
+        return await self.execute(
             GetRealtyBookings(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 item_id=item_id,
@@ -102,7 +102,7 @@ class ShortTermRentalFacade(FacadeBase):
             item_id: Идентификатор объявления на сайте
             skip_error: Флаг, с которым вместо ошибок(если ошибка произошла с айтемом) возвращается 200 статус, без ошибки
         """
-        return await self(
+        return await self.execute(
             PostRealtyPrices(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 item_id=item_id,
@@ -126,7 +126,7 @@ class ShortTermRentalFacade(FacadeBase):
             item_id: ID объявления
             source: Название PMS системы
         """
-        return await self(
+        return await self.execute(
             PutIntervals(skip_error=skip_error, intervals=intervals, item_id=item_id, source=source)
         )
 
@@ -161,7 +161,7 @@ class ShortTermRentalFacade(FacadeBase):
             night_price: Цена проживания за ночь (рубли)
             days: Количество дней до заезда, когда за отмену налагается штраф
         """
-        return await self(
+        return await self.execute(
             PostBaseParams(
                 item_id=item_id,
                 discount=discount,

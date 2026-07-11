@@ -166,7 +166,7 @@ def _render_call(m: MethodSpec, models: dict[str, ModelSpec]) -> str:
 
     method_name = m.method_name
     doc = render.class_docstring(m.doc, "Args", [(f.name, f.description) for f in facade_fields], indent="        ")
-    kw, invoke = ("def", f"self({call})") if m.paginated else ("async def", f"await self({call})")
+    kw, invoke = ("def", f"self.paginate({call})") if m.paginated else ("async def", f"await self.execute({call})")
     return "\n".join(
         [
             f"    {kw} {method_name}({signature}) -> {_return_annotation(m)}:",

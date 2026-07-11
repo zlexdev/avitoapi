@@ -168,13 +168,13 @@ class JobFacade(FacadeBase):
             action: Новый статус отклика, который нужно применить
             ids: Список идентификаторов откликов, к которым нужно применить статус
         """
-        return await self(ApplicationsApplyActions(action=action, ids=ids))
+        return await self.execute(ApplicationsApplyActions(action=action, ids=ids))
 
     async def applications_get_by_ids(
         self, ids: list[str] | None = None
     ) -> GetApplicationsByIdsResult:
         """Получение списка откликов via ``POST /job/v1/applications/get_by_ids``."""
-        return await self(ApplicationsGetByIds(ids=ids))
+        return await self.execute(ApplicationsGetByIds(ids=ids))
 
     async def applications_get_ids(
         self,
@@ -195,7 +195,7 @@ class JobFacade(FacadeBase):
             is_viewed: Отклик просмотрен
             state: Статус отклика. Опциональный фильтр по текущему статусу отклика
         """
-        return await self(
+        return await self.execute(
             ApplicationsGetIds(
                 updated_at_from=updated_at_from,
                 created_at_from=created_at_from,
@@ -208,7 +208,7 @@ class JobFacade(FacadeBase):
 
     async def applications_get_states(self) -> ApplicationsGetStatesResult:
         """Получение списка возможных статусов откликов via ``GET /job/v1/applications/get_states``."""
-        return await self(ApplicationsGetStates())
+        return await self.execute(ApplicationsGetStates())
 
     async def applications_set_is_viewed(
         self, applies: list[ApplicationsSetIsViewedApplies] | None = None
@@ -218,7 +218,7 @@ class JobFacade(FacadeBase):
         Args:
             applies: Список откликов
         """
-        return await self(ApplicationsSetIsViewed(applies=applies))
+        return await self.execute(ApplicationsSetIsViewed(applies=applies))
 
     async def applications_webhook_delete(
         self, url: str | None = None
@@ -228,11 +228,11 @@ class JobFacade(FacadeBase):
         Args:
             url: URL, на который отправляются уведомления
         """
-        return await self(ApplicationsWebhookDelete(url=url))
+        return await self.execute(ApplicationsWebhookDelete(url=url))
 
     async def applications_webhook_get(self) -> WebhookSubscribeRequestBody:
         """Получение информации о подписках (webhook) via ``GET /job/v1/applications/webhook``."""
-        return await self(ApplicationsWebhookGet())
+        return await self.execute(ApplicationsWebhookGet())
 
     async def applications_webhook_put(self, secret: str, url: str) -> WebhookSubscribeRequestBody:
         """Включение уведомлений по откликам (webhook) via ``PUT /job/v1/applications/webhook``.
@@ -241,11 +241,11 @@ class JobFacade(FacadeBase):
             secret: сгенерированный ключ
             url: URL на который будут отправляться уведомления
         """
-        return await self(ApplicationsWebhookPut(secret=secret, url=url))
+        return await self.execute(ApplicationsWebhookPut(secret=secret, url=url))
 
     async def applications_webhooks_get(self) -> WebhooksSubscriptionResultList:
         """Получение списка подписок (webhook) via ``GET /job/v1/applications/webhooks``."""
-        return await self(ApplicationsWebhooksGet())
+        return await self.execute(ApplicationsWebhooksGet())
 
     async def resumes_get(
         self,
@@ -318,7 +318,7 @@ class JobFacade(FacadeBase):
             own_transport: Свой транспорт (можно указать несколько значений через запятую) Возможные значения: - no - Нет - car - Легковое авто - cargo-car - Грузовое авто - bike - Мотоцикл - scooter - Мопед
             medical_book: Медкнижка Возможные значения: - yes - Медкнижка есть - no - Медкнижки нет
         """
-        return await self(
+        return await self.execute(
             ResumesGet(
                 per_page=per_page,
                 page=page,
@@ -364,7 +364,7 @@ class JobFacade(FacadeBase):
             resume_id: Идентификатор резюме
             employee_id: Идентификатор сотрудника компании в рамках иерархии аккаунтов. Используется для возможности списать контакт с лимита на покупку резюме для указанного сотрудника.
         """
-        return await self(ResumeGetContacts(resume_id=resume_id, employee_id=employee_id))
+        return await self.execute(ResumeGetContacts(resume_id=resume_id, employee_id=employee_id))
 
     async def vacancy_create2(
         self,
@@ -459,7 +459,7 @@ class JobFacade(FacadeBase):
             vacancy_code: Внутренний идентификатор вакансии или номер заявки на подбор, максимум 150 символов
             work_format: Блок \"Формат работы\" (массив строк) Возможные значения элементов массива: - \"office\" - В офисе или на объекте; - \"remote\" - Удалённо; - \"gibrid\" - Гибрид.
         """
-        return await self(
+        return await self.execute(
             VacancyCreate2(
                 address=address,
                 administrator_organization_type=administrator_organization_type,
@@ -528,7 +528,7 @@ class JobFacade(FacadeBase):
             vacancy_id: Идентификатор вакансии на сайте
             employee_id: employee_id - Идентификатор сотрудника на Авито. Сотрудник может останавливать только закрепленные за ним вакансии в Avito Pro. Сотрудник должен быть в активен.
         """
-        return await self(VacancyArchive2(vacancy_id=vacancy_id, employee_id=employee_id))
+        return await self.execute(VacancyArchive2(vacancy_id=vacancy_id, employee_id=employee_id))
 
     async def vacancy_update2(
         self,
@@ -620,7 +620,7 @@ class JobFacade(FacadeBase):
             vacancy_code: Внутренний идентификатор вакансии или номер заявки на подбор, максимум 150 символов
             work_format: Блок \"Формат работы\" (массив строк) Возможные значения элементов массива: - \"office\" - В офисе или на объекте; - \"remote\" - Удалённо; - \"gibrid\" - Гибрид.
         """
-        return await self(
+        return await self.execute(
             VacancyUpdate2(
                 vacancy_id=vacancy_id,
                 address=address,
@@ -693,7 +693,7 @@ class JobFacade(FacadeBase):
             billing_type: Вариант платного размещения Возможные значения: - \"package\" - размещение объявления осуществляется только при наличии подходящего пакета размещения - \"packageOrSingle\" - при наличии подходящего пакета оплата размещения объявления произойдет с него; если нет подходящего пакета, но достаточно денег на кошельке Авито, то произойдет разовое размещение - \"single\" - только разовое размещение, произойдет при наличии достаточной суммы на кошельке Авито; если есть подходящий пакет размещения, он будет проигнорирован
             employee_id: employee_id - Идентификатор сотрудника на Авито. Если этот параметр указан, то с баланса сотрудника в Avito Pro будет списано размещение. Использовать параметр можно только с billing_type равным package. Сотрудник должен быть в активен.
         """
-        return await self(
+        return await self.execute(
             VacancyProlongate2(
                 vacancy_id=vacancy_id, billing_type=billing_type, employee_id=employee_id
             )
@@ -714,7 +714,7 @@ class JobFacade(FacadeBase):
             params: Дополнительные поля, которые входят в params (можно указать несколько значений через запятую). По умолчанию отображаются все поля.
             photos: Признак того, нужно ли отдавать картинки, по умолчанию false
         """
-        return await self(
+        return await self.execute(
             ResumeGetItem(resume_id=resume_id, fields=fields, params=params, photos=photos)
         )
 
@@ -737,7 +737,7 @@ class JobFacade(FacadeBase):
             work_format: Формат работы (можно указать несколько значений через запятую) Получить актуальный список доступных значений можно из справочника `work_format` через метод [getDictByID](/api-catalog/job/documentation#operation/getDictByID).
             schedule: Режим работы (можно указать несколько значений через запятую) Получить актуальный список доступных значений можно из справочника `schedules` через метод [getDictByID](/api-catalog/job/documentation#operation/getDictByID).
         """
-        return await self(
+        return await self.execute(
             SearchVacancy(
                 per_page=per_page,
                 page=page,
@@ -840,7 +840,7 @@ class JobFacade(FacadeBase):
             vacancy_code: Внутренний идентификатор вакансии или номер заявки на подбор, максимум 150 символов
             work_format: Блок \"Формат работы\" (массив строк) Возможные значения элементов массива: - \"office\" - В офисе или на объекте; - \"remote\" - Удалённо; - \"gibrid\" - Гибрид.
         """
-        return await self(
+        return await self.execute(
             VacancyCreateV2(
                 administrator_organization_type=administrator_organization_type,
                 age=AgeCriteria(from_=from_, to=to),
@@ -914,11 +914,11 @@ class JobFacade(FacadeBase):
             ids: Идентификаторы вакансий на сайте
             params: Дополнительные поля, которые входят в params (можно указать несколько значений через запятую). Если значение не задано - возвращаются все поля. Устаревшие значения: * change (используйте shifts) * is_remote (используйте work_format) Удалённые значения (более недоступны): * manufacturing_type * industry_type * piecework_flag * programs * warehouse_functionality * where_to_work
         """
-        return await self(VacanciesGetByIds(fields=fields, ids=ids, params=params))
+        return await self.execute(VacanciesGetByIds(fields=fields, ids=ids, params=params))
 
     async def vacancy_get_statuses(self, ids: list[str] | None = None) -> VacancyStatusesResult:
         """Получение статуса публикации вакансий V2 via ``POST /job/v2/vacancies/statuses``."""
-        return await self(VacancyGetStatuses(ids=ids))
+        return await self.execute(VacancyGetStatuses(ids=ids))
 
     async def vacancy_update_v2(
         self,
@@ -1014,7 +1014,7 @@ class JobFacade(FacadeBase):
             vacancy_code: Внутренний идентификатор вакансии или номер заявки на подбор, максимум 150 символов
             work_format: Блок \"Формат работы\" (массив строк) Возможные значения элементов массива: - \"office\" - В офисе или на объекте; - \"remote\" - Удалённо; - \"gibrid\" - Гибрид.
         """
-        return await self(
+        return await self.execute(
             VacancyUpdateV2(
                 vacancy_uuid=vacancy_uuid,
                 administrator_organization_type=administrator_organization_type,
@@ -1089,7 +1089,9 @@ class JobFacade(FacadeBase):
             fields: Поля основного тела ответа (можно указать несколько значений через запятую). По умолчанию отображаются все поля.
             params: Дополнительные поля, которые входят в params (можно указать несколько значений через запятую). Если значение не задано - возвращаются все поля. Устаревшие значения: * change (используйте shifts) * is_remote (используйте work_format) Удалённые значения (более недоступны): * manufacturing_type * industry_type * piecework_flag * programs * warehouse_functionality * where_to_work
         """
-        return await self(VacancyGetItem(vacancy_id=vacancy_id, fields=fields, params=params))
+        return await self.execute(
+            VacancyGetItem(vacancy_id=vacancy_id, fields=fields, params=params)
+        )
 
     async def vacancy_auto_renewal2(
         self, vacancy_uuid: str, auto_renewal: bool | None = None
@@ -1099,11 +1101,13 @@ class JobFacade(FacadeBase):
         Args:
             vacancy_uuid: UUID Идентификатор вакансии для V2 ручек (возвращается ручкой [Публикация вакансии V2](https://developers.avito.ru/api-catalog/job/documentation#operation/vacancyCreateV2) )
         """
-        return await self(VacancyAutoRenewal2(vacancy_uuid=vacancy_uuid, auto_renewal=auto_renewal))
+        return await self.execute(
+            VacancyAutoRenewal2(vacancy_uuid=vacancy_uuid, auto_renewal=auto_renewal)
+        )
 
     async def dicts(self) -> None:
         """Получение списка доступных словарей via ``GET /job/v2/vacancy/dict``."""
-        return await self(GetDicts())
+        return await self.execute(GetDicts())
 
     async def dict_by_id(self, dictionary_id: str) -> None:
         """Получение доступных значений списка по ID словаря via ``GET /job/v2/vacancy/dict/{dictionary_id}``.
@@ -1111,4 +1115,4 @@ class JobFacade(FacadeBase):
         Args:
             dictionary_id: Идентификатор словаря
         """
-        return await self(GetDictById(dictionary_id=dictionary_id))
+        return await self.execute(GetDictById(dictionary_id=dictionary_id))

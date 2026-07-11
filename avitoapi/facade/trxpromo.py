@@ -24,12 +24,12 @@ class TrxpromoFacade(FacadeBase):
         self, items: list[ApiTrxPromoOpenApiApplyItems]
     ) -> ApplyResponse:
         """Запуск продвижения via ``POST /trx-promo/1/apply``."""
-        return await self(ApiTrxPromoOpenApiApply(items=items))
+        return await self.execute(ApiTrxPromoOpenApiApply(items=items))
 
     async def api_trx_promo_open_api_cancel(self, item_ids: list[int]) -> CancelResponse:
         """Остановка продвижения via ``POST /trx-promo/1/cancel``."""
-        return await self(ApiTrxPromoOpenApiCancel(item_ids=item_ids))
+        return await self.execute(ApiTrxPromoOpenApiCancel(item_ids=item_ids))
 
     async def api_trx_promo_open_api_commissions(self, item_ids: list[int]) -> CommissionResponse:
         """Проверка доступности продвижения и размера комиссий via ``GET /trx-promo/1/commissions``."""
-        return await self(ApiTrxPromoOpenApiCommissions(item_ids=item_ids))
+        return await self.execute(ApiTrxPromoOpenApiCommissions(item_ids=item_ids))

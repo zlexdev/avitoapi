@@ -23,7 +23,7 @@ class AuthFacade(FacadeBase):
         self, client_id: str, client_secret: str, grant_type: str
     ) -> GetAccessTokenResponse:
         """Получение access token via ``POST /token``."""
-        return await self(
+        return await self.execute(
             GetAccessToken(client_id=client_id, client_secret=client_secret, grant_type=grant_type)
         )
 
@@ -31,7 +31,7 @@ class AuthFacade(FacadeBase):
         self, client_id: str, client_secret: str, code: str, grant_type: str
     ) -> GetAccessTokenAuthorizationCodeResponse:
         """Получение access token via ``POST /token‎``."""
-        return await self(
+        return await self.execute(
             GetAccessTokenAuthorizationCode(
                 client_id=client_id, client_secret=client_secret, code=code, grant_type=grant_type
             )
@@ -45,7 +45,7 @@ class AuthFacade(FacadeBase):
         Args:
             grant_type: Тип OAuth flow. Строка refresh_token
         """
-        return await self(
+        return await self.execute(
             RefreshAccessTokenAuthorizationCode(
                 client_id=client_id,
                 client_secret=client_secret,

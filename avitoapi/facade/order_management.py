@@ -51,7 +51,7 @@ class OrderManagementFacade(FacadeBase):
         Args:
             markings: Массив маркировок, которые требуется передать
         """
-        return await self(Markings(markings=markings))
+        return await self.execute(Markings(markings=markings))
 
     async def accept_return_order(
         self,
@@ -68,7 +68,7 @@ class OrderManagementFacade(FacadeBase):
             phone: Номер телефона человека, который будет забирать возвратную посылку
             terminal_number: Номер отделения Почты России, куда придёт возвратная посылка.
         """
-        return await self(
+        return await self.execute(
             AcceptReturnOrder(
                 order_id=order_id,
                 recipient=AcceptReturnOrderRecipient(name=name, phone=phone),
@@ -89,7 +89,7 @@ class OrderManagementFacade(FacadeBase):
             cnc: Параметры для подготовки заказа с самовывозом
             transition: Название перехода. * `confirm` - подтверждение заказа; * `reject` - отмена заказа; * `perform` - подтверждение отправки заказа (RDBS); * `receive` - подтверждение доставки заказа (RDBS, CNC).
         """
-        return await self(
+        return await self.execute(
             ApplyTransition(
                 order_id=order_id, params=ApplyTransitionParams(cnc=cnc), transition=transition
             )
@@ -104,7 +104,9 @@ class OrderManagementFacade(FacadeBase):
             confirm_code: Код, который показал пользователь
             parcel_id: ID посылки в Авито
         """
-        return await self(CheckConfirmationCode(confirm_code=confirm_code, parcel_id=parcel_id))
+        return await self.execute(
+            CheckConfirmationCode(confirm_code=confirm_code, parcel_id=parcel_id)
+        )
 
     async def cnc_set_details(
         self,
@@ -123,7 +125,7 @@ class OrderManagementFacade(FacadeBase):
             id: ID заказа в Авито
             marketplace_id: Номер заказа в Авито в новой системе
         """
-        return await self(
+        return await self.execute(
             CncSetDetails(
                 address=address,
                 booking_period=booking_period,
@@ -142,7 +144,7 @@ class OrderManagementFacade(FacadeBase):
             order_id: ID заказа
             address: Адрес продавца
         """
-        return await self(GetCourierDeliveryRange(order_id=order_id, address=address))
+        return await self.execute(GetCourierDeliveryRange(order_id=order_id, address=address))
 
     async def set_courier_delivery_range(
         self,
@@ -167,7 +169,7 @@ class OrderManagementFacade(FacadeBase):
             phone: Телефон
             start_date: Начальная дата приезда курьера
         """
-        return await self(
+        return await self.execute(
             SetCourierDeliveryRange(
                 address=address,
                 address_details=address_details,
@@ -189,7 +191,7 @@ class OrderManagementFacade(FacadeBase):
             order_id: ID заказа в Авито
             tracking_number: Трек-номер посылки
         """
-        return await self(
+        return await self.execute(
             SetOrderTrackingNumber(order_id=order_id, tracking_number=tracking_number)
         )
 
@@ -210,7 +212,7 @@ class OrderManagementFacade(FacadeBase):
             page: Номер страницы для пагинации
             limit: Максимальное количество заказов на странице
         """
-        return await self(
+        return await self.execute(
             GetOrders(ids=ids, statuses=statuses, date_from=date_from, page=page, limit=limit)
         )
 
@@ -220,7 +222,7 @@ class OrderManagementFacade(FacadeBase):
         Args:
             order_ids: ID заказов в сервисе сделок (marketplace)
         """
-        return await self(GenerateLabels(order_ids=order_ids))
+        return await self.execute(GenerateLabels(order_ids=order_ids))
 
     async def generate_labels_extended(self, order_ids: list[str]) -> OrdersLabelsResponse:
         """Создать задачу на генерацию этикеток (до 1000). via ``POST /order-management/1/orders/labels/extended``.
@@ -228,7 +230,7 @@ class OrderManagementFacade(FacadeBase):
         Args:
             order_ids: ID заказов в сервисе сделок (marketplace)
         """
-        return await self(GenerateLabelsExtended(order_ids=order_ids))
+        return await self.execute(GenerateLabelsExtended(order_ids=order_ids))
 
     async def download_label(self, task_id: str) -> bytes:
         """Скачать сгенерированный PDF-файл (этикетку). via ``GET /order-management/1/orders/labels/{task_id}/download``.
@@ -236,4 +238,4 @@ class OrderManagementFacade(FacadeBase):
         Args:
             task_id: ID задачи на генерацию
         """
-        return await self(DownloadLabel(task_id=task_id))
+        return await self.execute(DownloadLabel(task_id=task_id))

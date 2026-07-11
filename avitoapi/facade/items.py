@@ -58,7 +58,7 @@ class ItemsFacade(FacadeBase):
             user_id: Номер пользователя в Личном кабинете Авито
             item_ids: Набор идентификаторов объявлений на сайте
         """
-        return await self(
+        return await self.execute(
             VasPrices(
                 user_id=_resolve_user_id(self) if user_id is None else user_id, item_ids=item_ids
             )
@@ -79,7 +79,7 @@ class ItemsFacade(FacadeBase):
             date_to: Конечная дата периода (YYYY-MM-DD)
             item_ids: Идентификаторы объявлений
         """
-        return await self(
+        return await self.execute(
             PostCallsStats(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 date_from=date_from,
@@ -95,7 +95,7 @@ class ItemsFacade(FacadeBase):
             user_id: Номер пользователя в Личном кабинете Авито
             item_id: Идентификатор объявления на сайте
         """
-        return await self(
+        return await self.execute(
             GetItemInfo(
                 user_id=_resolve_user_id(self) if user_id is None else user_id, item_id=item_id
             )
@@ -111,7 +111,7 @@ class ItemsFacade(FacadeBase):
             item_id: Идентификатор объявления на сайте
             vas_id: Идентификатор услуги, возможные его варианты значения: - `highlight` — [выделение объявления](https://support.avito.ru/articles/200026858) - `xl` – [XL-объявление](https://support.avito.ru/articles/685)
         """
-        return await self(
+        return await self.execute(
             PutItemVas(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 item_id=item_id,
@@ -132,7 +132,9 @@ class ItemsFacade(FacadeBase):
             updated_at_from: Фильтр больше либо равно по дате обновления/редактирования объявления в формате YYYY-MM-DD
             category: Идентификатор категории объявления см. возможные варианты категорий в [ справочнике ](https://www.avito.st/s/openapi/catalog-categories.xml)
         """
-        return self(GetItemsInfo(status=status, updated_at_from=updated_at_from, category=category))
+        return self.paginate(
+            GetItemsInfo(status=status, updated_at_from=updated_at_from, category=category)
+        )
 
     async def update_price(self, item_id: int, price: int) -> UpdatePriceResponse:
         """Обновление цены объявления via ``POST /core/v1/items/{item_id}/update_price``.
@@ -141,7 +143,7 @@ class ItemsFacade(FacadeBase):
             item_id: Идентификатор объявления на сайте
             price: Цена
         """
-        return await self(UpdatePrice(item_id=item_id, price=price))
+        return await self.execute(UpdatePrice(item_id=item_id, price=price))
 
     async def put_item_vas_package_v2(
         self, item_id: int, package_id: PutItemVasPackageV2PackageId, user_id: int | None = None
@@ -153,7 +155,7 @@ class ItemsFacade(FacadeBase):
             item_id: Идентификатор объявления на сайте
             package_id: Идентификатор пакета услуг, возможные варианты значения: - `x2_1` - применение пакета До 2 раз больше просмотров на 1 день - `x2_7` - применение пакета До 2 раз больше просмотров на 7 дней - `x5_1` - применение пакета До 5 раз больше просмотров на 1 день - `x5_7` - применение пакета До 5 раз больше просмотров на 7 дней - `x10_1` - применение пакета До 10 раз больше просмотров на 1 день - `x10_7` - применение пакета До 10 раз больше просмотров на 7 дней В некоторых регионах и категориях также доступны дополнительные варианты: - `x15_1` - применение пакета До 15 раз больше просмотров на 1 день - `x15_7` - применение пакета До 15 раз больше просмотров на 7 дней - `x20_1` - применение пакета До 20 раз больше просмотров на 1 день - `x20_7` - применение пакета До 20 раз больше просмотров на 7 дней Если попытаться применить эти пакеты в недоступных для них регионе и категории, оплата не пройдёт.
         """
-        return await self(
+        return await self.execute(
             PutItemVasPackageV2(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 item_id=item_id,
@@ -171,7 +173,7 @@ class ItemsFacade(FacadeBase):
             slugs: Список идентификаторов услуг
             stickers: Список значков
         """
-        return await self(ApplyVas(item_id=item_id, slugs=slugs, stickers=stickers))
+        return await self.execute(ApplyVas(item_id=item_id, slugs=slugs, stickers=stickers))
 
     async def item_stats_shallow(
         self,
@@ -187,7 +189,7 @@ class ItemsFacade(FacadeBase):
         Args:
             user_id: Идентификатор пользователя (клиента)
         """
-        return await self(
+        return await self.execute(
             ItemStatsShallow(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 date_from=date_from,
@@ -226,7 +228,7 @@ class ItemsFacade(FacadeBase):
             key: Показатель статистики, по которому нужно отсортировать;
             order: Порядок сортировки (asc, desc);
         """
-        return await self(
+        return await self.execute(
             ItemAnalytics(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 date_from=date_from,
@@ -262,7 +264,7 @@ class ItemsFacade(FacadeBase):
             location_ids: Идентификаторы населенных пунктов
             spending_types: Набор необходимых типов расходов
         """
-        return await self(
+        return await self.execute(
             AccountSpendings(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 date_from=date_from,

@@ -129,7 +129,9 @@ class DeliveryFacade(FacadeBase):
         Args:
             reason: Причина омены анонса
         """
-        return await self(CancelAnnouncement3Pl(announcement_id=announcement_id, reason=reason))
+        return await self.execute(
+            CancelAnnouncement3Pl(announcement_id=announcement_id, reason=reason)
+        )
 
     async def create_announcement3_pl(
         self,
@@ -149,7 +151,7 @@ class DeliveryFacade(FacadeBase):
             date_: Дата и время создания анонса в формате RFC 3339 в UTC
             packages: Список грузомест
         """
-        return await self(
+        return await self.execute(
             CreateAnnouncement3Pl(
                 announcement_id=announcement_id,
                 announcement_type=announcement_type,
@@ -208,7 +210,7 @@ class DeliveryFacade(FacadeBase):
             sender_phones: Список телефонов для связи. Формат номеров телефона не регламентирован.
             sender_type_: Тип отправителя.
         """
-        return await self(
+        return await self.execute(
             CreateParcel(
                 barcodes=barcodes,
                 direct_order_id=direct_order_id,
@@ -255,7 +257,7 @@ class DeliveryFacade(FacadeBase):
             date_: Дата и время создания анонса в формате RFC 3339 в UTC
             packages: Список грузомест
         """
-        return await self(
+        return await self.execute(
             CreateAnnouncement(
                 announcement_id=announcement_id,
                 announcement_type=announcement_type,
@@ -275,13 +277,13 @@ class DeliveryFacade(FacadeBase):
         Args:
             date_: Дата события
         """
-        return await self(
+        return await self.execute(
             TrackAnnouncement(announcement_id=announcement_id, date_=date_, event=event)
         )
 
     async def custom_area_schedule(self) -> AddTaskReply:
         """Установка графика работы на определённый день via ``POST /delivery-sandbox/areas/custom-schedule``."""
-        return await self(CustomAreaSchedule())
+        return await self.execute(CustomAreaSchedule())
 
     async def cancel_parcel(self, actor: CancelParcelActor, parcel_id: str) -> CancelParcelReply:
         """Отмена посылки via ``POST /delivery-sandbox/cancelParcel``.
@@ -289,13 +291,15 @@ class DeliveryFacade(FacadeBase):
         Args:
             actor: Кто отменяет посылку
         """
-        return await self(CancelParcel(actor=actor, parcel_id=parcel_id))
+        return await self.execute(CancelParcel(actor=actor, parcel_id=parcel_id))
 
     async def check_confirmation_code(
         self, confirm_code: str, parcel_id: str
     ) -> CheckConfirmationCodeReply:
         """Проверка кода подтверждения via ``POST /delivery-sandbox/order/checkConfirmationCode``."""
-        return await self(CheckConfirmationCode(confirm_code=confirm_code, parcel_id=parcel_id))
+        return await self.execute(
+            CheckConfirmationCode(confirm_code=confirm_code, parcel_id=parcel_id)
+        )
 
     async def set_order_properties(
         self,
@@ -305,7 +309,7 @@ class DeliveryFacade(FacadeBase):
         weight: Any | None = None,
     ) -> DeliverySetOrderPropertiesReply:
         """Добавление / изменение параметров доставки посылки via ``POST /delivery-sandbox/order/properties``."""
-        return await self(
+        return await self.execute(
             SetOrderProperties(
                 order_id=order_id,
                 properties=DeliveryParams(delivery=delivery, dimensions=dimensions, weight=weight),
@@ -324,7 +328,7 @@ class DeliveryFacade(FacadeBase):
             address_type: Тип адреса который передаётся - `SENDER_SEND` - фактический адрес приёма посылки от отправителя (продавца) - `SENDER_RECEIVE` - фактический адрес возврата посылки отправителю (продавцу)
             terminal_number: Идентификатор ПВЗ в службе доставки, должен быть равен идентификатору ПВЗ передаваемому при загрузке терминалов
         """
-        return await self(
+        return await self.execute(
             SetOrderRealAddress(
                 address=SetOrderRealAddressAddress(
                     address_type=address_type, terminal_number=terminal_number
@@ -360,7 +364,7 @@ class DeliveryFacade(FacadeBase):
             return_tracking_number: Номер, по которому отправитель может отследить возвратную посылку.
             provider_event_code: Код события по версии службы доставки.
         """
-        return await self(
+        return await self.execute(
             Tracking(
                 avito_event_type=avito_event_type,
                 avito_status=avito_status,
@@ -380,7 +384,7 @@ class DeliveryFacade(FacadeBase):
 
     async def prohibit_order_acceptance(self, order_id: str) -> ProhibitOrderAcceptanceReply:
         """Запрет приёма посылки от отправителя via ``POST /delivery-sandbox/prohibitOrderAcceptance``."""
-        return await self(ProhibitOrderAcceptance(order_id=order_id))
+        return await self.execute(ProhibitOrderAcceptance(order_id=order_id))
 
     async def sorting_center(self, delivery_providers: str) -> SortingCenterGet:
         """Получить список сортировочных центров via ``GET /delivery-sandbox/sorting-center``.
@@ -388,11 +392,11 @@ class DeliveryFacade(FacadeBase):
         Args:
             delivery_providers: Список кодов служб доставки, сортировочные центры которых необходимо вернуть
         """
-        return await self(GetSortingCenter(delivery_providers=delivery_providers))
+        return await self.execute(GetSortingCenter(delivery_providers=delivery_providers))
 
     async def add_sorting_center(self) -> AddTaskReply:
         """Загрузить сортировочные центры via ``POST /delivery-sandbox/tariffs/sorting-center``."""
-        return await self(AddSortingCenter())
+        return await self.execute(AddSortingCenter())
 
     async def add_areas_sandbox(self, tariff_id: int) -> AddTariffReply:
         """Загрузить области доставки via ``POST /delivery-sandbox/tariffs/{tariff_id}/areas``.
@@ -400,7 +404,7 @@ class DeliveryFacade(FacadeBase):
         Args:
             tariff_id: id тарифа, к которому должны быть прикреплены добавляемые области
         """
-        return await self(AddAreasSandbox(tariff_id=tariff_id))
+        return await self.execute(AddAreasSandbox(tariff_id=tariff_id))
 
     async def add_tags_to_sorting_center(self, tariff_id: int) -> AddTaskReply:
         """Установка тэгов своим и/или чужим сортировочным центрам via ``POST /delivery-sandbox/tariffs/{tariff_id}/tagged-sorting-centers``.
@@ -408,7 +412,7 @@ class DeliveryFacade(FacadeBase):
         Args:
             tariff_id: id своего тарифа, теги которого будут установлены для сортировочных центров
         """
-        return await self(AddTagsToSortingCenter(tariff_id=tariff_id))
+        return await self.execute(AddTagsToSortingCenter(tariff_id=tariff_id))
 
     async def add_terminals_sandbox(self, tariff_id: int) -> AddTerminalsReply:
         """Загрузить терминалы via ``POST /delivery-sandbox/tariffs/{tariff_id}/terminals``.
@@ -416,7 +420,7 @@ class DeliveryFacade(FacadeBase):
         Args:
             tariff_id: id тарифа, к которому должны быть прикреплены добавляемые терминалы
         """
-        return await self(AddTerminalsSandbox(tariff_id=tariff_id))
+        return await self.execute(AddTerminalsSandbox(tariff_id=tariff_id))
 
     async def update_terms(self, tariff_id: int) -> UpdateTermsReply:
         """Обновить сроки по тарифу via ``POST /delivery-sandbox/tariffs/{tariff_id}/terms``.
@@ -424,7 +428,7 @@ class DeliveryFacade(FacadeBase):
         Args:
             tariff_id: id тарифа, к которому должны быть прикреплены добавляемые области
         """
-        return await self(UpdateTerms(tariff_id=tariff_id))
+        return await self.execute(UpdateTerms(tariff_id=tariff_id))
 
     async def add_tariff_sandbox_v2(
         self,
@@ -445,7 +449,7 @@ class DeliveryFacade(FacadeBase):
             tariff_zones: Список тарифных зон
             terms_zones: Список зон сроков
         """
-        return await self(
+        return await self.execute(
             AddTariffSandboxV2(
                 delivery_provider_tariff_id=delivery_provider_tariff_id,
                 directions=directions,
@@ -458,7 +462,7 @@ class DeliveryFacade(FacadeBase):
 
     async def task(self, task_id: int) -> GetTaskReply:
         """Получение информации по задаче via ``GET /delivery-sandbox/tasks/{task_id}``."""
-        return await self(GetTask(task_id=task_id))
+        return await self.execute(GetTask(task_id=task_id))
 
     async def v1cancel_announcement(
         self, announcement_id: str, date_: TZDatetime, url_to_cancel_announcement: str
@@ -470,7 +474,7 @@ class DeliveryFacade(FacadeBase):
             date_: Дата события
             url_to_cancel_announcement: URL, куда отправлять отмену анонса.
         """
-        return await self(
+        return await self.execute(
             V1cancelAnnouncement(
                 announcement_id=announcement_id,
                 date_=date_,
@@ -484,7 +488,7 @@ class DeliveryFacade(FacadeBase):
         self, parcel_id: str, cancelation_url: str | None = None
     ) -> CancelSandboxParcelReply:
         """Отмена тестовой посылки via ``POST /delivery-sandbox/v1/cancelParcel``."""
-        return await self(
+        return await self.execute(
             V1CancelParcel(
                 options=CancelSandboxParcelOptions(cancelation_url=cancelation_url),
                 parcel_id=parcel_id,
@@ -510,7 +514,7 @@ class DeliveryFacade(FacadeBase):
             parcel_id: Идентификатор посылки.
             type_: Тип заявки, которую необходимо зарегистрировать.
         """
-        return await self(
+        return await self.execute(
             V1changeParcel(
                 application=ChangeParcelRequestApplication(kind=kind, name=name, phones=phones),
                 options=ChangeParcelRequestOptions(change_parcel_url=change_parcel_url),
@@ -556,7 +560,7 @@ class DeliveryFacade(FacadeBase):
             sender_phones: Контактные телефоны.
             sender_type_: Тип участника доставки (отправителя/получателя).
         """
-        return await self(
+        return await self.execute(
             V1createAnnouncement(
                 announcement_id=announcement_id,
                 announcement_type=announcement_type,
@@ -587,7 +591,7 @@ class DeliveryFacade(FacadeBase):
         Args:
             announcement_id: Уникальный идентификатор анонса UUID V4.
         """
-        return await self(V1getAnnouncementEvent(announcement_id=announcement_id))
+        return await self.execute(V1getAnnouncementEvent(announcement_id=announcement_id))
 
     async def v1get_change_parcel_info(self, application_id: str) -> GetChangeParcelInfoReply:
         """Получение информации об изменении тестовой посылки via ``POST /delivery-sandbox/v1/getChangeParcelInfo``.
@@ -595,15 +599,15 @@ class DeliveryFacade(FacadeBase):
         Args:
             application_id: Идентификатор заявки на изменение данных посылки
         """
-        return await self(V1getChangeParcelInfo(application_id=application_id))
+        return await self.execute(V1getChangeParcelInfo(application_id=application_id))
 
     async def v1get_parcel_info(self, parcel_id: str) -> GetSandboxParcelInfoReply:
         """Получение информации о тестовой посылке via ``POST /delivery-sandbox/v1/getParcelInfo``."""
-        return await self(V1getParcelInfo(parcel_id=parcel_id))
+        return await self.execute(V1getParcelInfo(parcel_id=parcel_id))
 
     async def v1get_registered_parcel_id(self, order_id: str) -> GetRegisteredParcelIdReply:
         """Получение ID зарегистрированной тестовой посылки via ``POST /delivery-sandbox/v1/getRegisteredParcelID``."""
-        return await self(V1getRegisteredParcelId(order_id=order_id))
+        return await self.execute(V1getRegisteredParcelId(order_id=order_id))
 
     async def create_sandbox_parcel_v22(
         self,
@@ -620,7 +624,7 @@ class DeliveryFacade(FacadeBase):
             registration_url: На заданный URL будет отправлен запрос на регистрацию посылки
             inn: ИНН пользователя, будет работать при tag - B2C.
         """
-        return await self(
+        return await self.execute(
             CreateSandboxParcelV22(
                 items=items,
                 options=CreateSandboxV2Options(registration_url=registration_url),
@@ -645,7 +649,7 @@ class DeliveryFacade(FacadeBase):
             reason: Причина отклонения заявки (заполняется в случае отклонения).
             status: Статус обработки заявки
         """
-        return await self(
+        return await self.execute(
             ChangeParcelResult(
                 id=id,
                 options=ChangeParcelResultOptions(storage_extended_to=storage_extended_to),
@@ -662,4 +666,4 @@ class DeliveryFacade(FacadeBase):
         Args:
             type_: Тип заявки. Заявки могут быть следующих типов: - `changeReceiver` - обновить данные о получателе посылки. - `extendParcelStorage` - продлить срок хранения посылки. - `prohibitParcelReceive` - запретить выдачу посылки на ПВЗ вручения. - `prohibitParcelAcceptance` - запретить прием посылки на ПВЗ отправки (в разработке). - `changeReceiverTerminalOnConfirmed` - обновить ПВЗ вручения.
         """
-        return await self(ChangeParcels(applications=applications, type_=type_))
+        return await self.execute(ChangeParcels(applications=applications, type_=type_))

@@ -13,7 +13,7 @@ class CalltrackingFacade(FacadeBase):
 
     async def call_by_id(self, call_id: int) -> GetCallByIdResponse:
         """Звонок по идентификатору via ``POST /calltracking/v1/getCallById/``."""
-        return await self(GetCallById(call_id=call_id))
+        return await self.execute(GetCallById(call_id=call_id))
 
     async def calls(
         self, date_time_from: str, limit: int, offset: int, date_time_to: str | None = None
@@ -26,7 +26,7 @@ class CalltrackingFacade(FacadeBase):
             limit: Размер выборки
             offset: Смещение выборки
         """
-        return await self(
+        return await self.execute(
             GetCalls(
                 date_time_from=date_time_from, date_time_to=date_time_to, limit=limit, offset=offset
             )
@@ -38,4 +38,4 @@ class CalltrackingFacade(FacadeBase):
         Args:
             call_id: Идентификатор звонка
         """
-        return await self(GetRecordByCallId(call_id=call_id))
+        return await self.execute(GetRecordByCallId(call_id=call_id))

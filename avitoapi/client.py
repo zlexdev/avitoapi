@@ -181,8 +181,23 @@ class Client(
         """
 
         if isinstance(method, PaginatedMethod):
-            return MethodPaginator(self, method)
-        return method.as_(self).emit(self)
+            return self.paginate(method)
+        return self.execute(method)
+
+    async def execute(self, method: BaseMethod[TR]) -> TR:
+        """Run one non-paginated method and return its decoded result.
+
+        The generated facade methods call this (``await self.execute(...)``) — an explicit
+        coroutine return type, unlike the overloaded :meth:`__call__`, so IDE async
+        inspections don't flag the ``await`` at every call site.
+        """
+
+        return await method.as_(self).emit(self)
+
+    def paginate(self, method: PaginatedMethod[TR]) -> MethodPaginator[Any]:
+        """Wrap a paginated method in a :class:`MethodPaginator` (await first page / async-for all)."""
+
+        return MethodPaginator(self, method)
 
     @property
     def request_middlewares(self) -> RequestMiddlewareManager:

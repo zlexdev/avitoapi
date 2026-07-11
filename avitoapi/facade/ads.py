@@ -83,7 +83,7 @@ class AdsFacade(FacadeBase):
 
     async def v1_get_account_by_id(self, account_id: int) -> V1GetAccountByIdOut:
         """Получить аккаунт по ID via ``GET /ads/v1/account/{account_id}``."""
-        return await self(V1GetAccountById(account_id=account_id))
+        return await self.execute(V1GetAccountById(account_id=account_id))
 
     async def v1_create_account(
         self,
@@ -112,7 +112,7 @@ class AdsFacade(FacadeBase):
             ogrn: ОГРН или ОГРНИП
             short_name: Краткое название аккаунта
         """
-        return await self(
+        return await self.execute(
             V1CreateAccount(
                 account_id=account_id,
                 actual_address=actual_address,
@@ -133,7 +133,7 @@ class AdsFacade(FacadeBase):
         Args:
             user_id: ID пользователя авито
         """
-        return await self(V1AddUser(account_id=account_id, role=role, user_id=user_id))
+        return await self.execute(V1AddUser(account_id=account_id, role=role, user_id=user_id))
 
     async def v1_get_advertisers_list(
         self,
@@ -153,7 +153,7 @@ class AdsFacade(FacadeBase):
             limit: Количество записей на странице
             page: Номер страницы
         """
-        return await self(
+        return await self.execute(
             V1GetAdvertisersList(
                 account_id=account_id,
                 filter=AdvertiserFilter(ids=ids, inns=inns, roles=roles),
@@ -164,7 +164,7 @@ class AdsFacade(FacadeBase):
 
     async def v1_get_account_balance_by_id(self, account_id: int) -> V1GetAccountBalanceByIdOut:
         """Получить баланс аккаунта по ID via ``GET /ads/v1/account/{account_id}/balance``."""
-        return await self(V1GetAccountBalanceById(account_id=account_id))
+        return await self.execute(V1GetAccountBalanceById(account_id=account_id))
 
     async def v1_transfer_bonus(
         self, account_id: int, account_id_to: int, amount: int
@@ -175,7 +175,7 @@ class AdsFacade(FacadeBase):
             account_id_to: accountId на который перевести
             amount: Сумма бонусов, не меньше 1 бонуса
         """
-        return await self(
+        return await self.execute(
             V1TransferBonus(account_id=account_id, account_id_to=account_id_to, amount=amount)
         )
 
@@ -209,7 +209,7 @@ class AdsFacade(FacadeBase):
             limit: Количество записей на странице
             page: Номер страницы
         """
-        return await self(
+        return await self.execute(
             V1GetCampaignsList(
                 account_id=account_id,
                 filter=CampaignsFilter(
@@ -246,7 +246,7 @@ class AdsFacade(FacadeBase):
             date_from: Дата начала периода в формате YYYY-MM-DD
             date_to: Дата окончания периода в формате YYYY-MM-DD
         """
-        return await self(
+        return await self.execute(
             V1GetCreativesStatistic(
                 account_id=account_id,
                 campaign_id=campaign_id,
@@ -273,7 +273,7 @@ class AdsFacade(FacadeBase):
             date_to: Дата окончания периода в формате YYYY-MM-DD
             group_ids: Список ID групп для получения статистики
         """
-        return await self(
+        return await self.execute(
             V1GetGroupsStatistic(
                 account_id=account_id,
                 campaign_id=campaign_id,
@@ -294,7 +294,7 @@ class AdsFacade(FacadeBase):
             date_from: Дата начала периода в формате YYYY-MM-DD
             date_to: Дата окончания периода в формате YYYY-MM-DD
         """
-        return await self(
+        return await self.execute(
             V1GetCampaignStatistic(
                 account_id=account_id, campaign_id=campaign_id, date_from=date_from, date_to=date_to
             )
@@ -302,13 +302,13 @@ class AdsFacade(FacadeBase):
 
     async def v1_get_child_accounts_list(self, account_id: int) -> V1GetChildAccountsListOut:
         """Получить список дочерних аккаунтов via ``GET /ads/v1/account/{account_id}/children``."""
-        return await self(V1GetChildAccountsList(account_id=account_id))
+        return await self.execute(V1GetChildAccountsList(account_id=account_id))
 
     async def v1_get_child_accounts_with_balances_list(
         self, account_id: int
     ) -> V1GetChildAccountsWithBalancesListOut:
         """Получить список дочерних аккаунтов с балансами via ``GET /ads/v1/account/{account_id}/children-with-balances``."""
-        return await self(V1GetChildAccountsWithBalancesList(account_id=account_id))
+        return await self.execute(V1GetChildAccountsWithBalancesList(account_id=account_id))
 
     async def v1_get_contracts_list(
         self,
@@ -328,7 +328,7 @@ class AdsFacade(FacadeBase):
             limit: Количество записей на странице
             page: Номер страницы
         """
-        return await self(
+        return await self.execute(
             V1GetContractsList(
                 account_id=account_id,
                 filter=ContractsFilter(
@@ -363,7 +363,7 @@ class AdsFacade(FacadeBase):
             ogrn: ОГРН или ОГРНИП
             short_name: Краткое наименование организации или ИП
         """
-        return await self(
+        return await self.execute(
             V1CreateAdvertiser(
                 account_id=account_id,
                 actual_address=actual_address,
@@ -419,7 +419,7 @@ class AdsFacade(FacadeBase):
             number: Номер договора. Можно не передавать только для type = external.
             parent_id: ID родительского договора для доп. соглашения
         """
-        return await self(
+        return await self.execute(
             V1CreateContract(
                 account_id=account_id,
                 advertiser_id=advertiser_id,
@@ -455,7 +455,7 @@ class AdsFacade(FacadeBase):
             is_self_advertising_enabled: Флаг разрешающий рекламировать родительский аккаунт. Если вам надо рекламировать нового рекламодателя без возможности рекламировать родителя, выставлять - false
             short_name: Краткое название дочернего аккаунта, меньше 64 символов
         """
-        return await self(
+        return await self.execute(
             V1CreateNonPayerAccount(
                 account_id=account_id,
                 is_self_advertising_enabled=is_self_advertising_enabled,
@@ -492,7 +492,7 @@ class AdsFacade(FacadeBase):
             limit: Количество записей на странице
             page: Номер страницы
         """
-        return await self(
+        return await self.execute(
             V1GetCreativesList(
                 account_id=account_id,
                 filter=CreativesFilter(
@@ -513,7 +513,7 @@ class AdsFacade(FacadeBase):
 
     async def v1_delete_user(self, account_id: int, user_id: int | None = None) -> EmptyResponse:
         """Удалить пользователя из аккаунта via ``DELETE /ads/v1/account/{account_id}/delete-user/{user_id}``."""
-        return await self(
+        return await self.execute(
             V1DeleteUser(
                 account_id=account_id,
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
@@ -529,7 +529,7 @@ class AdsFacade(FacadeBase):
             account_id_to: accountId на который перевести
             amount: Сумма перевода в рублях, не меньше 1 рубля
         """
-        return await self(
+        return await self.execute(
             V1TransferFunds(account_id=account_id, account_id_to=account_id_to, amount=amount)
         )
 
@@ -539,7 +539,9 @@ class AdsFacade(FacadeBase):
         Args:
             budget: Новый бюджет группы в рублях с НДС
         """
-        return await self(V1ChangeBudget(account_id=account_id, group_id=group_id, budget=budget))
+        return await self.execute(
+            V1ChangeBudget(account_id=account_id, group_id=group_id, budget=budget)
+        )
 
     async def v1_change_price(self, account_id: int, group_id: int, price: int) -> EmptyResponse:
         """Изменить цену группы via ``POST /ads/v1/account/{account_id}/group/{group_id}/change-price``.
@@ -547,7 +549,9 @@ class AdsFacade(FacadeBase):
         Args:
             price: Новая ставка группы в рублях с НДС
         """
-        return await self(V1ChangePrice(account_id=account_id, group_id=group_id, price=price))
+        return await self.execute(
+            V1ChangePrice(account_id=account_id, group_id=group_id, price=price)
+        )
 
     async def v1_get_groups_list(
         self,
@@ -576,7 +580,7 @@ class AdsFacade(FacadeBase):
             limit: Количество записей на странице
             page: Номер страницы
         """
-        return await self(
+        return await self.execute(
             V1GetGroupsList(
                 account_id=account_id,
                 filter=GroupsFilter(
@@ -602,8 +606,8 @@ class AdsFacade(FacadeBase):
         Args:
             user_id: ID пользователя авито
         """
-        return await self(V1SetUserRole(account_id=account_id, role=role, user_id=user_id))
+        return await self.execute(V1SetUserRole(account_id=account_id, role=role, user_id=user_id))
 
     async def v1_get_users_list_by_account(self, account_id: int) -> V1GetUsersListByAccountOut:
         """Получить список пользователей аккаунта via ``GET /ads/v1/account/{account_id}/users``."""
-        return await self(V1GetUsersListByAccount(account_id=account_id))
+        return await self.execute(V1GetUsersListByAccount(account_id=account_id))
