@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from . import events, exceptions, routers
 from .client import Client
+from .config import ClientConfig
 from .exceptions import (
     AuthError,
     ForbiddenError,
@@ -28,6 +29,7 @@ from .exceptions import (
 from .methods._base import BaseMethod
 from .models._base import AvitoObject
 from .models.common import AvitoErrorBody, Currency, Money, Page, TZDatetime
+from .polling import PollBatch, PollingRunner
 
 __version__ = "0.1.0"
 
@@ -37,6 +39,7 @@ __all__ = [
     "AvitoObject",
     "BaseMethod",
     "Client",
+    "ClientConfig",
     "Currency",
     "ForbiddenError",
     "HTTPError",
@@ -44,6 +47,8 @@ __all__ = [
     "Money",
     "NotFoundError",
     "Page",
+    "PollBatch",
+    "PollingRunner",
     "ProxyAuthError",
     "ProxyBanned",
     "ProxyConnectionError",
