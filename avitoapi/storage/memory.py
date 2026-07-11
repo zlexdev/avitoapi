@@ -62,6 +62,20 @@ class MemoryStorage(BaseStorage[object, str]):
         async with self._lock:
             self._data[full] = _Entry(value=copy.deepcopy(value), expires_at=expires_at)
 
+    async def add(self, key: str, value: object, *, ttl: timedelta | None = None) -> bool:
+        """Atomic set-if-absent under the shared lock (all namespaced views share it)."""
+
+        full = self._full_key(key)
+        expires_at = time.monotonic() + ttl.total_seconds() if ttl is not None else None
+        async with self._lock:
+            entry = self._data.get(full)
+            if entry is not None and (
+                entry.expires_at is None or entry.expires_at >= time.monotonic()
+            ):
+                return False
+            self._data[full] = _Entry(value=copy.deepcopy(value), expires_at=expires_at)
+            return True
+
     async def delete(self, key: str) -> None:
         full = self._full_key(key)
         async with self._lock:

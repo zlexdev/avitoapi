@@ -79,6 +79,22 @@ class RedisStorage(BaseStorage[object, str]):
         else:
             await self._redis().set(full, payload, px=int(ttl.total_seconds() * 1000))
 
+    async def add(self, key: str, value: object, *, ttl: timedelta | None = None) -> bool:
+        """Atomic set-if-absent via native ``SET ... NX`` — cross-process safe."""
+
+        payload = json.dumps(value, default=str, ensure_ascii=False)
+        full = self._full_key(key)
+        if ttl is None:
+            result = await self._redis().set(full, payload, nx=True)
+        else:
+            result = await self._redis().set(
+                full,
+                payload,
+                px=int(ttl.total_seconds() * 1000),
+                nx=True,
+            )
+        return bool(result)
+
     async def delete(self, key: str) -> None:
         await self._redis().delete(self._full_key(key))
 
