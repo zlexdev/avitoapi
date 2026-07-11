@@ -97,16 +97,6 @@ class DataResponse(AvitoObject):
     data: list[str] | None = Field(None, min_length=1, max_length=10000)
 
 
-class DaysResponse(AvitoObject):
-    """Параметры возврата
-
-    Attributes:
-        days: Количество дней до заезда, когда за отмену налагается штраф
-    """
-
-    days: int | None = None
-
-
 class EmployeeIdResponse(AvitoObject):
     """Информация об иерархии аккаунтов
 
@@ -233,16 +223,6 @@ class StatusResponse(AvitoObject):
     status: Any | None = None
 
 
-class StorageExtendedToResponse(AvitoObject):
-    """StorageExtendedToResponse — shared across domains.
-
-    Attributes:
-        storage_extended_to: Дата и время до которого продлено хранение (RFC3339). В случае отсутствия в системе информации о времени до которого возможно продления можно использовать константу `23:59:59 в московском часовом поясе`.
-    """
-
-    storage_extended_to: Any | None = Field(None, alias="storageExtendedTo")
-
-
 class SuccessResponse(AvitoObject):
     """SuccessResponse — shared across domains.
 
@@ -257,16 +237,6 @@ class TaskIdResponse(AvitoObject):
     """Идентификатор задачи проверки ИНН клиентов"""
 
     task_id: int = Field(..., alias="taskId")
-
-
-class TextResponse(AvitoObject):
-    """TextResponse — shared across domains.
-
-    Attributes:
-        text: Текст сообщения (максимум 1000 символов)
-    """
-
-    text: str | None = Field(None, max_length=1000)
 
 
 class ValidatingErrorError(AvitoObject):

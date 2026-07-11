@@ -20,7 +20,7 @@ from ..methods.messenger import (
     UploadImages,
 )
 from ..models._helpers import _resolve_user_id
-from ..models._shared import OkResponse, TextResponse
+from ..models._shared import OkResponse
 from ..models.messenger import (
     Chat,
     Chats,
@@ -29,6 +29,7 @@ from ..models.messenger import (
     Messages,
     PostBlacklistV2Users,
     PostSendImageMessageResponse,
+    PostSendMessageMessage,
     PostSendMessageResponse,
     UploadImagesResponse,
     VoiceFiles,
@@ -43,7 +44,7 @@ class MessengerFacade(FacadeBase):
         self,
         chat_id: str,
         user_id: int | None = None,
-        message: TextResponse | None = None,
+        text: str | None = None,
         type_: PostSendMessageType | None = None,
     ) -> PostSendMessageResponse:
         """Отправка сообщения via ``POST /messenger/v1/accounts/{user_id}/chats/{chat_id}/messages``.
@@ -51,13 +52,14 @@ class MessengerFacade(FacadeBase):
         Args:
             user_id: Идентификатор пользователя (клиента)
             chat_id: Идентификатор чата (клиента)
+            text: Текст сообщения (максимум 1000 символов)
             type_: Тип сообщения
         """
         return await self.execute(
             PostSendMessage(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 chat_id=chat_id,
-                message=message,
+                message=PostSendMessageMessage(text=text),
                 type_=type_,
             )
         )

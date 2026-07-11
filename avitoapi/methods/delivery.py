@@ -19,7 +19,6 @@ from ..enums.delivery import (
     V1changeParcelType,
     V1createAnnouncementAnnouncementType,
 )
-from ..models._shared import StorageExtendedToResponse
 from ..models.common import TZDatetime
 from ..models.delivery import (
     AddTariffReply,
@@ -32,6 +31,7 @@ from ..models.delivery import (
     ChangeParcelReply,
     ChangeParcelRequestApplication,
     ChangeParcelRequestOptions,
+    ChangeParcelResultOptions,
     ChangeParcelResultReply,
     ChangeParcelsApplication,
     ChangeParcelsResponse,
@@ -569,7 +569,7 @@ class ChangeParcelResult(BaseMethod[ChangeParcelResultReply]):
     __endpoint__: ClassVar[str] = "/delivery/order/changeParcelResult"
 
     id: str
-    options: StorageExtendedToResponse | None = None
+    options: ChangeParcelResultOptions | None = None
     reason: str | None = None
     status: ChangeParcelResultStatus
 

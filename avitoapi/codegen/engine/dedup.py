@@ -128,10 +128,24 @@ def _collapse_by_shape(domains: list[GeneratedDomain]) -> dict[str, ModelSpec]:
     """
 
     bound_anywhere = {name for gen in domains for name in gen.bound}
+    # Request-body sub-models (a method param whose type is a model) must stay in their
+    # domain: the facade flattens them into their fields, and collapsing them to a
+    # ``{field}Response`` canonical is both wrong (they're inputs, not responses) and breaks
+    # that flattening.
+    def _base(annotation: str) -> str:
+        return annotation.split("|")[0].strip()
+
+    body_models = {
+        _base(f.annotation)
+        for gen in domains
+        for m in gen.methods
+        for f in m.fields
+        if _base(f.annotation) in gen.models
+    }
     groups: dict[Signature, list[tuple[GeneratedDomain, str, ModelSpec]]] = defaultdict(list)
     for gen in domains:
         for name, model in gen.models.items():
-            if name in gen.bound or name in bound_anywhere or len(model.fields) != 1:
+            if name in gen.bound or name in bound_anywhere or name in body_models or len(model.fields) != 1:
                 continue
             if not _shareable(model):
                 continue

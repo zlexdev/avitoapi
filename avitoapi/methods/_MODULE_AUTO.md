@@ -68,9 +68,9 @@ cls V1GetChildAccountsWithBalancesList(BaseMethod[V1GetChildAccountsWithBalances
 
 cls V1GetContractsList(BaseMethod[V1GetContractsListOut])
 
-cls V1CreateAdvertiser(BaseMethod[V1CreateAdvertiserOut])
+cls V1CreateAdvertiser(BaseMethod[IdResponse])
 
-cls V1CreateContract(BaseMethod[V1CreateContractOut])
+cls V1CreateContract(BaseMethod[IdResponse])
 
 cls V1CreateNonPayerAccount(BaseMethod[V1CreateNonPayerAccountOut])
 
@@ -320,7 +320,7 @@ cls GetCallsByTimeV2(BaseMethod[GetCallsByTimeV2Response])
 
 cls ChatsByTime2(BaseMethod[ChatsByTime2Response])
 
-cls BalanceInfoV3(BaseMethod[BalanceInfoV3Response])
+cls BalanceInfoV3(BaseMethod[BalanceResponse])
 
 ```
 
@@ -333,7 +333,7 @@ cls GetBids(BaseMethod[GetBidsOut])
 
 cls GetPromotionsByItemIds(BaseMethod[GetPromotionsByItemIdsOut])
 
-cls RemovePromotion2(BaseMethod[RemovePromotion2Response])
+cls RemovePromotion2(BaseMethod[MessageResponse])
 
 cls SaveAutoBid(BaseMethod[None])
 
@@ -454,7 +454,7 @@ cls ApplicationsGetStates(BaseMethod[ApplicationsGetStatesResult])
 
 cls ApplicationsSetIsViewed(BaseMethod[SetApplicationsIsViewedResult])
 
-cls ApplicationsWebhookDelete(BaseMethod[ApplicationsWebhookDeleteResponse])
+cls ApplicationsWebhookDelete(BaseMethod[OkResponse])
 
 cls ApplicationsWebhookGet(BaseMethod[WebhookSubscribeRequestBody])
 
@@ -507,7 +507,7 @@ cls PostSendImageMessage(BaseMethod[PostSendImageMessageResponse])
 
 cls DeleteMessage(BaseMethod[DeleteMessageResponse])
 
-cls ChatRead(BaseMethod[ChatReadResponse])
+cls ChatRead(BaseMethod[OkResponse])
 
 cls GetVoiceFiles(BaseMethod[VoiceFiles])
 
@@ -515,7 +515,7 @@ cls UploadImages(BaseMethod[UploadImagesResponse])
 
 cls GetSubscriptions(BaseMethod[GetSubscriptionsResponse])
 
-cls PostWebhookUnsubscribe(BaseMethod[PostWebhookUnsubscribeResponse])
+cls PostWebhookUnsubscribe(BaseMethod[OkResponse])
 
 cls PostBlacklistV2(BaseMethod[None])
 
@@ -525,7 +525,7 @@ cls GetChatByIdV2(BaseMethod[Chat])
 
 cls GetMessagesV3(BaseMethod[Messages])
 
-cls PostWebhookV3(BaseMethod[PostWebhookV3Response])
+cls PostWebhookV3(BaseMethod[OkResponse])
 
 ```
 
@@ -536,9 +536,9 @@ cls PostWebhookV3(BaseMethod[PostWebhookV3Response])
 
 cls Markings(BaseMethod[SetOrderMarkingResponse])
 
-cls AcceptReturnOrder(BaseMethod[OrderAcceptReturnOrderResponse])
+cls AcceptReturnOrder(BaseMethod[SuccessResponse])
 
-cls ApplyTransition(BaseMethod[OrderApplyTransitionResponse])
+cls ApplyTransition(BaseMethod[SuccessResponse])
 
 cls CheckConfirmationCode(BaseMethod[OrderCheckConfirmationCodeResponse])
 
@@ -546,7 +546,7 @@ cls CncSetDetails(BaseMethod[OrderCncSetDetailsResponse])
 
 cls GetCourierDeliveryRange(BaseMethod[GetDeliveryCourierConfirmationResponse])
 
-cls SetCourierDeliveryRange(BaseMethod[SetCourierDeliveryRangeResponse])
+cls SetCourierDeliveryRange(BaseMethod[SuccessResponse])
 
 cls SetOrderTrackingNumber(BaseMethod[OrderSetTrackingNumberResponse])
 
@@ -631,7 +631,7 @@ cls PostBaseParams(BaseMethod[None])
 
 cls OpenApiAvailable(BaseMethod[OpenApiAvailableResponseBody])
 
-cls OpenApiMultiConfirm(BaseMethod[OpenApiMultiConfirmResponseBody])
+cls OpenApiMultiConfirm(BaseMethod[OkResponse])
 
 cls OpenApiMultiCreate(BaseMethod[OpenApiMultiCreateResponseBody])
 

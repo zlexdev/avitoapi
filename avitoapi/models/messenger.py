@@ -22,7 +22,7 @@ from ..enums.messenger import (
 )
 from ._base import AvitoObject
 from ._helpers import _resolve_user_id
-from ._shared import SizesResponse, TextResponse
+from ._shared import SizesResponse
 
 if TYPE_CHECKING:
     from ..methods.messenger import (
@@ -52,7 +52,9 @@ class Chat(AvitoObject):
     users: list[ChatUsers] | None = None
 
     def send_message(
-        self, message: TextResponse | None = None, type_: PostSendMessageType | None = None
+        self,
+        message: PostSendMessageMessage | None = None,
+        type_: PostSendMessageType | None = None,
     ) -> PostSendMessage:
         """Build an awaitable :class:`PostSendMessage` bound to this object (await to execute)."""
         from ..methods.messenger import PostSendMessage
@@ -434,8 +436,18 @@ class SendMessageRequestBody(AvitoObject):
         type_: Тип сообщения
     """
 
-    message: TextResponse | None = None
+    message: SendMessageRequestBodyMessage | None = None
     type_: SendMessageRequestBodyType | None = Field(None, alias="type")
+
+
+class SendMessageRequestBodyMessage(AvitoObject):
+    """SendMessageRequestBodyMessage response model.
+
+    Attributes:
+        text: Текст сообщения (максимум 1000 символов)
+    """
+
+    text: str | None = Field(None, max_length=1000)
 
 
 class WebhookSubscribeRequestBody(AvitoObject):
@@ -462,6 +474,16 @@ class PostSendMessageResponseContent(AvitoObject):
     """PostSendMessageResponseContent response model."""
 
     text: str | None = None
+
+
+class PostSendMessageMessage(AvitoObject):
+    """PostSendMessageMessage response model.
+
+    Attributes:
+        text: Текст сообщения (максимум 1000 символов)
+    """
+
+    text: str | None = Field(None, max_length=1000)
 
 
 class PostSendImageMessageResponse(AvitoObject):

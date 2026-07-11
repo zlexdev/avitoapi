@@ -89,7 +89,7 @@ from ..enums.delivery import (
     ZoneType,
 )
 from ._base import AvitoObject
-from ._shared import NameResponse, StatusResponse, StorageExtendedToResponse, TaskIdResponse
+from ._shared import NameResponse, StatusResponse, TaskIdResponse
 from .common import AvitoErrorBody, TZDatetime
 
 
@@ -524,9 +524,19 @@ class ChangeParcelResultRequest(AvitoObject):
     """
 
     id: str
-    options: StorageExtendedToResponse | None = None
+    options: ChangeParcelResultRequestOptions | None = None
     reason: str | None = None
     status: ChangeParcelResultRequestStatus
+
+
+class ChangeParcelResultRequestOptions(AvitoObject):
+    """ChangeParcelResultRequestOptions response model.
+
+    Attributes:
+        storage_extended_to: Дата и время до которого продлено хранение (RFC3339). В случае отсутствия в системе информации о времени до которого возможно продления можно использовать константу `23:59:59 в московском часовом поясе`.
+    """
+
+    storage_extended_to: Any | None = Field(None, alias="storageExtendedTo")
 
 
 class ChangeParcelsApplication(AvitoObject):
@@ -2518,6 +2528,16 @@ class CreateSandboxParcelV22Sender(AvitoObject):
 
     delivery: CreateSandboxParcelUserDelivery | None = None
     inn: str | None = None
+
+
+class ChangeParcelResultOptions(AvitoObject):
+    """ChangeParcelResultOptions response model.
+
+    Attributes:
+        storage_extended_to: Дата и время до которого продлено хранение (RFC3339). В случае отсутствия в системе информации о времени до которого возможно продления можно использовать константу `23:59:59 в московском часовом поясе`.
+    """
+
+    storage_extended_to: Any | None = Field(None, alias="storageExtendedTo")
 
 
 class AddAreasRequest(RootModel[list[Area]]):

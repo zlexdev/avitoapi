@@ -20,7 +20,6 @@ from ..enums.short_term_rental import (
     RealtyBookingStatus,
 )
 from ._base import AvitoObject
-from ._shared import DaysResponse
 
 
 class AvitoBooking(AvitoObject):
@@ -58,7 +57,7 @@ class BaseParams(AvitoObject):
     instant: BaseParamsInstant | None = None
     minimal_duration: int | None = None
     night_price: int | None = None
-    refund: DaysResponse | None = None
+    refund: BaseParamsRefund | None = None
 
 
 class BaseParamsDiscount(AvitoObject):
@@ -121,6 +120,16 @@ class BaseParamsInstant(AvitoObject):
     active: bool | None = None
     max_days: int | None = None
     min_days: int | None = None
+
+
+class BaseParamsRefund(AvitoObject):
+    """Параметры возврата
+
+    Attributes:
+        days: Количество дней до заезда, когда за отмену налагается штраф
+    """
+
+    days: int | None = None
 
 
 class ConflictedInterval(AvitoObject):
@@ -431,3 +440,13 @@ class PostBaseParamsInstant(AvitoObject):
     active: bool | None = None
     max_days: int | None = None
     min_days: int | None = None
+
+
+class PostBaseParamsRefund(AvitoObject):
+    """Параметры возврата
+
+    Attributes:
+        days: Количество дней до заезда, когда за отмену налагается штраф
+    """
+
+    days: int | None = None

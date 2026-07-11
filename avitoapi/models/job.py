@@ -1880,6 +1880,16 @@ class VacancyCreateV2Contacts(AvitoObject):
     phone: str | None = None
 
 
+class VacancyCreateV2Hierarchy(AvitoObject):
+    """employee_id - Идентификатор сотрудника на Авито. Если этот параметр указан, то с баланса сотрудника в Avito Pro будет списано размещение. Использовать параметр можно только с billing_type равным package. Сотрудник должен быть в активен.
+
+    Attributes:
+        employee_id: Идентификатор сотрудника на Авито
+    """
+
+    employee_id: int | None = None
+
+
 class VacancyCreateV2Location(AvitoObject):
     """Геолокация вакансии (как минимум одно из значений)"""
 
@@ -1914,6 +1924,16 @@ class VacancyUpdateV2Contacts(AvitoObject):
     email: str | None = Field(None, min_length=1, max_length=255)
     name: str | None = Field(None, min_length=1, max_length=30)
     phone: str | None = None
+
+
+class VacancyUpdateV2Hierarchy(AvitoObject):
+    """employee_id - Идентификатор сотрудника на Авито. Если этот параметр указан, то с баланса сотрудника в Avito Pro будет списано размещение. Использовать параметр можно только с billing_type равным package. Сотрудник должен быть в активен.
+
+    Attributes:
+        employee_id: Идентификатор сотрудника на Авито
+    """
+
+    employee_id: int | None = None
 
 
 class VacancyUpdateV2Location(AvitoObject):

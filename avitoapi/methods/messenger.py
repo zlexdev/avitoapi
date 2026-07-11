@@ -8,7 +8,7 @@ from typing import ClassVar
 from pydantic import Field
 
 from ..enums.messenger import GetChatsV2ChatTypes, PostSendMessageType
-from ..models._shared import OkResponse, TextResponse
+from ..models._shared import OkResponse
 from ..models.messenger import (
     Chat,
     Chats,
@@ -17,6 +17,7 @@ from ..models.messenger import (
     Messages,
     PostBlacklistV2Users,
     PostSendImageMessageResponse,
+    PostSendMessageMessage,
     PostSendMessageResponse,
     UploadImagesResponse,
     VoiceFiles,
@@ -40,7 +41,7 @@ class PostSendMessage(BaseMethod[PostSendMessageResponse]):
 
     user_id: int
     chat_id: str
-    message: TextResponse | None = None
+    message: PostSendMessageMessage | None = None
     type_: PostSendMessageType | None = Field(None, alias="type")
 
 
