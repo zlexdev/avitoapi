@@ -6,6 +6,7 @@ from __future__ import annotations
 from pydantic import Field
 
 from ._base import AvitoObject
+from .common import AvitoErrorBody
 
 
 class Call(AvitoObject):
@@ -34,19 +35,6 @@ class Call(AvitoObject):
     waiting_duration: float = Field(..., alias="waitingDuration")
 
 
-class Error(AvitoObject):
-    """Error response model.
-
-    See: https://developers.avito.ru/api-catalog/calltracking/documentation
-
-    Attributes:
-        code: Внутренний код ошибки Возможные значения: 0 - нет ошибки 1000 - пустой запрос 1001 - ошибка валидации 1002 - ошибка авторизации 1003 - внутренняя ошибка 1004 - не найдено
-    """
-
-    code: int
-    message: str
-
-
 class GetCallByIdResponse(AvitoObject):
     """GetCallByIdResponse response model.
 
@@ -54,20 +42,7 @@ class GetCallByIdResponse(AvitoObject):
     """
 
     call: Call
-    error: Error
-
-
-class GetCallRecordError(AvitoObject):
-    """GetCallRecordError response model.
-
-    See: https://developers.avito.ru/api-catalog/calltracking/documentation
-
-    Attributes:
-        code: Внутренний код ошибки Возможные значения: 0 - нет ошибки 1000 - пустой запрос 1001 - ошибка валидации 1002 - ошибка авторизации 1003 - внутренняя ошибка 1004 - не найдено 1005 - запись звонка еще не готова на стороне оператора
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody
 
 
 class GetCallsResponse(AvitoObject):
@@ -77,4 +52,4 @@ class GetCallsResponse(AvitoObject):
     """
 
     calls: list[Call]
-    error: Error
+    error: AvitoErrorBody

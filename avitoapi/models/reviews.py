@@ -9,6 +9,8 @@ from pydantic import Field
 
 from ..enums.reviews import ReviewAnswerStatus, ReviewStage
 from ._base import AvitoObject
+from ._shared import TooManyRequestsErrorError
+from .common import AvitoErrorBody
 
 
 class CreateAnswerRequestBody(AvitoObject):
@@ -170,20 +172,6 @@ class ReviewAnswer(AvitoObject):
     text: str
 
 
-class ReviewError(AvitoObject):
-    """Ошибка Bad Request
-
-    See: https://developers.avito.ru/api-catalog/ratings/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Текст ошибки
-    """
-
-    code: str
-    message: str
-
-
 class ReviewImage(AvitoObject):
     """Структура изображения, приложенного к отзыву
 
@@ -244,21 +232,7 @@ class ForbiddenError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/ratings/documentation
     """
 
-    error: ForbiddenErrorError | None = None
-
-
-class ForbiddenErrorError(AvitoObject):
-    """ForbiddenErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/ratings/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class InternalError(AvitoObject):
@@ -267,21 +241,7 @@ class InternalError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/ratings/documentation
     """
 
-    error: InternalErrorError | None = None
-
-
-class InternalErrorError(AvitoObject):
-    """InternalErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/ratings/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class NotFoundError(AvitoObject):
@@ -290,21 +250,7 @@ class NotFoundError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/ratings/documentation
     """
 
-    error: NotFoundErrorError | None = None
-
-
-class NotFoundErrorError(AvitoObject):
-    """NotFoundErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/ratings/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class TooManyRequestsError(AvitoObject):
@@ -314,18 +260,6 @@ class TooManyRequestsError(AvitoObject):
     """
 
     error: TooManyRequestsErrorError | None = None
-
-
-class TooManyRequestsErrorError(AvitoObject):
-    """TooManyRequestsErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/ratings/documentation
-
-    Attributes:
-        code: Код ошибки
-    """
-
-    code: int
 
 
 class ValidatingError(AvitoObject):

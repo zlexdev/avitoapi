@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import re
 
-from . import naming, render
+from . import dedup, naming, render
 from .build import GeneratedDomain, MethodSpec
 
 
@@ -63,12 +63,14 @@ def _import_block(gen: GeneratedDomain, text: str) -> str:
         lines.append(f"from ..methods.{gen.module} import {', '.join(method_classes)}")
 
     known_models = set(gen.models) | set(gen.root_models)
-    models_used = sorted({m.return_symbol for m in gen.methods if m.return_symbol} | {s for s in known_models if re.search(rf"\b{s}\b", text)})
+    candidates = {m.return_symbol for m in gen.methods if m.return_symbol} | {s for s in known_models if re.search(rf"\b{s}\b", text)}
+    models_used = sorted(candidates - set(gen.shared_imports))  # shared names import from _shared/common, not the domain module
     if models_used:
         lines.append(f"from ..models.{gen.module} import {', '.join(models_used)}")
     enums_used = sorted(e for e in gen.enums if re.search(rf"\b{e}\b", text))
     if enums_used:
         lines.append(f"from ..enums.{gen.module} import {', '.join(enums_used)}")
+    lines.extend(dedup.shared_import_lines(gen, text, in_models_pkg=False))
 
     lines.append("from ..models._helpers import _resolve_user_id")
     if any(m.paginated for m in gen.methods):

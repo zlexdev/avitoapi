@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 
-from . import render
+from . import dedup, render
 from .build import GeneratedDomain, MethodSpec
 
 
@@ -54,6 +54,7 @@ def _import_block(gen: GeneratedDomain, text: str) -> str:
     enums_used = sorted(e for e in gen.enums if re.search(rf"\b{e}\b", text))
     if enums_used:
         lines.append(f"from ..enums.{gen.module} import {', '.join(enums_used)}")
+    lines.extend(dedup.shared_import_lines(gen, text, in_models_pkg=False))
     return "\n".join(lines) + "\n"
 
 

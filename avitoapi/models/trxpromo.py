@@ -6,6 +6,7 @@ from __future__ import annotations
 from pydantic import Field
 
 from ._base import AvitoObject
+from .common import AvitoErrorBody
 
 
 class ApplyReq(AvitoObject):
@@ -58,22 +59,12 @@ class ApplyResponseSuccessResult(AvitoObject):
     See: https://developers.avito.ru/api-catalog/trxpromo/documentation
     """
 
-    error: ApplyResponseSuccessResultError | None = None
+    error: AvitoErrorBody | None = None
     item_id: int = Field(..., alias="itemID")
     success: bool
     valid_commission_range: ApplyResponseSuccessResultValidCommissionRange | None = Field(
         None, alias="validCommissionRange"
     )
-
-
-class ApplyResponseSuccessResultError(AvitoObject):
-    """ApplyResponseSuccessResultError response model.
-
-    See: https://developers.avito.ru/api-catalog/trxpromo/documentation
-    """
-
-    code: int
-    message: str
 
 
 class ApplyResponseSuccessResultValidCommissionRange(AvitoObject):
@@ -116,19 +107,9 @@ class CancelResponseSuccessResult(AvitoObject):
     See: https://developers.avito.ru/api-catalog/trxpromo/documentation
     """
 
-    error: CancelResponseSuccessResultError | None = None
+    error: AvitoErrorBody | None = None
     item_id: int = Field(..., alias="itemID")
     success: bool
-
-
-class CancelResponseSuccessResultError(AvitoObject):
-    """CancelResponseSuccessResultError response model.
-
-    See: https://developers.avito.ru/api-catalog/trxpromo/documentation
-    """
-
-    code: int
-    message: str
 
 
 class CommissionResponse(AvitoObject):
@@ -159,20 +140,10 @@ class CommissionResponseSuccessResult(AvitoObject):
         settings: Доступные настройки продвижения
     """
 
-    error: CommissionResponseSuccessResultError | None = None
+    error: AvitoErrorBody | None = None
     item_id: int = Field(..., alias="itemID")
     promo_available: bool = Field(..., alias="promoAvailable")
     settings: CommissionResponseSuccessResultSettings
-
-
-class CommissionResponseSuccessResultError(AvitoObject):
-    """CommissionResponseSuccessResultError response model.
-
-    See: https://developers.avito.ru/api-catalog/trxpromo/documentation
-    """
-
-    code: int
-    message: str
 
 
 class CommissionResponseSuccessResultSettings(AvitoObject):

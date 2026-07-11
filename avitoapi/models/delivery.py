@@ -21,14 +21,10 @@ from ..enums.delivery import (
     AreaServices,
     CancelParcelReplyDataStatus,
     CancelParcelRequestActor,
-    CancelSandboxParcelErrorCode,
-    ChangeParcelErrorCode,
     ChangeParcelRequestApplicationKind,
     ChangeParcelRequestType,
-    ChangeParcelResultReplyErrorCode,
     ChangeParcelResultRequestStatus,
     ChangeParcelsDataStatus,
-    ChangeParcelsErrorCode,
     ChangeParcelsRequestType,
     CheckConfirmationCodeReplyDataStatus,
     CreateParcelClientDeliveryCompletenessAndIntegrity,
@@ -36,12 +32,10 @@ from ..enums.delivery import (
     CreateParcelClientDeliveryCourierOptionsDeliveryType,
     CreateParcelClientDeliveryType,
     CreateParcelClientType,
-    CreateParcelErrorCode,
     CreateParcelOptionsReturnPolicyAction,
     CreateParcelOptionsReturnPolicyAfterUnit,
     CreateParcelPaymentStatus,
     CreateParcelPropertyAccuracy,
-    CreateSandboxParcelErrorCode,
     CreateSandboxParcelOptionsXDeliveryLeg,
     CustomAreaScheduleRequestObjectServices,
     DeliveryDirectionTagRoot,
@@ -75,22 +69,16 @@ from ..enums.delivery import (
     DeliveryTariffZoneServiceInsuranceC2CCalculationMechanic,
     DeliveryTariffZoneServiceInsuranceC2CChargeableParameter,
     DeliveryTariffZoneServiceInsuranceC2CServiceName,
-    GetChangeParcelInfoErrorCode,
     GetInfoByOrderIdErrorReplyName,
-    GetRegisteredParcelIdErrorCode,
-    GetSandboxParcelInfoErrorCode,
     GetTaskDataState,
     GetTerminalsTaskReplyDataState,
     ProhibitOrderAcceptanceReplyDataStatus,
-    SandboxCancelAnnouncementErrorCode,
     SandboxCancelAnnouncementReplyDataStatus,
     SandboxCreateAnnouncementDeliveryPointAccuracy,
-    SandboxCreateAnnouncementErrorCode,
     SandboxCreateAnnouncementParticipantDeliveryType,
     SandboxCreateAnnouncementParticipantType,
     SandboxCreateAnnouncementReplyDataStatus,
     SandboxCreateAnnouncementRequestAnnouncementType,
-    SandboxGetAnnouncementEventErrorCode,
     SetOrderRealAddressAddressAddressType,
     SetStatusErrorReplyName,
     SetStatusRequestStatus,
@@ -99,7 +87,7 @@ from ..enums.delivery import (
     ZoneType,
 )
 from ._base import AvitoObject
-from .common import TZDatetime
+from .common import AvitoErrorBody, TZDatetime
 
 if TYPE_CHECKING:
     from ..methods.delivery import GetTask
@@ -112,7 +100,7 @@ class AddTariffReply(AvitoObject):
     """
 
     data: AddTariffReplyData | None = None
-    error: DeliveryError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class AddTariffReplyData(AvitoObject):
@@ -174,7 +162,7 @@ class AddTaskReply(AvitoObject):
     """
 
     data: AddTaskReplyData | None = None
-    error: AddTaskReplyError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class AddTaskReplyData(AvitoObject):
@@ -189,20 +177,6 @@ class AddTaskReplyData(AvitoObject):
     task_id: int | None = Field(None, alias="taskId")
 
 
-class AddTaskReplyError(AvitoObject):
-    """AddTaskReplyError response model.
-
-    See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-
-    Attributes:
-        code: код ошибки
-        message: человекопонятное описание ошибки
-    """
-
-    code: str
-    message: str
-
-
 class AddTerminalsReply(AvitoObject):
     """AddTerminalsReply response model.
 
@@ -210,7 +184,7 @@ class AddTerminalsReply(AvitoObject):
     """
 
     data: AddTerminalsReplyData | None = None
-    error: DeliveryError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class AddTerminalsReplyData(AvitoObject):
@@ -437,7 +411,7 @@ class AnnouncementsSuccessResponse(AvitoObject):
     """
 
     data: AnnouncementsSuccessResponseData | None = None
-    error: AnnouncementsSuccessResponseError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class AnnouncementsSuccessResponseData(AvitoObject):
@@ -450,20 +424,6 @@ class AnnouncementsSuccessResponseData(AvitoObject):
     """
 
     status: AnnouncementsSuccessResponseDataStatus | None = None
-
-
-class AnnouncementsSuccessResponseError(AvitoObject):
-    """AnnouncementsSuccessResponseError response model.
-
-    See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Текстовое описание ошибки
-    """
-
-    code: str | None = None
-    message: str | None = None
 
 
 class AnnouncementsTrackAnnouncementRequest(AvitoObject):
@@ -529,16 +489,6 @@ class Breadcrumb(AvitoObject):
     name: str = Field(..., max_length=255)
 
 
-class CancelSandboxParcelError(AvitoObject):
-    """CancelSandboxParcelError response model.
-
-    See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-    """
-
-    code: CancelSandboxParcelErrorCode
-    message: str | None = None
-
-
 class CancelSandboxParcelOptions(AvitoObject):
     """CancelSandboxParcelOptions response model.
 
@@ -555,7 +505,7 @@ class CancelSandboxParcelReply(AvitoObject):
     """
 
     data: CancelSandboxParcelReplyData | None = None
-    error: CancelSandboxParcelError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class CancelSandboxParcelReplyData(AvitoObject):
@@ -577,16 +527,6 @@ class CancelSandxobParcelRequest(AvitoObject):
     parcel_id: str = Field(..., alias="parcelID")
 
 
-class ChangeParcelError(AvitoObject):
-    """ChangeParcelError response model.
-
-    See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-    """
-
-    code: ChangeParcelErrorCode
-    message: str | None = None
-
-
 class ChangeParcelReply(AvitoObject):
     """ChangeParcelReply response model.
 
@@ -594,7 +534,7 @@ class ChangeParcelReply(AvitoObject):
     """
 
     data: ChangeParcelReplyData | None = None
-    error: ChangeParcelError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class ChangeParcelReplyData(AvitoObject):
@@ -660,17 +600,7 @@ class ChangeParcelResultReply(AvitoObject):
     """
 
     data: dict[str, Any] | None = None
-    error: ChangeParcelResultReplyError | None = None
-
-
-class ChangeParcelResultReplyError(AvitoObject):
-    """ChangeParcelResultReplyError response model.
-
-    See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-    """
-
-    code: ChangeParcelResultReplyErrorCode
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class ChangeParcelResultRequest(AvitoObject):
@@ -744,20 +674,6 @@ class ChangeParcelsData(AvitoObject):
     status: ChangeParcelsDataStatus
 
 
-class ChangeParcelsError(AvitoObject):
-    """Ошибка регистрации заявки на изменение посылок. Поле присутствует, если запрос не был успешно обработан. Если запрос был успешно обработан, то поле отсутствует.
-
-    See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-
-    Attributes:
-        code: Код ошибки. VALIDATION_ERROR – ошибка валидации входящих параметров. Например: Длина передаваемого поля превышает допустимые лимиты. В запросе отсутствует поле, обязательное для данного типа ( type ) заявки. В поле error.message должно содержаться пояснение, какое поле не прошло валидацию. UNSUPPORTED_PARAM_ERROR – в запросе получен неподдерживаемый параметр. Например: В запросе передан тип ( type ) заявки, который не реализован на стороне СД. Запрос содержит заполненные поля, которые не соответствую типу ( type ) заявки. Например для заявки с type=extendParcelStorage передано заполненное поле receiver.phones В поле error.message должно содержаться пояснение, какое поле не поддерживается. Важно! Перечисленные выше ошибки можно использовать только для проверки корректности входящего контракта и запрещено использовать для проверки бизнес-логики сценария. Все возникающие ошибки бизнес-логики, которые могут возникнуть в процессе исполнения заявки, должны передаваться в поле reason запроса changeParcelResult Примеры ошибок бизнес-логики: На стороне СД не найдена посылка по переданному `parcelID`. Посылка, для которой необходимо выполнить заявку запрета приема в ПВЗ отправки ( prohibitParcelAcceptance ), уже принята в ПВЗ отправки. Посылка, для которой необходимо продлить срок хранения посылки ( extendParcelStorage ), уже истек срок хранения и она отправлена на возврат. Посылка, для которой необходимо запретить выдачу в ПВЗ вручения ( prohibitParcelReceive ) уже вручена получателю. Все перечисленные ошибки – \"терминальные\". При получении этих ошибок Avito не будет выполнять повторные запросы, т.к. повтор приведет к тому же результату. Список в дальнейшем может пополняться.
-        message: Человекочитаемые детали произошедшей ошибки. Поле будет использоваться живыми людьми для диагностирования проблемы.
-    """
-
-    code: ChangeParcelsErrorCode
-    message: str
-
-
 class ChangeParcelsRequest(AvitoObject):
     """ChangeParcelsRequest response model.
 
@@ -778,7 +694,7 @@ class ChangeParcelsResponse(AvitoObject):
     """
 
     data: ChangeParcelsData | None = None
-    error: ChangeParcelsError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class ChangeParcelsTerminal(AvitoObject):
@@ -1127,20 +1043,6 @@ class CreateParcelDeliveryCourier(AvitoObject):
     options: CreateParcelCourierOptions | None = None
 
 
-class CreateParcelError(AvitoObject):
-    """Ошибка создания посылки. Поле присутствует, если запрос не был успешно обработан. Если запрос был успешно обработан, то поле отсутствует.
-
-    See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-
-    Attributes:
-        code: Код ошибки. - `VALIDATION_ERROR` – ошибка валидации данных (например, длина передаваемого поля превышает допустимые лимиты, или какое-то поле отсутствует). В поле `error.message` должно содержаться пояснение, какое поле не прошло валидацию. - `UNSUPPORTED_PARAM_ERROR` – в запросе получен неподдерживаемый параметр. В поле `error.message` должно содержаться пояснение, какое поле не поддерживается. - `TERMINAL_UNAVAILABLE` – терминал, указанный в запросе, недоступен для создания посылки. В поле `error.message` должно содержаться пояснение причины недоступности терминала. - `SORTING_CENTER_UNAVAILABLE` – сортировочный центр, указанный в запросе, недоступен для создания посылки. В поле error.message должно содержаться пояснение причины недоступности сортировочного центра. Все перечисленные ошибки – \"терминальные\". При получении этих ошибок Avito не будет выполнять повторные запросы, т.к. повтор приведет к тому же результату. Список в дальнейшем может пополняться.
-        message: Текстовое описание ошибки
-    """
-
-    code: CreateParcelErrorCode
-    message: str
-
-
 class CreateParcelItem(AvitoObject):
     """CreateParcelItem response model.
 
@@ -1327,7 +1229,7 @@ class CreateParcelReply(AvitoObject):
     """
 
     data: CreateParcelReplyData | None = None
-    error: CreateParcelError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class CreateParcelReplyData(AvitoObject):
@@ -1374,7 +1276,7 @@ class CreateParcelResponse(AvitoObject):
     """
 
     data: CreateParcelData | None = None
-    error: CreateParcelError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class CreateParcelUserDeliveryTerminal(AvitoObject):
@@ -1387,16 +1289,6 @@ class CreateParcelUserDeliveryTerminal(AvitoObject):
     """
 
     id: str | None = None
-
-
-class CreateSandboxParcelError(AvitoObject):
-    """CreateSandboxParcelError response model.
-
-    See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-    """
-
-    code: CreateSandboxParcelErrorCode
-    message: str | None = None
 
 
 class CreateSandboxParcelItem(AvitoObject):
@@ -1588,20 +1480,6 @@ class DeliveryTerms(AvitoObject):
     tough_wrap: bool | None = Field(None, alias="toughWrap")
 
 
-class DeliveryError(AvitoObject):
-    """DeliveryError response model.
-
-    See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-
-    Attributes:
-        code: код ошибки
-        message: Человекопонятное описание ошибки
-    """
-
-    code: str
-    message: str
-
-
 class DeliveryError4Xx(AvitoObject):
     """DeliveryError4Xx response model.
 
@@ -1636,7 +1514,7 @@ class DeliverySetOrderPropertiesReply(AvitoObject):
     """
 
     data: DeliverySetOrderPropertiesReplyData | None = None
-    error: DeliveryError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class DeliverySetOrderPropertiesReplyData(AvitoObject):
@@ -1668,7 +1546,7 @@ class DeliverySetOrderRealAddresseReply(AvitoObject):
     """
 
     data: DeliverySetOrderRealAddresseReplyData | None = None
-    error: DeliveryError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class DeliverySetOrderRealAddresseReplyData(AvitoObject):
@@ -1726,7 +1604,7 @@ class DeliverySetStatusReply(AvitoObject):
     """
 
     data: DeliverySetStatusReplyData | None = None
-    error: DeliveryError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class DeliverySetStatusReplyData(AvitoObject):
@@ -2116,16 +1994,6 @@ class DirectionV2(AvitoObject):
     zones: list[Zone]
 
 
-class GetChangeParcelInfoError(AvitoObject):
-    """GetChangeParcelInfoError response model.
-
-    See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-    """
-
-    code: GetChangeParcelInfoErrorCode
-    message: str | None = None
-
-
 class GetChangeParcelInfoReply(AvitoObject):
     """GetChangeParcelInfoReply response model.
 
@@ -2133,7 +2001,7 @@ class GetChangeParcelInfoReply(AvitoObject):
     """
 
     data: GetChangeParcelInfoReplyData | None = None
-    error: GetChangeParcelInfoError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class GetChangeParcelInfoReplyData(AvitoObject):
@@ -2191,16 +2059,6 @@ class GetInfoByOrderIdErrorReply(AvitoObject):
     name: GetInfoByOrderIdErrorReplyName | None = None
 
 
-class GetRegisteredParcelIdError(AvitoObject):
-    """GetRegisteredParcelIdError response model.
-
-    See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-    """
-
-    code: GetRegisteredParcelIdErrorCode
-    message: str | None = None
-
-
 class GetRegisteredParcelIdReply(AvitoObject):
     """GetRegisteredParcelIdReply response model.
 
@@ -2208,7 +2066,7 @@ class GetRegisteredParcelIdReply(AvitoObject):
     """
 
     data: GetRegisteredParcelIdReplyData | None = None
-    error: GetRegisteredParcelIdError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class GetRegisteredParcelIdReplyData(AvitoObject):
@@ -2241,16 +2099,6 @@ class GetSandboxParcelInfoDimensions(AvitoObject):
     real_width: int | None = Field(None, alias="realWidth")
 
 
-class GetSandboxParcelInfoError(AvitoObject):
-    """GetSandboxParcelInfoError response model.
-
-    See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-    """
-
-    code: GetSandboxParcelInfoErrorCode
-    message: str | None = None
-
-
 class GetSandboxParcelInfoParcelHistory(AvitoObject):
     """GetSandboxParcelInfoParcelHistory response model.
 
@@ -2270,7 +2118,7 @@ class GetSandboxParcelInfoReply(AvitoObject):
     """
 
     data: GetSandboxParcelInfoReplyData | None = None
-    error: GetSandboxParcelInfoError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class GetSandboxParcelInfoReplyData(AvitoObject):
@@ -2340,7 +2188,7 @@ class GetTariffTaskReply(AvitoObject):
     """
 
     data: GetTariffTaskReplyData | None = None
-    error: DeliveryError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class GetTariffTaskReplyData(AvitoObject):
@@ -2354,7 +2202,7 @@ class GetTariffTaskReplyData(AvitoObject):
         task_id: id задачи на добавление тарифа
     """
 
-    errors: list[DeliveryError] | None = None
+    errors: list[AvitoErrorBody] | None = None
     result: TariffTaskResult | None = None
     state: Any | None = None
     task_id: int | None = Field(None, alias="taskId")
@@ -2369,7 +2217,7 @@ class GetTaskData(AvitoObject):
         state: Статус задачи
     """
 
-    errors: list[DeliveryError] | None = None
+    errors: list[AvitoErrorBody] | None = None
     result: Any | None = None
     state: GetTaskDataState
     task_id: int = Field(..., alias="taskId")
@@ -2382,7 +2230,7 @@ class GetTaskReply(AvitoObject):
     """
 
     data: GetTaskData | None = None
-    error: DeliveryError | None = None
+    error: AvitoErrorBody | None = None
 
     def get_task(self) -> GetTask:
         """Build an awaitable :class:`GetTask` bound to this object (await to execute)."""
@@ -2398,7 +2246,7 @@ class GetTerminalsTaskReply(AvitoObject):
     """
 
     data: GetTerminalsTaskReplyData | None = None
-    error: DeliveryError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class GetTerminalsTaskReplyData(AvitoObject):
@@ -2411,21 +2259,10 @@ class GetTerminalsTaskReplyData(AvitoObject):
         state: Статус задачи
     """
 
-    errors: list[DeliveryError] | None = None
+    errors: list[AvitoErrorBody] | None = None
     result: TerminalsTaskResult | None = None
     state: GetTerminalsTaskReplyDataState | None = None
     task_id: int | None = Field(None, alias="taskId")
-
-
-class GetTokenRequest(AvitoObject):
-    """GetTokenRequest response model.
-
-    See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-    """
-
-    client_id: str
-    client_secret: str
-    grant_type: str
 
 
 class ImageUrls(AvitoObject):
@@ -2464,16 +2301,6 @@ class Restriction(AvitoObject):
     max_weight: int = Field(..., ge=1000, le=100000000000, alias="maxWeight")
 
 
-class SandboxCancelAnnouncementError(AvitoObject):
-    """SandboxCancelAnnouncementError response model.
-
-    See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-    """
-
-    code: SandboxCancelAnnouncementErrorCode
-    message: str
-
-
 class SandboxCancelAnnouncementOptions(AvitoObject):
     """Опции отмены анонса.
 
@@ -2493,7 +2320,7 @@ class SandboxCancelAnnouncementReply(AvitoObject):
     """
 
     data: SandboxCancelAnnouncementReplyData | None = None
-    error: SandboxCancelAnnouncementError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class SandboxCancelAnnouncementReplyData(AvitoObject):
@@ -2537,16 +2364,6 @@ class SandboxCreateAnnouncementDeliveryPoint(AvitoObject):
     accuracy: SandboxCreateAnnouncementDeliveryPointAccuracy | None = None
     id: str | None = None
     provider: str
-
-
-class SandboxCreateAnnouncementError(AvitoObject):
-    """SandboxCreateAnnouncementError response model.
-
-    See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-    """
-
-    code: SandboxCreateAnnouncementErrorCode
-    message: str
 
 
 class SandboxCreateAnnouncementOptions(AvitoObject):
@@ -2619,7 +2436,7 @@ class SandboxCreateAnnouncementReply(AvitoObject):
     """
 
     data: SandboxCreateAnnouncementReplyData | None = None
-    error: SandboxCreateAnnouncementError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class SandboxCreateAnnouncementReplyData(AvitoObject):
@@ -2659,16 +2476,6 @@ class SandboxCreateAnnouncementRequest(AvitoObject):
     sender: SandboxCreateAnnouncementParticipant
 
 
-class SandboxGetAnnouncementEventError(AvitoObject):
-    """SandboxGetAnnouncementEventError response model.
-
-    See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-    """
-
-    code: SandboxGetAnnouncementEventErrorCode
-    message: str
-
-
 class SandboxGetAnnouncementEventReply(AvitoObject):
     """SandboxGetAnnouncementEventReply response model.
 
@@ -2676,7 +2483,7 @@ class SandboxGetAnnouncementEventReply(AvitoObject):
     """
 
     data: SandboxGetAnnouncementEventReplyData | None = None
-    error: SandboxGetAnnouncementEventError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class SandboxGetAnnouncementEventReplyData(AvitoObject):
@@ -2716,20 +2523,6 @@ class Schedule(AvitoObject):
     thu: list[str]
     tue: list[str]
     wed: list[str]
-
-
-class ServerErrorReply(AvitoObject):
-    """ServerErrorReply response model.
-
-    See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
 
 
 class SetStatusErrorReply(AvitoObject):
@@ -2783,21 +2576,7 @@ class SortingCenterGet(AvitoObject):
     """
 
     data: list[SortingCenterGetData] | None = None
-    error: SortingCenterGetError | None = None
-
-
-class SortingCenterGetError(AvitoObject):
-    """SortingCenterGetError response model.
-
-    See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-
-    Attributes:
-        code: код ошибки
-        message: человекопонятное описание ошибки
-    """
-
-    code: str
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class SortingCenterGetData(AvitoObject):
@@ -3005,7 +2784,7 @@ class UpdateTermsReply(AvitoObject):
     """
 
     data: UpdateTermsReplyData | None = None
-    error: DeliveryError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class UpdateTermsReplyData(AvitoObject):
@@ -3120,7 +2899,7 @@ class CancelParcelReply(AvitoObject):
     """
 
     data: CancelParcelReplyData | None = None
-    error: DeliveryError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class CancelParcelReplyData(AvitoObject):
@@ -3199,7 +2978,7 @@ class ProhibitOrderAcceptanceReply(AvitoObject):
     """
 
     data: ProhibitOrderAcceptanceReplyData | None = None
-    error: DeliveryError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class ProhibitOrderAcceptanceReplyData(AvitoObject):
@@ -3230,7 +3009,7 @@ class UpdateReceiverInfoReply(AvitoObject):
     """
 
     data: UpdateReceiverInfoReplyData | None = None
-    error: DeliveryError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class UpdateReceiverInfoReplyData(AvitoObject):
@@ -3252,7 +3031,7 @@ class UpdateReturnInfoReply(AvitoObject):
     """
 
     data: UpdateReturnInfoReplyData | None = None
-    error: DeliveryError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class UpdateReturnInfoReplyData(AvitoObject):

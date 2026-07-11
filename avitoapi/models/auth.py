@@ -18,17 +18,6 @@ class GetTokenOAuthRequest(AvitoObject):
     grant_type: str
 
 
-class GetTokenRequest(AvitoObject):
-    """GetTokenRequest response model.
-
-    See: https://developers.avito.ru/api-catalog/auth/documentation
-    """
-
-    client_id: str
-    client_secret: str
-    grant_type: str
-
-
 class RefreshRequest(AvitoObject):
     """RefreshRequest response model.
 

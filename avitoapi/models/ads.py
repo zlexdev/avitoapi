@@ -503,16 +503,6 @@ class EnumObject(AvitoObject):
     value: str
 
 
-class Error(AvitoObject):
-    """Error response model.
-
-    See: https://developers.avito.ru/api-catalog/ads/documentation
-    """
-
-    code: str
-    message: str
-
-
 class FrequencyRule(AvitoObject):
     """Правило частотного ограничения
 

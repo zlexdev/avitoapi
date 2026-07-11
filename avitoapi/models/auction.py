@@ -6,6 +6,7 @@ from __future__ import annotations
 from pydantic import Field
 
 from ._base import AvitoObject
+from ._shared import TooManyRequestsErrorError
 
 
 class Error(AvitoObject):
@@ -27,18 +28,6 @@ class TooManyRequestsError(AvitoObject):
     """
 
     error: TooManyRequestsErrorError | None = None
-
-
-class TooManyRequestsErrorError(AvitoObject):
-    """TooManyRequestsErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/auction/documentation
-
-    Attributes:
-        code: Код ошибки
-    """
-
-    code: int
 
 
 class GetUserBidsResponse(AvitoObject):

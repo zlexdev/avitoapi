@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import re
 
-from . import render
+from . import dedup, render
 from .build import GeneratedDomain
 from .entities import BoundMethod
 from .types import ModelSpec
@@ -57,6 +57,7 @@ def _import_block(gen: GeneratedDomain, text: str) -> str:
     used_enums = sorted(e for e in gen.enums if re.search(rf"\b{e}\b", text))
     if used_enums:
         lines.append(f"from ..enums.{gen.module} import {', '.join(used_enums)}")
+    lines.extend(dedup.shared_import_lines(gen, text, in_models_pkg=True))
     if gen.bound:
         uses_resolver = any("_resolve_user_id" in expr for bms in gen.bound.values() for bm in bms for _, expr in bm.fills)
         if uses_resolver:

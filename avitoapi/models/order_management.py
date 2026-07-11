@@ -11,12 +11,11 @@ from ..enums.order_management import (
     DiscountType,
     OrderApplyTransitionRequestTransition,
     OrderCheckConfirmationCodeResponseDataStatus,
-    OrderSetTrackingNumberResponseErrorCode,
     ReturnPolicyReturnStatus,
     SetCourierDeliveryRangeRequestIntervalType,
 )
 from ._base import AvitoObject
-from .common import TZDatetime
+from .common import AvitoErrorBody, TZDatetime
 
 
 class Action(AvitoObject):
@@ -96,20 +95,6 @@ class Discount(AvitoObject):
     id: str | None = None
     type_: DiscountType | None = Field(None, alias="type")
     value: float | None = None
-
-
-class Error(AvitoObject):
-    """Error response model.
-
-    See: https://developers.avito.ru/api-catalog/order-management/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Текст ошибки
-    """
-
-    code: int
-    message: str
 
 
 class GetDeliveryCourierConfirmationResponse(AvitoObject):
@@ -481,22 +466,8 @@ class OrderSetTrackingNumberResponse(AvitoObject):
         success: Флаг успеха обновления
     """
 
-    error: OrderSetTrackingNumberResponseError | None = None
+    error: AvitoErrorBody | None = None
     success: bool | None = None
-
-
-class OrderSetTrackingNumberResponseError(AvitoObject):
-    """OrderSetTrackingNumberResponseError response model.
-
-    See: https://developers.avito.ru/api-catalog/order-management/documentation
-
-    Attributes:
-        code: Код ошибки: * `incorrect_number` - Некорректный трек-номер * `already_set` - Трек-номер уже зарегистрирован для другого заказа
-        message: Текст ошибки
-    """
-
-    code: OrderSetTrackingNumberResponseErrorCode
-    message: str
 
 
 class OrdersInfo(AvitoObject):

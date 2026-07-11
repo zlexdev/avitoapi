@@ -40,7 +40,7 @@ from ..enums.autoload import (
     UploadItemAutoloadV4AvitoStatus,
 )
 from ._base import AvitoObject
-from .common import TZDatetime
+from .common import AvitoErrorBody, TZDatetime
 
 if TYPE_CHECKING:
     from ..methods.autoload import (
@@ -305,41 +305,13 @@ class FeedsDataRoot(AvitoObject):
     feed_url: str
 
 
-class FieldError(AvitoObject):
-    """FieldError response model.
-
-    See: https://developers.avito.ru/api-catalog/autoload/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Описание ошибки
-    """
-
-    code: str
-    message: str
-
-
 class FieldErrorV2(AvitoObject):
     """FieldErrorV2 response model.
 
     See: https://developers.avito.ru/api-catalog/autoload/documentation
     """
 
-    error: FieldErrorV2Error | None = None
-
-
-class FieldErrorV2Error(AvitoObject):
-    """FieldErrorV2Error response model.
-
-    See: https://developers.avito.ru/api-catalog/autoload/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Описание ошибки
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class FieldValue(AvitoObject):

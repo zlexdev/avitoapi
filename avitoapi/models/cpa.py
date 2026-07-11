@@ -8,6 +8,8 @@ from typing import Any
 from pydantic import Field
 
 from ._base import AvitoObject
+from ._shared import TooManyRequestsErrorError
+from .common import AvitoErrorBody
 
 
 class Call(AvitoObject):
@@ -110,20 +112,6 @@ class CallsByTime(AvitoObject):
     date_time_from: str = Field(..., alias="dateTimeFrom")
     limit: int
     offset: int | None = None
-
-
-class CpaError(AvitoObject):
-    """CpaError response model.
-
-    See: https://developers.avito.ru/api-catalog/cpa/documentation
-
-    Attributes:
-        code: Внутренний код ошибки Возможные значения: - 1000 - пустой запрос - 1001 - ошибка валидации - 1002 - ошибка авторизации - 1003 - внутренняя ошибка - 1004 - не найдено
-        message: Текст ошибки
-    """
-
-    code: int | None = None
-    message: str | None = None
 
 
 class CpaErrorChat(AvitoObject):
@@ -230,21 +218,7 @@ class InternalErrorResult(AvitoObject):
     See: https://developers.avito.ru/api-catalog/cpa/documentation
     """
 
-    error: InternalErrorResultError
-
-
-class InternalErrorResultError(AvitoObject):
-    """InternalErrorResultError response model.
-
-    See: https://developers.avito.ru/api-catalog/cpa/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Текст ошибки
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody
 
 
 class OpenApiChatsByTimeFilters(AvitoObject):
@@ -538,21 +512,7 @@ class NotFoundError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/cpa/documentation
     """
 
-    error: NotFoundErrorError | None = None
-
-
-class NotFoundErrorError(AvitoObject):
-    """NotFoundErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/cpa/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class ServiceError(AvitoObject):
@@ -561,21 +521,7 @@ class ServiceError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/cpa/documentation
     """
 
-    error: ServiceErrorError | None = None
-
-
-class ServiceErrorError(AvitoObject):
-    """ServiceErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/cpa/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Описание ошибки
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class TooManyRequestsError(AvitoObject):
@@ -585,18 +531,6 @@ class TooManyRequestsError(AvitoObject):
     """
 
     error: TooManyRequestsErrorError | None = None
-
-
-class TooManyRequestsErrorError(AvitoObject):
-    """TooManyRequestsErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/cpa/documentation
-
-    Attributes:
-        code: Код ошибки
-    """
-
-    code: int
 
 
 class ValidatingError(AvitoObject):
@@ -651,7 +585,7 @@ class PostCreateComplaintResponse(AvitoObject):
         success: Флаг статуса запроса
     """
 
-    error: CpaError | None = None
+    error: AvitoErrorBody | None = None
     success: bool | None = None
 
 
@@ -664,7 +598,7 @@ class CreateComplaintByActionIdResponse(AvitoObject):
         success: Флаг статуса запроса
     """
 
-    error: CpaError | None = None
+    error: AvitoErrorBody | None = None
     success: bool | None = None
 
 
@@ -695,7 +629,7 @@ class BalanceInfoV2Response(AvitoObject):
     advance: int | None = None
     balance: int | None = None
     debt: int | None = None
-    error: CpaError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class GetCallByIdV2Response(AvitoObject):
@@ -705,7 +639,7 @@ class GetCallByIdV2Response(AvitoObject):
     """
 
     calls: CallV2 | None = None
-    error: CpaError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class GetCallsByTimeV2Response(AvitoObject):
@@ -718,7 +652,7 @@ class GetCallsByTimeV2Response(AvitoObject):
     """
 
     calls: list[CallV2] | None = None
-    error: CpaError | None = None
+    error: AvitoErrorBody | None = None
 
 
 class ChatsByTime2Response(AvitoObject):

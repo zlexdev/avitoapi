@@ -26,7 +26,7 @@ from ..enums.items import (
 )
 from ._base import AvitoObject
 from ._helpers import _resolve_user_id
-from .common import TZDatetime
+from .common import AvitoErrorBody, TZDatetime
 
 if TYPE_CHECKING:
     from ..methods.items import ApplyVas, GetItemInfo, PutItemVas, PutItemVasPackageV2, UpdatePrice
@@ -217,31 +217,7 @@ class ErrorResponse(AvitoObject):
     See: https://developers.avito.ru/api-catalog/item/documentation
     """
 
-    error: ErrorResponseError | None = None
-
-
-class ErrorResponseError(AvitoObject):
-    """ErrorResponseError response model.
-
-    See: https://developers.avito.ru/api-catalog/item/documentation
-    """
-
-    code: int
-    message: str
-
-
-class FieldError(AvitoObject):
-    """FieldError response model.
-
-    See: https://developers.avito.ru/api-catalog/item/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Описание ошибки
-    """
-
-    code: str
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class InfoVas(AvitoObject):
@@ -704,21 +680,7 @@ class AuthError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/item/documentation
     """
 
-    error: AuthErrorError | None = None
-
-
-class AuthErrorError(AvitoObject):
-    """AuthErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/item/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class BadRequestError(AvitoObject):
@@ -727,21 +689,7 @@ class BadRequestError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/item/documentation
     """
 
-    error: BadRequestErrorError | None = None
-
-
-class BadRequestErrorError(AvitoObject):
-    """BadRequestErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/item/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class ItemIdsRequestBody(AvitoObject):
@@ -762,21 +710,7 @@ class NotFoundError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/item/documentation
     """
 
-    error: NotFoundErrorError | None = None
-
-
-class NotFoundErrorError(AvitoObject):
-    """NotFoundErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/item/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class PackageIdRequestBodyV2(AvitoObject):
@@ -809,21 +743,7 @@ class ServiceError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/item/documentation
     """
 
-    error: ServiceErrorError | None = None
-
-
-class ServiceErrorError(AvitoObject):
-    """ServiceErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/item/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Описание ошибки
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class ServiceUnavailableError(AvitoObject):
@@ -832,21 +752,7 @@ class ServiceUnavailableError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/item/documentation
     """
 
-    error: ServiceUnavailableErrorError | None = None
-
-
-class ServiceUnavailableErrorError(AvitoObject):
-    """ServiceUnavailableErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/item/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Описание ошибки
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class TooManyRequests(AvitoObject):

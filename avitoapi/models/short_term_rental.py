@@ -19,6 +19,7 @@ from ..enums.short_term_rental import (
     RealtyBookingStatus,
 )
 from ._base import AvitoObject
+from .common import AvitoErrorBody
 
 
 class AvitoBooking(AvitoObject):
@@ -206,21 +207,7 @@ class Error(AvitoObject):
     See: https://developers.avito.ru/api-catalog/str/documentation
     """
 
-    error: ErrorError | None = None
-
-
-class ErrorError(AvitoObject):
-    """ErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/str/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class ParamPriceItemRealty(AvitoObject):

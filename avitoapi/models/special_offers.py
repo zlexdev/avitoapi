@@ -10,6 +10,7 @@ from ..enums.special_offers import (
     OpenApiMultiCreateResponseBodyDispatchesStatus,
 )
 from ._base import AvitoObject
+from .common import AvitoErrorBody
 
 
 class OpenApiAvailableRequestBody(AvitoObject):
@@ -57,17 +58,7 @@ class OpenApiBadRequestError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/sbc-gateway/documentation
     """
 
-    error: OpenApiBadRequestErrorError
-
-
-class OpenApiBadRequestErrorError(AvitoObject):
-    """OpenApiBadRequestErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/sbc-gateway/documentation
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody
 
 
 class OpenApiForbiddenError(AvitoObject):
@@ -76,17 +67,7 @@ class OpenApiForbiddenError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/sbc-gateway/documentation
     """
 
-    error: OpenApiForbiddenErrorError
-
-
-class OpenApiForbiddenErrorError(AvitoObject):
-    """OpenApiForbiddenErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/sbc-gateway/documentation
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody
 
 
 class OpenApiInternalError(AvitoObject):
@@ -95,17 +76,7 @@ class OpenApiInternalError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/sbc-gateway/documentation
     """
 
-    error: OpenApiInternalErrorError
-
-
-class OpenApiInternalErrorError(AvitoObject):
-    """OpenApiInternalErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/sbc-gateway/documentation
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody
 
 
 class OpenApiMultiConfirmRequestBody(AvitoObject):
@@ -381,17 +352,7 @@ class OpenApiUnauthorizedError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/sbc-gateway/documentation
     """
 
-    error: OpenApiUnauthorizedErrorError
-
-
-class OpenApiUnauthorizedErrorError(AvitoObject):
-    """OpenApiUnauthorizedErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/sbc-gateway/documentation
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody
 
 
 class OpenApiMultiConfirmDispatches(AvitoObject):

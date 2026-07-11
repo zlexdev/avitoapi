@@ -19,7 +19,7 @@ from ..enums.autostrategy import (
     GetCampaignsRequestBodyOrderByDirection,
 )
 from ._base import AvitoObject
-from .common import TZDatetime
+from .common import AvitoErrorBody, TZDatetime
 
 
 class Budget(AvitoObject):
@@ -194,21 +194,7 @@ class ConflictError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/autostrategy/documentation
     """
 
-    error: ConflictErrorError | None = None
-
-
-class ConflictErrorError(AvitoObject):
-    """ConflictErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/autostrategy/documentation
-
-    Attributes:
-        code: Код ошибки. Возможные ошибки: `2` - кампания не найдена
-        message: Сообщение об ошибке
-    """
-
-    code: int | None = None
-    message: str | None = None
+    error: AvitoErrorBody | None = None
 
 
 class CreateCampaignBadRequestError(AvitoObject):
@@ -270,21 +256,7 @@ class CreateCampaignConflictError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/autostrategy/documentation
     """
 
-    error: CreateCampaignConflictErrorError | None = None
-
-
-class CreateCampaignConflictErrorError(AvitoObject):
-    """CreateCampaignConflictErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/autostrategy/documentation
-
-    Attributes:
-        code: Код ошибки. Возможные ошибки: `1` - общий бюджет меньше минимального `2` - реальный бюджет меньше минимального `3` - недостаточно бонусов на счете `5` - часть или все объявления уже продвигаются `6` - тариф не активен `7` - бюджет выше максимального
-        message: Сообщение об ошибке
-    """
-
-    code: int | None = None
-    message: str | None = None
+    error: AvitoErrorBody | None = None
 
 
 class CreateCampaignRequestBody(AvitoObject):
@@ -374,21 +346,7 @@ class EditCampaignConflictError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/autostrategy/documentation
     """
 
-    error: EditCampaignConflictErrorError | None = None
-
-
-class EditCampaignConflictErrorError(AvitoObject):
-    """EditCampaignConflictErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/autostrategy/documentation
-
-    Attributes:
-        code: Код ошибки. Возможные ошибки: `2` - кампания не найдена
-        message: Сообщение об ошибке
-    """
-
-    code: int | None = None
-    message: str | None = None
+    error: AvitoErrorBody | None = None
 
 
 class EditCampaignRequestBody(AvitoObject):
@@ -466,21 +424,7 @@ class GetBudgetConflictError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/autostrategy/documentation
     """
 
-    error: GetBudgetConflictErrorError | None = None
-
-
-class GetBudgetConflictErrorError(AvitoObject):
-    """GetBudgetConflictErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/autostrategy/documentation
-
-    Attributes:
-        code: Код ошибки. Возможные ошибки: `1` - Слишком много объявлений для расчета бюджета `6` - Тариф не активен
-        message: Сообщение об ошибке
-    """
-
-    code: int | None = None
-    message: str | None = None
+    error: AvitoErrorBody | None = None
 
 
 class GetBudgetRequestBody(AvitoObject):
@@ -876,21 +820,7 @@ class AuthError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/autostrategy/documentation
     """
 
-    error: AuthErrorError | None = None
-
-
-class AuthErrorError(AvitoObject):
-    """AuthErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/autostrategy/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class AutostrategyAuthError(AvitoObject):
@@ -941,21 +871,7 @@ class NotFoundError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/autostrategy/documentation
     """
 
-    error: NotFoundErrorError | None = None
-
-
-class NotFoundErrorError(AvitoObject):
-    """NotFoundErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/autostrategy/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class ServiceError(AvitoObject):
@@ -964,21 +880,7 @@ class ServiceError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/autostrategy/documentation
     """
 
-    error: ServiceErrorError | None = None
-
-
-class ServiceErrorError(AvitoObject):
-    """ServiceErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/autostrategy/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Описание ошибки
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class GetAutostrategyBudgetResponse(AvitoObject):

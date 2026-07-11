@@ -151,7 +151,8 @@ from ..enums.job import (
     WorkerClassValue,
 )
 from ._base import AvitoObject
-from .common import TZDatetime
+from ._shared import TooManyRequestsErrorError
+from .common import AvitoErrorBody, TZDatetime
 
 if TYPE_CHECKING:
     from ..methods.job import ResumeGetContacts, ResumeGetItem
@@ -1742,18 +1743,8 @@ class VacancyStatusesResultRootLastAction(AvitoObject):
     """
 
     datetime_: str | None = Field(None, alias="datetime")
-    error: VacancyStatusesResultRootLastActionError | None = None
+    error: AvitoErrorBody | None = None
     status: str | None = None
-
-
-class VacancyStatusesResultRootLastActionError(AvitoObject):
-    """Ошибка в процессе публикации вакансии
-
-    See: https://developers.avito.ru/api-catalog/job/documentation
-    """
-
-    code: int | None = None
-    message: str | None = None
 
 
 class VacancyStatusesResultRootVacancy(AvitoObject):
@@ -2073,21 +2064,7 @@ class AuthError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/job/documentation
     """
 
-    error: AuthErrorError | None = None
-
-
-class AuthErrorError(AvitoObject):
-    """AuthErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/job/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class ForbiddenError(AvitoObject):
@@ -2096,21 +2073,7 @@ class ForbiddenError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/job/documentation
     """
 
-    error: ForbiddenErrorError | None = None
-
-
-class ForbiddenErrorError(AvitoObject):
-    """ForbiddenErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/job/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class PurchasingError(AvitoObject):
@@ -2119,21 +2082,7 @@ class PurchasingError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/job/documentation
     """
 
-    error: PurchasingErrorError | None = None
-
-
-class PurchasingErrorError(AvitoObject):
-    """PurchasingErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/job/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class ServiceError(AvitoObject):
@@ -2142,21 +2091,7 @@ class ServiceError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/job/documentation
     """
 
-    error: ServiceErrorError | None = None
-
-
-class ServiceErrorError(AvitoObject):
-    """ServiceErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/job/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Описание ошибки
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class ServiceUnavailableError(AvitoObject):
@@ -2165,21 +2100,7 @@ class ServiceUnavailableError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/job/documentation
     """
 
-    error: ServiceUnavailableErrorError | None = None
-
-
-class ServiceUnavailableErrorError(AvitoObject):
-    """ServiceUnavailableErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/job/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Описание ошибки
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class TooManyRequestsError(AvitoObject):
@@ -2189,18 +2110,6 @@ class TooManyRequestsError(AvitoObject):
     """
 
     error: TooManyRequestsErrorError | None = None
-
-
-class TooManyRequestsErrorError(AvitoObject):
-    """TooManyRequestsErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/job/documentation
-
-    Attributes:
-        code: Код ошибки
-    """
-
-    code: int
 
 
 class ValidatingError(AvitoObject):
@@ -2234,21 +2143,7 @@ class VerificationNeededError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/job/documentation
     """
 
-    error: VerificationNeededErrorError | None = None
-
-
-class VerificationNeededErrorError(AvitoObject):
-    """VerificationNeededErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/job/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class ApplicationsSetIsViewedApplies(AvitoObject):

@@ -10,7 +10,7 @@ from ..enums.user import (
     ResponseOperationsHistoryItemServiceType,
 )
 from ._base import AvitoObject
-from .common import TZDatetime
+from .common import AvitoErrorBody, TZDatetime
 
 
 class Balance(AvitoObject):
@@ -121,21 +121,7 @@ class AuthError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/user/documentation
     """
 
-    error: AuthErrorError | None = None
-
-
-class AuthErrorError(AvitoObject):
-    """AuthErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/user/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class ForbiddenError(AvitoObject):
@@ -144,21 +130,7 @@ class ForbiddenError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/user/documentation
     """
 
-    error: ForbiddenErrorError | None = None
-
-
-class ForbiddenErrorError(AvitoObject):
-    """ForbiddenErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/user/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class NotFoundError(AvitoObject):
@@ -167,21 +139,7 @@ class NotFoundError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/user/documentation
     """
 
-    error: NotFoundErrorError | None = None
-
-
-class NotFoundErrorError(AvitoObject):
-    """NotFoundErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/user/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class ServiceError(AvitoObject):
@@ -190,21 +148,7 @@ class ServiceError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/user/documentation
     """
 
-    error: ServiceErrorError | None = None
-
-
-class ServiceErrorError(AvitoObject):
-    """ServiceErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/user/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Описание ошибки
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class ServiceUnavailableError(AvitoObject):
@@ -213,18 +157,4 @@ class ServiceUnavailableError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/user/documentation
     """
 
-    error: ServiceUnavailableErrorError | None = None
-
-
-class ServiceUnavailableErrorError(AvitoObject):
-    """ServiceUnavailableErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/user/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Описание ошибки
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None

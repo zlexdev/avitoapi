@@ -29,7 +29,7 @@ from ..enums.avito_promo import (
     TransactionStatus,
 )
 from ._base import AvitoObject
-from .common import TZDatetime
+from .common import AvitoErrorBody, TZDatetime
 
 
 class DefaultErrorResponse(AvitoObject):
@@ -41,20 +41,7 @@ class DefaultErrorResponse(AvitoObject):
         error: Ошибка
     """
 
-    error: DefaultErrorResponseError
-
-
-class DefaultErrorResponseError(AvitoObject):
-    """Ошибка
-
-    See: https://developers.avito.ru/api-catalog/avito-promo/documentation
-
-    Attributes:
-        code: Код ошибки
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody
 
 
 class ErrorFieldsRoot(AvitoObject):

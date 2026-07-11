@@ -25,15 +25,6 @@ class Error(AvitoObject):
     message: str
 
 
-class ErrorMessage(AvitoObject):
-    """ErrorMessage response model.
-
-    See: https://developers.avito.ru/api-catalog/realty-reports/documentation
-    """
-
-    message: str
-
-
 class MarketPriceCorrespondenceV1Response(AvitoObject):
     """MarketPriceCorrespondenceV1Response response model.
 

@@ -49,6 +49,7 @@ class GeneratedDomain:
     root_models: dict[str, str] = field(default_factory=dict)
     methods: list[MethodSpec] = field(default_factory=list)
     bound: dict[str, list[BoundMethod]] = field(default_factory=dict)
+    shared_imports: dict[str, str] = field(default_factory=dict)  # name -> "common" | "_shared" (dedup.py)
 
 
 def _is_paginated(op_query_names: set[str]) -> bool:

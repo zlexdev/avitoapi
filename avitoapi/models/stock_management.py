@@ -6,18 +6,6 @@ from __future__ import annotations
 from ._base import AvitoObject
 
 
-class ErrorMessage(AvitoObject):
-    """ErrorMessage response model.
-
-    See: https://developers.avito.ru/api-catalog/stock-management/documentation
-
-    Attributes:
-        message: Текст ошибки
-    """
-
-    message: str
-
-
 class StockEditResult(AvitoObject):
     """StockEditResult response model.
 

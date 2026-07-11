@@ -6,6 +6,7 @@ from __future__ import annotations
 from pydantic import Field
 
 from ._base import AvitoObject
+from .common import AvitoErrorBody
 
 
 class TariffContract(AvitoObject):
@@ -118,21 +119,7 @@ class AuthError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/tariff/documentation
     """
 
-    error: AuthErrorError | None = None
-
-
-class AuthErrorError(AvitoObject):
-    """AuthErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/tariff/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class NotFoundError(AvitoObject):
@@ -141,21 +128,7 @@ class NotFoundError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/tariff/documentation
     """
 
-    error: NotFoundErrorError | None = None
-
-
-class NotFoundErrorError(AvitoObject):
-    """NotFoundErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/tariff/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class ServiceError(AvitoObject):
@@ -164,18 +137,4 @@ class ServiceError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/tariff/documentation
     """
 
-    error: ServiceErrorError | None = None
-
-
-class ServiceErrorError(AvitoObject):
-    """ServiceErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/tariff/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Описание ошибки
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None

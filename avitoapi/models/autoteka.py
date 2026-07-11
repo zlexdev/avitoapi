@@ -58,6 +58,8 @@ from ..enums.autoteka import (
     VehicleSpecificationsParamValue,
 )
 from ._base import AvitoObject
+from ._shared import TooManyRequestsErrorError
+from .common import AvitoErrorBody
 
 if TYPE_CHECKING:
     from ..methods.autoteka import (
@@ -4534,21 +4536,7 @@ class ForbiddenError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/autoteka/documentation
     """
 
-    error: ForbiddenErrorError | None = None
-
-
-class ForbiddenErrorError(AvitoObject):
-    """ForbiddenErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/autoteka/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class InternalError(AvitoObject):
@@ -4557,21 +4545,7 @@ class InternalError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/autoteka/documentation
     """
 
-    error: InternalErrorError | None = None
-
-
-class InternalErrorError(AvitoObject):
-    """InternalErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/autoteka/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class NotFoundError(AvitoObject):
@@ -4580,21 +4554,7 @@ class NotFoundError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/autoteka/documentation
     """
 
-    error: NotFoundErrorError | None = None
-
-
-class NotFoundErrorError(AvitoObject):
-    """NotFoundErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/autoteka/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class TooManyRequestsError(AvitoObject):
@@ -4606,39 +4566,13 @@ class TooManyRequestsError(AvitoObject):
     error: TooManyRequestsErrorError | None = None
 
 
-class TooManyRequestsErrorError(AvitoObject):
-    """TooManyRequestsErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/autoteka/documentation
-
-    Attributes:
-        code: Код ошибки
-    """
-
-    code: int
-
-
 class ValidatingError(AvitoObject):
     """ValidatingError response model.
 
     See: https://developers.avito.ru/api-catalog/autoteka/documentation
     """
 
-    error: ValidatingErrorError | None = None
-
-
-class ValidatingErrorError(AvitoObject):
-    """ValidatingErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/autoteka/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class CatalogsResolveFieldsValueIds(AvitoObject):

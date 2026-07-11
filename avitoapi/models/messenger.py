@@ -20,6 +20,7 @@ from ..enums.messenger import (
 )
 from ._base import AvitoObject
 from ._helpers import _resolve_user_id
+from .common import AvitoErrorBody
 
 if TYPE_CHECKING:
     from ..methods.messenger import (
@@ -495,21 +496,7 @@ class AuthError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/messenger/documentation
     """
 
-    error: AuthErrorError | None = None
-
-
-class AuthErrorError(AvitoObject):
-    """AuthErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/messenger/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class BadRequestError(AvitoObject):
@@ -518,21 +505,7 @@ class BadRequestError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/messenger/documentation
     """
 
-    error: BadRequestErrorError | None = None
-
-
-class BadRequestErrorError(AvitoObject):
-    """BadRequestErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/messenger/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class ForbiddenError(AvitoObject):
@@ -541,21 +514,7 @@ class ForbiddenError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/messenger/documentation
     """
 
-    error: ForbiddenErrorError | None = None
-
-
-class ForbiddenErrorError(AvitoObject):
-    """ForbiddenErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/messenger/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class NotFoundError(AvitoObject):
@@ -564,21 +523,7 @@ class NotFoundError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/messenger/documentation
     """
 
-    error: NotFoundErrorError | None = None
-
-
-class NotFoundErrorError(AvitoObject):
-    """NotFoundErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/messenger/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class PurchasingError(AvitoObject):
@@ -587,21 +532,7 @@ class PurchasingError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/messenger/documentation
     """
 
-    error: PurchasingErrorError | None = None
-
-
-class PurchasingErrorError(AvitoObject):
-    """PurchasingErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/messenger/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class SendImageMessageRequestBody(AvitoObject):
@@ -647,21 +578,7 @@ class ServiceError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/messenger/documentation
     """
 
-    error: ServiceErrorError | None = None
-
-
-class ServiceErrorError(AvitoObject):
-    """ServiceErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/messenger/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Описание ошибки
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class ServiceUnavailableError(AvitoObject):
@@ -670,21 +587,7 @@ class ServiceUnavailableError(AvitoObject):
     See: https://developers.avito.ru/api-catalog/messenger/documentation
     """
 
-    error: ServiceUnavailableErrorError | None = None
-
-
-class ServiceUnavailableErrorError(AvitoObject):
-    """ServiceUnavailableErrorError response model.
-
-    See: https://developers.avito.ru/api-catalog/messenger/documentation
-
-    Attributes:
-        code: Код ошибки
-        message: Описание ошибки
-    """
-
-    code: int
-    message: str
+    error: AvitoErrorBody | None = None
 
 
 class ValidatingError(AvitoObject):
