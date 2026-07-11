@@ -101,20 +101,41 @@ class PollingRunner(ABC):
         self._backoff_initial = backoff_initial_s
         self._backoff_max = backoff_max_s
         self._stop = asyncio.Event()
+        self._cursor: str | None = None
+        self._cursor_loaded = False
 
     @abstractmethod
     async def poll(self, cursor: str | None) -> PollBatch:
         """Fetch the next batch from ``cursor``; return the events + advanced cursor."""
 
-    async def start(self) -> None:
-        """Run the poll loop until :meth:`stop`. Mirrors ``BaseWebhookRunner.start()``."""
+    async def tick(self) -> int:
+        """Run exactly one poll cycle: fetch a batch, emit it, advance the cursor.
 
-        cursor = await self._load_cursor()
+        Returns the number of events emitted. Call this directly to drive the poller from a
+        host's own loop (a test, a scheduler, an existing app's background task) without
+        :meth:`start` owning the loop — the embedded-runtime seam. Raises whatever :meth:`poll`
+        raises; :meth:`start` is the adapter that adds backoff + ``PollError`` around it.
+        """
+
+        if not self._cursor_loaded:
+            self._cursor = await self._load_cursor()
+            self._cursor_loaded = True
+        batch = await self.poll(self._cursor)
+        for event in batch.events:
+            await self._safe_emit(event)
+        if batch.cursor is not None and batch.cursor != self._cursor:
+            self._cursor = batch.cursor
+            await self._save_cursor(self._cursor)
+        return len(batch.events)
+
+    async def start(self) -> None:
+        """Run :meth:`tick` in a loop until :meth:`stop`. Mirrors ``BaseWebhookRunner.start()``."""
+
         backoff = self._backoff_initial
-        log.info("poller.start", poller=self._poller, account_id=self._account_id, cursor=cursor)
+        log.info("poller.start", poller=self._poller, account_id=self._account_id)
         while not self._stop.is_set():
             try:
-                batch = await self.poll(cursor)
+                await self.tick()
             except asyncio.CancelledError:
                 raise
             except Exception as exc:  # noqa: BLE001 — loop boundary: one failed poll must not kill the poller
@@ -125,11 +146,6 @@ class PollingRunner(ABC):
                 await self._sleep(backoff)
                 backoff = min(backoff * 2, self._backoff_max)
                 continue
-            for event in batch.events:
-                await self._safe_emit(event)
-            if batch.cursor is not None and batch.cursor != cursor:
-                cursor = batch.cursor
-                await self._save_cursor(cursor)
             backoff = self._backoff_initial
             await self._sleep(self._interval)
         log.info("poller.stopped", poller=self._poller, account_id=self._account_id)
@@ -138,6 +154,13 @@ class PollingRunner(ABC):
         """Signal the loop to finish the current cycle and return. Idempotent."""
 
         self._stop.set()
+
+    def update_cadence(self, interval_s: float) -> None:
+        """Retune the between-cycle delay on the *live* poller — no restart. Next tick picks it up."""
+
+        if interval_s <= 0:
+            raise ValueError("interval must be positive")
+        self._interval = interval_s
 
     @property
     def cursor_key(self) -> str:
