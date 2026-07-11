@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from . import events, exceptions, routers
+from . import channels, events, exceptions, fanout, idempotency, routers
 from .client import Client
 from .config import ClientConfig
 from .exceptions import (
@@ -64,7 +64,10 @@ __all__ = [
     "TZDatetime",
     "UnauthorizedError",
     "ValidationFailed",
+    "channels",
     "events",
     "exceptions",
+    "fanout",
+    "idempotency",
     "routers",
 ]
