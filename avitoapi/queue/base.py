@@ -74,7 +74,7 @@ class BaseEventQueue(ABC):
     * :meth:`ack` removes the row. Idempotent; second call returns ``False``.
     * :meth:`replay` iterates every unacked row (no leasing) — used at
       startup to re-deliver leftover state.
-    * :meth:`update_metadata` lets pipeline runners checkpoint progress.
+    * :meth:`update_metadata` lets handlers checkpoint progress.
     * :meth:`pending_count` reports ready-to-deliver rows (excludes DLQ).
 
     Backends that don't support a feature (e.g. priority) should

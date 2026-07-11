@@ -59,13 +59,12 @@ Each replay increments `QueuedEvent.attempts`; handlers can read
 | `message_id`            | row id in the persistent queue                     |
 | `attempts`              | times this event has been (re)delivered            |
 | `queued_at`             | epoch seconds when it was enqueued                 |
-| `metadata`              | free-form persisted bag (pipelines stash here)     |
+| `metadata`              | free-form persisted bag for handler checkpoints    |
 | `atomic_completed()`    | atomically drop the row (idempotent)               |
 | `persist_metadata()`    | flush `metadata` back to the row                   |
 | `is_acked`, `is_bound`  | introspection flags                                |
 
-Store auxiliary state in `metadata` if you need it to survive replay —
-the pipeline runner does exactly this for its checkpoints.
+Store auxiliary state in `metadata` if you need it to survive replay.
 
 ---
 

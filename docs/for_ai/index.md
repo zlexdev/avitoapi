@@ -43,7 +43,7 @@ Portable: the whole folder depends only on the stdlib and can be lifted out.
 
 - [`docs/api-surface.md`](../api-surface.md) — the exhaustive public surface.
 - [`docs/cookbook/`](../cookbook/README.md) — hands-on recipes (multi-account, routing, filters,
-  middleware, FSM, circuit-breaker, queue, pipeline, saga, webhooks, proxy rotation).
+  middleware, FSM, circuit-breaker, queue, webhooks, proxy rotation).
 
 ## Invariants worth knowing
 
