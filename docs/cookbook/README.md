@@ -47,10 +47,9 @@ exhaustive surface docs see each module's `_MODULE.md`.
 
 ## End-to-end example
 
-A full working bot lives in [`examples/echo_bot`](../../examples/echo_bot/) —
-multi-account dispatcher + aiohttp webhook + healthcheck endpoint +
-Docker shell. Read it after the cookbook to see all the pieces wired
-together.
+A minimal working bot lives in [`examples/echo_bot.py`](../../examples/echo_bot.py) —
+a flat script wiring a `Client`, `send_message`, and a webhook handler.
+Read it after the cookbook to see the pieces wired together.
 
 ---
 

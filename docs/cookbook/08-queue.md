@@ -1,9 +1,13 @@
 # Persistent event queue
 
 Every event entering `Dispatcher.feed_event` is appended to a
-`BaseEventQueue` before propagation. Handlers must call
-`await ctx.atomic_completed()` to drop the row — otherwise the next
-restart replays it.
+`BaseEventQueue` before propagation. `feed_event` auto-acks the row
+once every handler returns without raising — you don't need to call
+`ctx.atomic_completed()` yourself. Call it manually only if you want
+to ack early (before all handlers finish) or take over acking for a
+custom worker loop; an unhandled exception in any handler leaves the
+row un-acked so the next restart / lease replays it (and eventually
+routes it to the DLQ after `max_attempts`).
 
 ---
 
@@ -18,8 +22,7 @@ dispatcher = Dispatcher(event_queue=queue)
 
 @dispatcher.new_message()
 async def handle(event, ctx):
-    await save_to_db(event)
-    await ctx.atomic_completed()    # ← drop the row atomically
+    await save_to_db(event)         # feed_event auto-acks after this returns
 ```
 
 `MemoryStorage` is enough for tests. For production swap in a real
@@ -60,7 +63,7 @@ Each replay increments `QueuedEvent.attempts`; handlers can read
 | `attempts`              | times this event has been (re)delivered            |
 | `queued_at`             | epoch seconds when it was enqueued                 |
 | `metadata`              | free-form persisted bag for handler checkpoints    |
-| `atomic_completed()`    | atomically drop the row (idempotent)               |
+| `atomic_completed()`    | manually drop the row early (idempotent); usually unneeded — `feed_event` auto-acks |
 | `persist_metadata()`    | flush `metadata` back to the row                   |
 | `is_acked`, `is_bound`  | introspection flags                                |
 

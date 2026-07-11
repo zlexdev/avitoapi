@@ -9,6 +9,9 @@ so handlers get full IDE completion + type narrowing on ``message.type``.
 from __future__ import annotations
 
 from enum import StrEnum
+from typing import Any
+
+from pydantic import Field
 
 from ..models._base import AvitoObject
 from ._base import Event as BaseEvent
@@ -54,30 +57,29 @@ class MessengerEvent(BaseEvent, event_name="messenger"):
     account_id: str
     chat_id: str
 
-    def __init__(self, *, account_id: str, chat_id: str, **kwargs: object) -> None:
-        super().__init__()
-        self.account_id = account_id
-        self.chat_id = chat_id
-        for k, v in kwargs.items():
-            setattr(self, k, v)
-
 
 class NewMessage(MessengerEvent, event_name="messenger.new_message"):
     """A new inbound message landed in one of the bot's chats.
 
-    ``message`` is the typed discriminated union — use
-    ``isinstance(event.message, TextMessage)`` or ``event.message.type`` to
-    branch on the variant. Specialised observers
-    (:class:`avitoapi.routers.MessengerRouter.text_message`, etc.) filter on
-    the variant for you, so a handler bound to ``router.text_message``
-    receives only ``NewMessage`` events whose payload is a ``TextMessage``.
+    ``message`` is the typed :class:`Message` on the REST path; the webhook
+    path delivers a raw ``dict`` (the typed union is only built for REST), so
+    the field accepts either. Specialised observers
+    (:class:`avitoapi.routers.Router.text_message`, etc.) narrow on
+    ``message.type`` when a typed :class:`Message` is present.
     """
 
-    message: Message
+    # left_to_right: a webhook raw dict stays a dict (verbatim); a REST-built
+    # Message instance stays a Message. Smart-union would coerce some dicts.
+    message: dict[str, Any] | Message = Field(union_mode="left_to_right")
 
-    def __init__(self, *, account_id: str, chat_id: str, message: Message) -> None:
-        super().__init__(account_id=account_id, chat_id=chat_id)
-        self.message = message
+    @property
+    def dedup_key(self) -> str:
+        msg = self.message
+        if isinstance(msg, dict):
+            mid = str(msg.get("id") or msg.get("message_id") or "")
+        else:
+            mid = str(getattr(msg, "id", "") or getattr(msg, "message_id", ""))
+        return f"messenger.new_message:{self.account_id}:{self.chat_id}:{mid}"
 
 
 class MessageRead(MessengerEvent, event_name="messenger.message_read"):
@@ -85,26 +87,15 @@ class MessageRead(MessengerEvent, event_name="messenger.message_read"):
 
     message_id: str
 
-    def __init__(self, *, account_id: str, chat_id: str, message_id: str) -> None:
-        super().__init__(account_id=account_id, chat_id=chat_id)
-        self.message_id = message_id
-
 
 class ChatArchived(MessengerEvent, event_name="messenger.chat_archived"):
     """A chat was archived (by the user or by the system)."""
-
-    def __init__(self, *, account_id: str, chat_id: str) -> None:
-        super().__init__(account_id=account_id, chat_id=chat_id)
 
 
 class ChatBlacklisted(MessengerEvent, event_name="messenger.chat_blacklisted"):
     """The counterparty was added to the account blacklist."""
 
     blocked_user_id: int
-
-    def __init__(self, *, account_id: str, chat_id: str, blocked_user_id: int) -> None:
-        super().__init__(account_id=account_id, chat_id=chat_id)
-        self.blocked_user_id = blocked_user_id
 
 
 class VoiceFileResolved(MessengerEvent, event_name="messenger.voice_file_resolved"):
@@ -117,11 +108,6 @@ class VoiceFileResolved(MessengerEvent, event_name="messenger.voice_file_resolve
 
     voice_id: str
     url: str
-
-    def __init__(self, *, account_id: str, chat_id: str, voice_id: str, url: str) -> None:
-        super().__init__(account_id=account_id, chat_id=chat_id)
-        self.voice_id = voice_id
-        self.url = url
 
 
 __all__ = [

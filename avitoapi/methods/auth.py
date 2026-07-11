@@ -5,9 +5,9 @@ from __future__ import annotations
 
 from typing import ClassVar
 
+from ..models._shared import GetAccessTokenResponse
 from ..models.auth import (
     GetAccessTokenAuthorizationCodeResponse,
-    GetAccessTokenResponse,
     RefreshAccessTokenAuthorizationCodeResponse,
 )
 from ._base import BaseMethod

@@ -3,13 +3,128 @@
 
 from __future__ import annotations
 
+from typing import Any
+
+from pydantic import Field
+
 from ._base import AvitoObject
+from .common import AvitoErrorBody
 
 
-class ErrorMessage(AvitoObject):
-    """ErrorMessage — shared across domains."""
+class AmountResponse(AvitoObject):
+    """Информация о балансе аванса тарифа клиента"""
 
-    message: str
+    amount: int
+
+
+class BalanceResponse(AvitoObject):
+    """BalanceResponse — shared across domains.
+
+    Attributes:
+        balance: Баланс пользователя
+    """
+
+    balance: int | None = None
+
+
+class CampaignIdResponse(AvitoObject):
+    """Описание ошибок валидации полей
+
+    Attributes:
+        campaign_id: Ошибка валидации поля **campaignId**
+    """
+
+    campaign_id: str | None = Field(None, alias="campaignId")
+
+
+class CampaignIdsResponse(AvitoObject):
+    """Payload удаления кампаний аккаунта
+
+    Attributes:
+        campaign_ids: Список ID кампаний
+    """
+
+    campaign_ids: list[int] = Field(..., min_length=1, alias="campaignIDs")
+
+
+class CodeResponse(AvitoObject):
+    """CodeResponse — shared across domains.
+
+    Attributes:
+        code: Код ошибки
+    """
+
+    code: int
+
+
+class CountResponse(AvitoObject):
+    """CountResponse — shared across domains.
+
+    Attributes:
+        count: Количество успешно привязанных тегов к сортировочным центрам
+    """
+
+    count: str
+
+
+class CreativeIdResponse(AvitoObject):
+    """Payload копирования креатива аккаунта
+
+    Attributes:
+        creative_id: ID копируемого креатива
+    """
+
+    creative_id: int = Field(..., ge=1, alias="creativeID")
+
+
+class CreativeIdsResponse(AvitoObject):
+    """Payload удаления креативов аккаунта
+
+    Attributes:
+        creative_ids: Список ID креативов
+    """
+
+    creative_ids: list[int] = Field(..., min_length=1, alias="creativeIDs")
+
+
+class DataResponse(AvitoObject):
+    """DataResponse — shared across domains.
+
+    Attributes:
+        data: Набор VIN-номеров для дальнейшего заполнения реестра
+    """
+
+    data: list[str] | None = Field(None, min_length=1, max_length=10000)
+
+
+class EmployeeIdResponse(AvitoObject):
+    """Информация об иерархии аккаунтов
+
+    Attributes:
+        employee_id: Идентификатор сотрудника назначенного на Вакансию
+    """
+
+    employee_id: int | None = None
+
+
+class ErrorResponse(AvitoObject):
+    """ErrorResponse — shared across domains."""
+
+    error: AvitoErrorBody | None = None
+
+
+class GetAccessTokenResponse(AvitoObject):
+    """GetAccessTokenResponse — shared across domains.
+
+    Attributes:
+        access_token: Ключ для временной авторизации в системе
+        expires_in: Время жизни ключа в секундах
+        token_type: Тип ключа авторизации
+    """
+
+    access_token: str | None = None
+    expires_in: float | None = None
+    token_type: str | None = None
 
 
 class GetTokenRequest(AvitoObject):
@@ -20,11 +135,119 @@ class GetTokenRequest(AvitoObject):
     grant_type: str
 
 
-class TooManyRequestsErrorError(AvitoObject):
-    """TooManyRequestsErrorError — shared across domains.
+class GibddValueResponse(AvitoObject):
+    """GibddValueResponse — shared across domains.
+
+    Attributes:
+        gibdd_value: Строковое значение
+    """
+
+    gibdd_value: str = Field(..., alias="gibddValue")
+
+
+class GroupIdsResponse(AvitoObject):
+    """Payload удаления групп аккаунта
+
+    Attributes:
+        group_ids: Список ID групп
+    """
+
+    group_ids: list[int] = Field(..., min_length=1, alias="groupIDs")
+
+
+class IdResponse(AvitoObject):
+    """IdResponse — shared across domains."""
+
+    id: int
+
+
+class ItemIdsResponse(AvitoObject):
+    """ItemIdsResponse — shared across domains.
+
+    Attributes:
+        item_ids: Набор идентификаторов объявлений на сайте
+    """
+
+    item_ids: list[int] = Field(..., alias="itemIds")
+
+
+class MessageResponse(AvitoObject):
+    """MessageResponse — shared across domains.
+
+    Attributes:
+        message: Текст ошибки
+    """
+
+    message: str
+
+
+class NameResponse(AvitoObject):
+    """NameResponse — shared across domains."""
+
+    name: str = Field(..., max_length=255)
+
+
+class OkResponse(AvitoObject):
+    """OkResponse — shared across domains."""
+
+    ok: bool | None = None
+
+
+class PreviewIdResponse(AvitoObject):
+    """PreviewIdResponse — shared across domains.
+
+    Attributes:
+        preview_id: preview Id
+    """
+
+    preview_id: int = Field(..., ge=1, alias="previewId")
+
+
+class SizesResponse(AvitoObject):
+    """Объект, описывающий изображение, для сообщения типа image
+
+    Attributes:
+        sizes: объект ключ-значение, где ключи - строки в формате \"ШxВ\" (ширина, высота), а значения - ссылки на изображения
+    """
+
+    sizes: dict[str, Any] | None = None
+
+
+class StatusResponse(AvitoObject):
+    """StatusResponse — shared across domains.
+
+    Attributes:
+        status: `success` - свойства успешно сохранены `duplicate` - свойства заказа были переданы ранее и текущий запрос был проигнорирован
+    """
+
+    status: Any | None = None
+
+
+class SuccessResponse(AvitoObject):
+    """SuccessResponse — shared across domains.
+
+    Attributes:
+        success: Успех/неуспех создания жалобы
+    """
+
+    success: bool | None = None
+
+
+class TaskIdResponse(AvitoObject):
+    """Идентификатор задачи проверки ИНН клиентов"""
+
+    task_id: int = Field(..., alias="taskId")
+
+
+class ValidatingErrorError(AvitoObject):
+    """ValidatingErrorError — shared across domains.
 
     Attributes:
         code: Код ошибки
+        fields: Информация об ошибке валидации параметров в формате ключ-значение
+        message: Сообщение об ошибке
     """
 
     code: int
+    fields: dict[str, Any] | None = None
+    message: str

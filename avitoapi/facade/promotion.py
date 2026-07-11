@@ -38,7 +38,7 @@ class PromotionFacade(FacadeBase):
         Args:
             items: Данные по объявлениям для запроса прогноза
         """
-        return await self(GetBbipForecastsByItemsV1(items=items))
+        return await self.execute(GetBbipForecastsByItemsV1(items=items))
 
     async def create_bbip_order_for_items_v1(
         self, items: list[BbipOrderByItemV1]
@@ -48,7 +48,7 @@ class PromotionFacade(FacadeBase):
         Args:
             items: Заявки на подключение BBIP по отдельным объявлениям
         """
-        return await self(CreateBbipOrderForItemsV1(items=items))
+        return await self.execute(CreateBbipOrderForItemsV1(items=items))
 
     async def get_bbip_suggests_by_items_v1(
         self, item_ids: list[int] | None = None
@@ -58,11 +58,11 @@ class PromotionFacade(FacadeBase):
         Args:
             item_ids: Идентификаторы объявлений
         """
-        return await self(GetBbipSuggestsByItemsV1(item_ids=item_ids))
+        return await self.execute(GetBbipSuggestsByItemsV1(item_ids=item_ids))
 
     async def get_dict_of_services_v1(self) -> GetDictOfServicesV1Resp:
         """Словарь типов услуг продвижения via ``POST /promotion/v1/items/services/dict``."""
-        return await self(GetDictOfServicesV1())
+        return await self.execute(GetDictOfServicesV1())
 
     async def get_services_by_items_v1(
         self, item_ids: list[int] | None = None
@@ -72,17 +72,22 @@ class PromotionFacade(FacadeBase):
         Args:
             item_ids: Идентификаторы объявлений
         """
-        return await self(GetServicesByItemsV1(item_ids=item_ids))
+        return await self.execute(GetServicesByItemsV1(item_ids=item_ids))
 
     async def list_orders_by_user_v1(
-        self, pagination: ListOrdersByUserV1Pagination | None = None
+        self, page: int = 1, per_page: int = 20
     ) -> ListOrdersByUserV1Resp:
         """Список заявок via ``POST /promotion/v1/items/services/orders/get``.
 
         Args:
-            pagination: Данные для постраничного чтения
+            page: Номер страницы
+            per_page: Количество записей на странице
         """
-        return await self(ListOrdersByUserV1(pagination=pagination))
+        return await self.execute(
+            ListOrdersByUserV1(
+                pagination=ListOrdersByUserV1Pagination(page=page, per_page=per_page)
+            )
+        )
 
     async def get_order_status_v1(self, order_id: str | None = None) -> GetOrderStatusV1Resp:
         """Статус заявки via ``POST /promotion/v1/items/services/orders/status``.
@@ -90,4 +95,4 @@ class PromotionFacade(FacadeBase):
         Args:
             order_id: Идентификатор заявки на подключение услуг продвижения
         """
-        return await self(GetOrderStatusV1(order_id=order_id))
+        return await self.execute(GetOrderStatusV1(order_id=order_id))

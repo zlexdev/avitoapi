@@ -1,4 +1,8 @@
 <p align="center">
+  <img src="banner.png" alt="avitoapi" width="100%">
+</p>
+
+<p align="center">
   <strong>avitoapi</strong>
 </p>
 
@@ -132,7 +136,16 @@ class OrdersPoller(PollingRunner):
 await OrdersPoller(dp, client).start()  # mirrors BaseWebhookRunner.start()/stop()
 ```
 
-A runnable end-to-end bot lives in [`examples/echo_bot/`](examples/echo_bot/).
+A runnable end-to-end bot lives in [`examples/echo_bot.py`](examples/echo_bot.py).
+
+### Channels & fan-out — merging multiple sources
+
+`avitoapi.channels` gives handlers a bounded, backpressure-aware publish
+surface (`dispatcher.channels.register(MemoryEventChannel(...))` +
+`await dispatcher.publish(name, event)`); `avitoapi.fanout.SourceHub`
+supervises several event sources (webhook + pollers + custom feeds) into
+one dispatcher with health tracking and restart policy. See the module
+docs under `avitoapi/channels/` and `avitoapi/fanout/`.
 
 ## Regenerating the SDK from the spec
 

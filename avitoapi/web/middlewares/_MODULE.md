@@ -1,7 +1,10 @@
 # avitoapi.web.middlewares
 
-Webhook-side middlewares. Each is an independent class; the echo bot
-composes them (see `examples/echo_bot/echo_bot/dispatcher_factory.py`).
+Webhook-side middlewares. Each is an independent class; `AvitoWebhookHandler`
+(see `avitoapi/web/avito_webhook_handler.py`) composes `HMACSignatureMiddleware`
++ `WebhookFastReturnMiddleware` for the standard chain. Dedup is no longer a
+webhook-side middleware — it happens once at `Dispatcher.feed_event`, keyed by
+`event.dedup_key`.
 
 ## `HMACSignatureMiddleware`
 
@@ -16,15 +19,6 @@ ok = await mw.verify(raw_body, signature_header, webhook_id)
 Constant-time compare via `hmac.compare_digest`. With
 `require_signature=False` a missing header just returns `False`; with
 `True` it raises `HMACSignatureMissingError`.
-
-## `WebhookIdempotencyMiddleware`
-
-TTL-bounded dedup on `(chat_id, message_id)`. Backed by `BaseStorage`;
-namespace is auto-applied (`"webhook_seen"`). `await mw.seen(chat, msg)`
-returns `True` on a replay and records the key on first sight.
-
-Default TTL: 1 hour. Adjust via `ttl=timedelta(...)` for very chatty
-chats.
 
 ## `WebhookFastReturnMiddleware`
 
@@ -42,6 +36,5 @@ task = fr.schedule(some_async_handler(event))
 ## Files
 
 - `hmac_signature.py` — `HMACSignatureMiddleware`, `SecretProvider`, `HMACSignatureMissingError`.
-- `idempotency.py` — `WebhookIdempotencyMiddleware`.
 - `fast_return.py` — `WebhookFastReturnMiddleware`, `_FallbackTaskTracker`.
 - `__init__.py` — public re-exports.

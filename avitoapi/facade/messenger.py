@@ -20,9 +20,9 @@ from ..methods.messenger import (
     UploadImages,
 )
 from ..models._helpers import _resolve_user_id
+from ..models._shared import OkResponse
 from ..models.messenger import (
     Chat,
-    ChatReadResponse,
     Chats,
     DeleteMessageResponse,
     GetSubscriptionsResponse,
@@ -31,8 +31,6 @@ from ..models.messenger import (
     PostSendImageMessageResponse,
     PostSendMessageMessage,
     PostSendMessageResponse,
-    PostWebhookUnsubscribeResponse,
-    PostWebhookV3Response,
     UploadImagesResponse,
     VoiceFiles,
 )
@@ -42,11 +40,11 @@ from ._base import FacadeBase
 class MessengerFacade(FacadeBase):
     """``Client`` mixin — Мессенджер endpoints."""
 
-    async def post_send_message(
+    async def send_message(
         self,
         chat_id: str,
         user_id: int | None = None,
-        message: PostSendMessageMessage | None = None,
+        text: str | None = None,
         type_: PostSendMessageType | None = None,
     ) -> PostSendMessageResponse:
         """Отправка сообщения via ``POST /messenger/v1/accounts/{user_id}/chats/{chat_id}/messages``.
@@ -54,18 +52,19 @@ class MessengerFacade(FacadeBase):
         Args:
             user_id: Идентификатор пользователя (клиента)
             chat_id: Идентификатор чата (клиента)
+            text: Текст сообщения (максимум 1000 символов)
             type_: Тип сообщения
         """
-        return await self(
+        return await self.execute(
             PostSendMessage(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 chat_id=chat_id,
-                message=message,
+                message=PostSendMessageMessage(text=text),
                 type_=type_,
             )
         )
 
-    async def post_send_image_message(
+    async def send_image_message(
         self, chat_id: str, image_id: str, user_id: int | None = None
     ) -> PostSendImageMessageResponse:
         """Отправка сообщения с изображением via ``POST /messenger/v1/accounts/{user_id}/chats/{chat_id}/messages/image``.
@@ -75,7 +74,7 @@ class MessengerFacade(FacadeBase):
             chat_id: Идентификатор чата (клиента)
             image_id: Идентификатор загруженного изображения
         """
-        return await self(
+        return await self.execute(
             PostSendImageMessage(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 chat_id=chat_id,
@@ -93,7 +92,7 @@ class MessengerFacade(FacadeBase):
             chat_id: Идентификатор чата (клиента)
             message_id: Идентификатор сообщения
         """
-        return await self(
+        return await self.execute(
             DeleteMessage(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 chat_id=chat_id,
@@ -101,14 +100,14 @@ class MessengerFacade(FacadeBase):
             )
         )
 
-    async def chat_read(self, chat_id: str, user_id: int | None = None) -> ChatReadResponse:
+    async def chat_read(self, chat_id: str, user_id: int | None = None) -> OkResponse:
         """Прочитать чат via ``POST /messenger/v1/accounts/{user_id}/chats/{chat_id}/read``.
 
         Args:
             user_id: Идентификатор пользователя (клиента)
             chat_id: Идентификатор чата (клиента)
         """
-        return await self(
+        return await self.execute(
             ChatRead(
                 user_id=_resolve_user_id(self) if user_id is None else user_id, chat_id=chat_id
             )
@@ -121,7 +120,7 @@ class MessengerFacade(FacadeBase):
             user_id: Идентификатор пользователя (клиента)
             voice_ids: Получение файлов голосовых сообщений с указанными voice_id
         """
-        return await self(
+        return await self.execute(
             GetVoiceFiles(
                 user_id=_resolve_user_id(self) if user_id is None else user_id, voice_ids=voice_ids
             )
@@ -135,7 +134,7 @@ class MessengerFacade(FacadeBase):
         Args:
             user_id: Идентификатор пользователя (клиента)
         """
-        return await self(
+        return await self.execute(
             UploadImages(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 uploadfile=uploadfile,
@@ -144,17 +143,17 @@ class MessengerFacade(FacadeBase):
 
     async def get_subscriptions(self) -> GetSubscriptionsResponse:
         """Получение подписок (webhooks) via ``POST /messenger/v1/subscriptions``."""
-        return await self(GetSubscriptions())
+        return await self.execute(GetSubscriptions())
 
-    async def post_webhook_unsubscribe(self, url: str) -> PostWebhookUnsubscribeResponse:
+    async def webhook_unsubscribe(self, url: str) -> OkResponse:
         """Отключение уведомлений (webhooks) via ``POST /messenger/v1/webhook/unsubscribe``.
 
         Args:
             url: Url на который будут отправляться нотификации
         """
-        return await self(PostWebhookUnsubscribe(url=url))
+        return await self.execute(PostWebhookUnsubscribe(url=url))
 
-    async def post_blacklist_v2(
+    async def blacklist_v2(
         self, user_id: int | None = None, users: list[PostBlacklistV2Users] | None = None
     ) -> None:
         """Добавление пользователя в blacklist via ``POST /messenger/v2/accounts/{user_id}/blacklist``.
@@ -162,7 +161,7 @@ class MessengerFacade(FacadeBase):
         Args:
             user_id: Идентификатор пользователя (клиента)
         """
-        return await self(
+        return await self.execute(
             PostBlacklistV2(
                 user_id=_resolve_user_id(self) if user_id is None else user_id, users=users
             )
@@ -187,7 +186,7 @@ class MessengerFacade(FacadeBase):
             limit: Количество сообщений / чатов для запроса
             offset: Сдвиг сообщений / чатов для запроса
         """
-        return await self(
+        return await self.execute(
             GetChatsV2(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 item_ids=item_ids,
@@ -205,7 +204,7 @@ class MessengerFacade(FacadeBase):
             user_id: Идентификатор пользователя (клиента)
             chat_id: Идентификатор чата (клиента)
         """
-        return await self(
+        return await self.execute(
             GetChatByIdV2(
                 user_id=_resolve_user_id(self) if user_id is None else user_id, chat_id=chat_id
             )
@@ -222,7 +221,7 @@ class MessengerFacade(FacadeBase):
             limit: Количество сообщений / чатов для запроса
             offset: Сдвиг сообщений / чатов для запроса
         """
-        return await self(
+        return await self.execute(
             GetMessagesV3(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 chat_id=chat_id,
@@ -231,10 +230,10 @@ class MessengerFacade(FacadeBase):
             )
         )
 
-    async def post_webhook_v3(self, url: str) -> PostWebhookV3Response:
+    async def webhook_v3(self, url: str) -> OkResponse:
         """Включение уведомлений V3 (webhooks) via ``POST /messenger/v3/webhook``.
 
         Args:
             url: Url на который будут отправляться нотификации
         """
-        return await self(PostWebhookV3(url=url))
+        return await self.execute(PostWebhookV3(url=url))

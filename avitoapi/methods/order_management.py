@@ -12,20 +12,18 @@ from ..enums.order_management import (
     SetCourierDeliveryRangeIntervalType,
     Status,
 )
+from ..models._shared import SuccessResponse
 from ..models.common import TZDatetime
 from ..models.order_management import (
     AcceptReturnOrderRecipient,
     ApplyTransitionParams,
     GetDeliveryCourierConfirmationResponse,
     Marking,
-    OrderAcceptReturnOrderResponse,
-    OrderApplyTransitionResponse,
     OrderCheckConfirmationCodeResponse,
     OrderCncSetDetailsResponse,
     OrderSetTrackingNumberResponse,
     OrdersInfo,
     OrdersLabelsResponse,
-    SetCourierDeliveryRangeResponse,
     SetOrderMarkingResponse,
 )
 from ._base import BaseMethod
@@ -46,7 +44,7 @@ class Markings(BaseMethod[SetOrderMarkingResponse]):
     markings: list[Marking] | None = None
 
 
-class AcceptReturnOrder(BaseMethod[OrderAcceptReturnOrderResponse]):
+class AcceptReturnOrder(BaseMethod[SuccessResponse]):
     """Выбор отделения отделения Почты России для получения возврата via ``POST /order-management/1/order/acceptReturnOrder``.
 
     See: https://developers.avito.ru/api-catalog/order-management/documentation
@@ -65,7 +63,7 @@ class AcceptReturnOrder(BaseMethod[OrderAcceptReturnOrderResponse]):
     terminal_number: str | None = Field(None, alias="terminalNumber")
 
 
-class ApplyTransition(BaseMethod[OrderApplyTransitionResponse]):
+class ApplyTransition(BaseMethod[SuccessResponse]):
     """Изменение статуса заказа via ``POST /order-management/1/order/applyTransition``.
 
     See: https://developers.avito.ru/api-catalog/order-management/documentation
@@ -141,7 +139,7 @@ class GetCourierDeliveryRange(BaseMethod[GetDeliveryCourierConfirmationResponse]
     address: str | None = Field(None, min_length=1)
 
 
-class SetCourierDeliveryRange(BaseMethod[SetCourierDeliveryRangeResponse]):
+class SetCourierDeliveryRange(BaseMethod[SuccessResponse]):
     """Метод выбора определённого доступного временного промежутка для приезда курьера via ``POST /order-management/1/order/setCourierDeliveryRange``.
 
     See: https://developers.avito.ru/api-catalog/order-management/documentation

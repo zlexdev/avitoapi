@@ -28,7 +28,7 @@ class ReviewsFacade(FacadeBase):
             message: Текст ответа на отзыв
             review_id: ID отзыва
         """
-        return await self(CreateReviewAnswerV1(message=message, review_id=review_id))
+        return await self.execute(CreateReviewAnswerV1(message=message, review_id=review_id))
 
     async def remove_review_answer_v1(self, answer_id: int) -> RemoveAnswerResponse:
         """Запрос на удаление ответа на отзыв via ``DELETE /ratings/v1/answers/{answer_id}``.
@@ -36,11 +36,11 @@ class ReviewsFacade(FacadeBase):
         Args:
             answer_id: Идентификатор ответа на отзыв
         """
-        return await self(RemoveReviewAnswerV1(answer_id=answer_id))
+        return await self.execute(RemoveReviewAnswerV1(answer_id=answer_id))
 
     async def get_ratings_info_v1(self) -> GetRatingInfoResponse:
         """Получение информации о рейтинге пользователя via ``GET /ratings/v1/info``."""
-        return await self(GetRatingsInfoV1())
+        return await self.execute(GetRatingsInfoV1())
 
     async def get_reviews_v1(self, offset: int, limit: int) -> GetReviewsResponse:
         """Получение списка активных отзывов на пользователя с пагинацией via ``GET /ratings/v1/reviews``.
@@ -49,4 +49,4 @@ class ReviewsFacade(FacadeBase):
             offset: Смещение
             limit: Лимит количества отзывов
         """
-        return await self(GetReviewsV1(offset=offset, limit=limit))
+        return await self.execute(GetReviewsV1(offset=offset, limit=limit))

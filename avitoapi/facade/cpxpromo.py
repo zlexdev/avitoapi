@@ -10,7 +10,8 @@ from ..methods.cpxpromo import (
     SaveAutoBid,
     SaveManualBid,
 )
-from ..models.cpxpromo import GetBidsOut, GetPromotionsByItemIdsOut, RemovePromotion2Response
+from ..models._shared import MessageResponse
+from ..models.cpxpromo import GetBidsOut, GetPromotionsByItemIdsOut
 from ._base import FacadeBase
 
 
@@ -19,19 +20,19 @@ class CpxpromoFacade(FacadeBase):
 
     async def get_bids(self, item_id: int) -> GetBidsOut:
         """Получение детализированной информации о действующих и доступных ценах за целевые действия и бюджетах via ``GET /cpxpromo/1/getBids/{item_id}``."""
-        return await self(GetBids(item_id=item_id))
+        return await self.execute(GetBids(item_id=item_id))
 
     async def get_promotions_by_item_ids(self, item_ids: list[int]) -> GetPromotionsByItemIdsOut:
         """Получение текущих цен за целевое действие и бюджетов по нескольким объявлениям via ``POST /cpxpromo/1/getPromotionsByItemIds``."""
-        return await self(GetPromotionsByItemIds(item_ids=item_ids))
+        return await self.execute(GetPromotionsByItemIds(item_ids=item_ids))
 
-    async def remove_promotion2(self, item_id: int) -> RemovePromotion2Response:
+    async def remove_promotion2(self, item_id: int) -> MessageResponse:
         """Остановка продвижения via ``POST /cpxpromo/1/remove``.
 
         Args:
             item_id: Идентификатор объявления
         """
-        return await self(RemovePromotion2(item_id=item_id))
+        return await self.execute(RemovePromotion2(item_id=item_id))
 
     async def save_auto_bid(
         self, action_type_id: int, budget_penny: int, budget_type: str, item_id: int
@@ -44,7 +45,7 @@ class CpxpromoFacade(FacadeBase):
             budget_type: Тип бюджета (\"1d\" - дневной | \"7d\" - недельный | \"30d\" - месячный)
             item_id: Идентификатор объявления
         """
-        return await self(
+        return await self.execute(
             SaveAutoBid(
                 action_type_id=action_type_id,
                 budget_penny=budget_penny,
@@ -64,7 +65,7 @@ class CpxpromoFacade(FacadeBase):
             item_id: Идентификатор объявления
             limit_penny: Дневной лимит в копейках
         """
-        return await self(
+        return await self.execute(
             SaveManualBid(
                 action_type_id=action_type_id,
                 bid_penny=bid_penny,

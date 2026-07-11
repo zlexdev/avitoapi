@@ -20,8 +20,8 @@ class AuctionFacade(FacadeBase):
             from_item_id: Идентификатор последнего объявления в предыдущей пачке (по умолчанию 0)
             batch_size: Кол-во объявлений в пачке (максимум 200)
         """
-        return await self(GetUserBids(from_item_id=from_item_id, batch_size=batch_size))
+        return await self.execute(GetUserBids(from_item_id=from_item_id, batch_size=batch_size))
 
     async def save_item_bids(self, items: list[SaveItemBidsItems]) -> None:
         """Сохранение новых ставок via ``POST /auction/1/bids``."""
-        return await self(SaveItemBids(items=items))
+        return await self.execute(SaveItemBids(items=items))

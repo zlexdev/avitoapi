@@ -1,6 +1,6 @@
 """Render ``facade/<module>.py`` — a mixin class of endpoint methods inherited by ``Client``.
 
-``Client`` subclasses every ``*Facade`` mixin, so ``await client.get_item_info(item_id=…)``
+``Client`` subclasses every ``*Facade`` mixin, so ``await client.item_info(item_id=…)``
 constructs the generated method-class and awaits it through ``Client.__call__`` (``self`` *is*
 the client). ``user_id`` path segments default to the client's account. Paginated endpoints
 stay sync and return a ``MethodPaginator``.
@@ -9,9 +9,17 @@ stay sync and return a ``MethodPaginator``.
 from __future__ import annotations
 
 import re
+from dataclasses import replace
 
 from . import dedup, naming, render
 from .build import GeneratedDomain, MethodSpec
+from .types import FieldSpec, ModelSpec
+
+
+def _base_type(annotation: str) -> str:
+    """Drop ``| None`` unions and whitespace to get the leading type name."""
+
+    return annotation.split("|")[0].strip()
 
 
 def facade_class(module: str) -> str:
@@ -30,7 +38,7 @@ def emit(gen: GeneratedDomain) -> str:
         f'    """``Client`` mixin — {gen.title} endpoints."""\n\n',
     ]
     for method in gen.methods:
-        out.append(_render_call(method))
+        out.append(_render_call(method, gen.models))
         out.append("\n\n")
     return "".join(out)
 
@@ -42,6 +50,12 @@ def _signature_text(gen: GeneratedDomain) -> str:
         parts.append(m.return_symbol or "")
         for f in m.fields:
             parts.append(f.annotation)
+            # A body-model field is flattened into its sub-fields at render time — the
+            # model class still appears here (needed for the reconstruction call import),
+            # plus its sub-field annotations so their enums/models get imported too.
+            model = gen.models.get(_base_type(f.annotation))
+            if model is not None:
+                parts.extend(sub.annotation for sub in model.fields)
     return " ".join(parts)
 
 
@@ -86,10 +100,61 @@ def _return_annotation(m: MethodSpec) -> str:
     return m.generic_arg if m.generic_arg != "None" else "None"
 
 
-def _render_call(m: MethodSpec) -> str:
+def _facade_fields(m: MethodSpec, models: dict[str, ModelSpec]) -> tuple[list[FieldSpec], list[str]]:
+    """Flatten body-model params into their fields; return (facade params, method-class call args).
+
+    A param whose type is a generated object model (e.g. ``message: PostSendMessageMessage``)
+    is replaced by that model's own fields as top-level params, and the call reconstructs the
+    model inside (``message=PostSendMessageMessage(text=text)``). The method class is unchanged —
+    this is a facade-only ergonomic unwrap. Sub-field names that clash with a sibling are
+    prefixed with the parent name (``message_text``).
+    """
+
     accounts = set(m.account_params)
-    required = [f for f in m.fields if f.required and f.name not in accounts]
-    optional = [f for f in m.fields if not f.required or f.name in accounts]
+
+    def _is_model(f: FieldSpec) -> bool:
+        return f.name not in accounts and bool(models.get(_base_type(f.annotation), None) and models[_base_type(f.annotation)].fields)
+
+    # Plain (non-flattened) params own their names — pre-register so a flattened
+    # sub-field that clashes yields (gets a parent prefix / numeric suffix), never the reverse.
+    seen: set[str] = {f.name for f in m.fields if not _is_model(f)}
+
+    def _uniq(preferred: str, *alts: str) -> str:
+        for cand in (preferred, *alts):
+            if cand not in seen:
+                seen.add(cand)
+                return cand
+        i = 2
+        while f"{preferred}_{i}" in seen:
+            i += 1
+        seen.add(f"{preferred}_{i}")
+        return f"{preferred}_{i}"
+
+    facade_fields: list[FieldSpec] = []
+    call_args: list[str] = []
+    for f in m.fields:
+        if _is_model(f):
+            sub_exprs: list[str] = []
+            for sub in models[_base_type(f.annotation)].fields:
+                pname = _uniq(sub.name, f"{f.name}_{sub.name}")
+                facade_fields.append(sub if pname == sub.name else replace(sub, name=pname))
+                sub_exprs.append(f"{sub.name}={pname}")
+            call_args.append(f"{f.name}={_base_type(f.annotation)}({', '.join(sub_exprs)})")
+        else:
+            facade_fields.append(f)
+            call_args.append(
+                f"{f.name}=_resolve_user_id(self) if {f.name} is None else {f.name}"
+                if f.name in accounts
+                else f"{f.name}={f.name}",
+            )
+    return facade_fields, call_args
+
+
+def _render_call(m: MethodSpec, models: dict[str, ModelSpec]) -> str:
+    accounts = set(m.account_params)
+    facade_fields, call_args = _facade_fields(m, models)
+    required = [f for f in facade_fields if f.required and f.name not in accounts]
+    optional = [f for f in facade_fields if not f.required or f.name in accounts]
 
     params = [f"{f.name}: {f.annotation}" for f in required]
     for f in optional:
@@ -97,17 +162,11 @@ def _render_call(m: MethodSpec) -> str:
         params.append(f"{f.name}: {annot} = {'None' if f.name in accounts else (f.default_expr or 'None')}")
     signature = ", ".join(["self", *params])
 
-    call_args = [
-        f"{f.name}=_resolve_user_id(self) if {f.name} is None else {f.name}"
-        if f.name in accounts
-        else f"{f.name}={f.name}"
-        for f in m.fields
-    ]
     call = f"{m.class_name}({', '.join(call_args)})"
 
     method_name = m.method_name
-    doc = render.class_docstring(m.doc, "Args", [(f.name, f.description) for f in m.fields], indent="        ")
-    kw, invoke = ("def", f"self({call})") if m.paginated else ("async def", f"await self({call})")
+    doc = render.class_docstring(m.doc, "Args", [(f.name, f.description) for f in facade_fields], indent="        ")
+    kw, invoke = ("def", f"self.paginate({call})") if m.paginated else ("async def", f"await self.execute({call})")
     return "\n".join(
         [
             f"    {kw} {method_name}({signature}) -> {_return_annotation(m)}:",

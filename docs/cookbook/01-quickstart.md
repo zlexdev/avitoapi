@@ -75,7 +75,7 @@ from avitoapi import Client, ClientConfig
 
 async def main() -> None:
     async with Client(config=ClientConfig.from_env()) as client:
-        me = await client.get_self()
+        me = await client.get_user_info_self()
         print(me.id, me.name)
 
 asyncio.run(main())

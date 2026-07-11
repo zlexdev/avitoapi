@@ -16,9 +16,9 @@ from ..methods.cpa import (
     PhonesInfoFromChats,
     PostCreateComplaint,
 )
+from ..models._shared import BalanceResponse
 from ..models.cpa import (
     BalanceInfoV2Response,
-    BalanceInfoV3Response,
     ChatByActionIdResponse,
     ChatsByTime2Response,
     ChatsByTimeResponse,
@@ -40,7 +40,7 @@ class CpaFacade(FacadeBase):
         Args:
             call_id: Идентификатор звонка
         """
-        return await self(GetCall(call_id=call_id))
+        return await self.execute(GetCall(call_id=call_id))
 
     async def chat_by_action_id(self, action_id: int) -> ChatByActionIdResponse:
         """Чат via ``GET /cpa/v1/chatByActionId/{action_id}``.
@@ -48,7 +48,7 @@ class CpaFacade(FacadeBase):
         Args:
             action_id: Идентификатор целевого действия
         """
-        return await self(ChatByActionId(action_id=action_id))
+        return await self.execute(ChatByActionId(action_id=action_id))
 
     async def chats_by_time(
         self, date_time_from: str, limit: int, offset: int
@@ -60,18 +60,18 @@ class CpaFacade(FacadeBase):
             limit: Размер выборки (значение в поле должно быть не более 100)
             offset: Смещение выборки (по-умолчанию 0). Для улучшения производительности лучше использовать максимальный startTime чата из предыдущей выборки
         """
-        return await self(ChatsByTime(date_time_from=date_time_from, limit=limit, offset=offset))
+        return await self.execute(
+            ChatsByTime(date_time_from=date_time_from, limit=limit, offset=offset)
+        )
 
-    async def post_create_complaint(
-        self, call_id: int, message: str
-    ) -> PostCreateComplaintResponse:
+    async def create_complaint(self, call_id: int, message: str) -> PostCreateComplaintResponse:
         """Создание жалобы для звонков via ``POST /cpa/v1/createComplaint``.
 
         Args:
             call_id: Идентификатор звонка
             message: Текст жалобы
         """
-        return await self(PostCreateComplaint(call_id=call_id, message=message))
+        return await self.execute(PostCreateComplaint(call_id=call_id, message=message))
 
     async def create_complaint_by_action_id(
         self, action_id: int, message: str
@@ -82,7 +82,7 @@ class CpaFacade(FacadeBase):
             action_id: ID действия (action), по которому подаётся жалоба
             message: Сообщение, прикрепленное к жалобе
         """
-        return await self(CreateComplaintByActionId(action_id=action_id, message=message))
+        return await self.execute(CreateComplaintByActionId(action_id=action_id, message=message))
 
     async def phones_info_from_chats(
         self, date_time_from: str, limit: int, offset: int
@@ -92,13 +92,13 @@ class CpaFacade(FacadeBase):
         Args:
             date_time_from: Время с которого начинается поиск
         """
-        return await self(
+        return await self.execute(
             PhonesInfoFromChats(date_time_from=date_time_from, limit=limit, offset=offset)
         )
 
     async def balance_info_v2(self) -> BalanceInfoV2Response:
         """Баланс (deprecated) via ``POST /cpa/v2/balanceInfo``."""
-        return await self(BalanceInfoV2())
+        return await self.execute(BalanceInfoV2())
 
     async def get_call_by_id_v2(self, call_id: int) -> GetCallByIdV2Response:
         """Звонок via ``POST /cpa/v2/callById``.
@@ -106,7 +106,7 @@ class CpaFacade(FacadeBase):
         Args:
             call_id: Идентификатор звонка
         """
-        return await self(GetCallByIdV2(call_id=call_id))
+        return await self.execute(GetCallByIdV2(call_id=call_id))
 
     async def get_calls_by_time_v2(
         self, date_time_from: str, limit: int, offset: int | None = None
@@ -118,7 +118,7 @@ class CpaFacade(FacadeBase):
             limit: Размер выборки
             offset: Смещение выборки (по-умолчанию 0). Для улучшения производительности лучше использовать максимальный startTime звонка из предыдущей выборки
         """
-        return await self(
+        return await self.execute(
             GetCallsByTimeV2(date_time_from=date_time_from, limit=limit, offset=offset)
         )
 
@@ -132,8 +132,10 @@ class CpaFacade(FacadeBase):
             limit: Размер выборки (значение в поле должно быть не более 100)
             offset: Смещение выборки (по-умолчанию 0). Для улучшения производительности лучше использовать максимальный date чата из предыдущей выборки
         """
-        return await self(ChatsByTime2(date_time_from=date_time_from, limit=limit, offset=offset))
+        return await self.execute(
+            ChatsByTime2(date_time_from=date_time_from, limit=limit, offset=offset)
+        )
 
-    async def balance_info_v3(self) -> BalanceInfoV3Response:
+    async def balance_info_v3(self) -> BalanceResponse:
         """Баланс via ``POST /cpa/v3/balanceInfo``."""
-        return await self(BalanceInfoV3())
+        return await self.execute(BalanceInfoV3())

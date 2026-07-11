@@ -13,4 +13,4 @@ class TariffFacade(FacadeBase):
 
     async def get_tariff_info(self) -> TariffInfo:
         """Информация по тарифу via ``GET /tariff/info/1``."""
-        return await self(GetTariffInfo())
+        return await self.execute(GetTariffInfo())

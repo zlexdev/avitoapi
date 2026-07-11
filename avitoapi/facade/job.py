@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 from ..enums.job import (
+    ApplyProcessingAdditionalQuestions,
+    ApplyProcessingApplyType,
     BonusesValue,
     CitizenshipCriteriaValue,
     ConstructionWorkTypeValue,
@@ -14,6 +16,7 @@ from ..enums.job import (
     FoodProductionShopTypeValue,
     Grade,
     MedicalBookVacancy,
+    PaidPeriod,
     RegistrationMethodValue,
     ResumeGetItemFields,
     ResumeGetItemParams,
@@ -30,6 +33,7 @@ from ..enums.job import (
     ResumesGetSchedule,
     RetailEquipmentTypeValue,
     RetailShopTypeValue,
+    Taxes,
     ToolsAvailability,
     VacanciesGetByIdsFields,
     VacanciesGetByIdsParams,
@@ -37,6 +41,10 @@ from ..enums.job import (
     VacancyCreate2BillingType,
     VacancyCreate2DeliveryMethod,
     VacancyCreate2Description,
+    VacancyCreate2DrivingExperienceId,
+    VacancyCreate2ExperienceId,
+    VacancyCreate2PayoutFrequencyId,
+    VacancyCreate2ScheduleId,
     VacancyCreate2WorkFormat,
     VacancyCreateV2AgePreferences,
     VacancyCreateV2BillingType,
@@ -56,6 +64,9 @@ from ..enums.job import (
     VacancyUpdate2BillingType,
     VacancyUpdate2DeliveryMethod,
     VacancyUpdate2Description,
+    VacancyUpdate2DrivingExperienceId,
+    VacancyUpdate2ExperienceId,
+    VacancyUpdate2PayoutFrequencyId,
     VacancyUpdate2WorkFormat,
     VacancyUpdateV2AgePreferences,
     VacancyUpdateV2BillingType,
@@ -96,22 +107,26 @@ from ..methods.job import (
     VacancyUpdate2,
     VacancyUpdateV2,
 )
+from ..models._shared import OkResponse
 from ..models.common import TZDatetime
 from ..models.job import (
     AgeCriteria,
     ApplicationsGetStatesResult,
     ApplicationsSetIsViewedApplies,
-    ApplicationsWebhookDeleteResponse,
     ApplyProcessing,
     Contacts,
     Coordinates,
     GetApplicationsByIdsResult,
     GetApplicationsIdsResult,
+    LocationAddress,
+    Phone,
     Resume20,
     ResumeContacts,
     ResumesGetRadius,
+    ResumesGetRadiusPoint,
     ResumesGetResponse,
     SalaryDetail,
+    SalaryDetailBase,
     SearchVacancyResponse,
     SetApplicationsIsViewedResult,
     Vacancies20,
@@ -153,13 +168,13 @@ class JobFacade(FacadeBase):
             action: Новый статус отклика, который нужно применить
             ids: Список идентификаторов откликов, к которым нужно применить статус
         """
-        return await self(ApplicationsApplyActions(action=action, ids=ids))
+        return await self.execute(ApplicationsApplyActions(action=action, ids=ids))
 
     async def applications_get_by_ids(
         self, ids: list[str] | None = None
     ) -> GetApplicationsByIdsResult:
         """Получение списка откликов via ``POST /job/v1/applications/get_by_ids``."""
-        return await self(ApplicationsGetByIds(ids=ids))
+        return await self.execute(ApplicationsGetByIds(ids=ids))
 
     async def applications_get_ids(
         self,
@@ -180,7 +195,7 @@ class JobFacade(FacadeBase):
             is_viewed: Отклик просмотрен
             state: Статус отклика. Опциональный фильтр по текущему статусу отклика
         """
-        return await self(
+        return await self.execute(
             ApplicationsGetIds(
                 updated_at_from=updated_at_from,
                 created_at_from=created_at_from,
@@ -193,7 +208,7 @@ class JobFacade(FacadeBase):
 
     async def applications_get_states(self) -> ApplicationsGetStatesResult:
         """Получение списка возможных статусов откликов via ``GET /job/v1/applications/get_states``."""
-        return await self(ApplicationsGetStates())
+        return await self.execute(ApplicationsGetStates())
 
     async def applications_set_is_viewed(
         self, applies: list[ApplicationsSetIsViewedApplies] | None = None
@@ -203,21 +218,19 @@ class JobFacade(FacadeBase):
         Args:
             applies: Список откликов
         """
-        return await self(ApplicationsSetIsViewed(applies=applies))
+        return await self.execute(ApplicationsSetIsViewed(applies=applies))
 
-    async def applications_webhook_delete(
-        self, url: str | None = None
-    ) -> ApplicationsWebhookDeleteResponse:
+    async def applications_webhook_delete(self, url: str | None = None) -> OkResponse:
         """Отключение уведомлений по откликам (webhook) via ``DELETE /job/v1/applications/webhook``.
 
         Args:
             url: URL, на который отправляются уведомления
         """
-        return await self(ApplicationsWebhookDelete(url=url))
+        return await self.execute(ApplicationsWebhookDelete(url=url))
 
     async def applications_webhook_get(self) -> WebhookSubscribeRequestBody:
         """Получение информации о подписках (webhook) via ``GET /job/v1/applications/webhook``."""
-        return await self(ApplicationsWebhookGet())
+        return await self.execute(ApplicationsWebhookGet())
 
     async def applications_webhook_put(self, secret: str, url: str) -> WebhookSubscribeRequestBody:
         """Включение уведомлений по откликам (webhook) via ``PUT /job/v1/applications/webhook``.
@@ -226,14 +239,17 @@ class JobFacade(FacadeBase):
             secret: сгенерированный ключ
             url: URL на который будут отправляться уведомления
         """
-        return await self(ApplicationsWebhookPut(secret=secret, url=url))
+        return await self.execute(ApplicationsWebhookPut(secret=secret, url=url))
 
     async def applications_webhooks_get(self) -> WebhooksSubscriptionResultList:
         """Получение списка подписок (webhook) via ``GET /job/v1/applications/webhooks``."""
-        return await self(ApplicationsWebhooksGet())
+        return await self.execute(ApplicationsWebhooksGet())
 
     async def resumes_get(
         self,
+        max_distance: int,
+        min_distance: int,
+        point: ResumesGetRadiusPoint,
         per_page: int = 25,
         page: int = 1,
         cursor: int | None = None,
@@ -242,7 +258,6 @@ class JobFacade(FacadeBase):
         location: int | None = None,
         metro: int | None = None,
         district: int | None = None,
-        radius: ResumesGetRadius | None = None,
         specialization: int | None = None,
         schedule: ResumesGetSchedule | None = None,
         business_trip_readiness: ResumesGetBusinessTripReadiness | None = None,
@@ -276,7 +291,9 @@ class JobFacade(FacadeBase):
             location: Идентификатор региона поиска (можно указать несколько значений через запятую) Метод принимает идентификаторы сущностей Region и City из [справочника](https://autoload.avito.ru/format/Locations.xml).
             metro: Идентификатор метро поиска (можно указать несколько значений через запятую) Метод принимает идентификаторы сущности Subway из [справочника](https://autoload.avito.ru/format/Locations.xml).
             district: Идентификатор района поиска (можно указать несколько значений через запятую) Метод принимает идентификаторы сущности District из [справочника](https://autoload.avito.ru/format/Locations.xml).
-            radius: Радиус поиска
+            max_distance: Максимальное расстояние от центра в метрах, значение от 0 до 100_000
+            min_distance: Минимальное расстояние от центра в метрах, значение от 0 до 10_000
+            point: Географические координаты (для указания точки на карте), в градусах — десятичные дроби
             specialization: Идентификатор сферы деятельности (можно указать несколько значений через запятую) Возможные значения: - 10166 - IT, интернет, телеком - 10167 - Медицина, фармацевтика - 10168 - Продажи - 10169 - Страхование - 10170 - Транспорт, логистика - 10171 - Образование, наука - 10172 - Строительство - 10173 - Туризм, рестораны - 10174 - Фитнес, салоны красоты - 10175 - Без опыта, студенты - 10180 - Автомобильный бизнес - 10181 - Бухгалтерия, финансы - 10182 - Высший менеджмент - 10183 - Госслужба, НКО - 10184 - ЖКХ, эксплуатация - 10185 - Искусство, развлечения - 10186 - Консультирование - 10187 - Маркетинг, реклама, PR - 10188 - Охрана, безопасность - 10189 - Управление персоналом - 10190 - Юриспруденция - 10191 - Административная работа - 10192 - Банки, инвестиции - 10193 - Производство, сырьё, с/х - 16844 - Домашний персонал - 2804251 - Курьерская доставка - 2804250 - Такси
             schedule: График работы (можно указать несколько значений через запятую) Возможные значения: - partial-day - Неполный рабочий день - full-day - Полный рабочий день - fly-in-fly-out - Вахтовый метод - flexible - Гибкий график - shift - Сменный график - remote - Удаленная работа
             business_trip_readiness: Готовность к командировкам (можно указать несколько значений через запятую) Возможные значения: - ready - Готов - never - Не готов - sometimes - Иногда
@@ -299,7 +316,7 @@ class JobFacade(FacadeBase):
             own_transport: Свой транспорт (можно указать несколько значений через запятую) Возможные значения: - no - Нет - car - Легковое авто - cargo-car - Грузовое авто - bike - Мотоцикл - scooter - Мопед
             medical_book: Медкнижка Возможные значения: - yes - Медкнижка есть - no - Медкнижки нет
         """
-        return await self(
+        return await self.execute(
             ResumesGet(
                 per_page=per_page,
                 page=page,
@@ -309,7 +326,9 @@ class JobFacade(FacadeBase):
                 location=location,
                 metro=metro,
                 district=district,
-                radius=radius,
+                radius=ResumesGetRadius(
+                    max_distance=max_distance, min_distance=min_distance, point=point
+                ),
                 specialization=specialization,
                 schedule=schedule,
                 business_trip_readiness=business_trip_readiness,
@@ -343,33 +362,39 @@ class JobFacade(FacadeBase):
             resume_id: Идентификатор резюме
             employee_id: Идентификатор сотрудника компании в рамках иерархии аккаунтов. Используется для возможности списать контакт с лимита на покупку резюме для указанного сотрудника.
         """
-        return await self(ResumeGetContacts(resume_id=resume_id, employee_id=employee_id))
+        return await self.execute(ResumeGetContacts(resume_id=resume_id, employee_id=employee_id))
 
     async def vacancy_create2(
         self,
         billing_type: VacancyCreate2BillingType,
         business_area: int,
+        latitude: float,
+        longitude: float,
         description: VacancyCreate2Description,
+        id: VacancyCreate2DrivingExperienceId,
         employment: str,
-        experience: VacancyCreate2Experience,
+        experience_id: VacancyCreate2ExperienceId,
         name: str,
-        schedule: VacancyCreate2Schedule,
+        payout_frequency_id: VacancyCreate2PayoutFrequencyId,
+        schedule_id: VacancyCreate2ScheduleId,
         address: str | None = None,
         administrator_organization_type: int | None = None,
-        age: AgeCriteria | None = None,
+        from_: int | None = None,
+        to: int | None = None,
         age_preferences: list[VacancyCreate2AgePreferences] | None = None,
         allow_calls: bool | None = None,
         allow_messages: bool | None = None,
-        apply_processing: ApplyProcessing | None = None,
+        additional_questions: list[ApplyProcessingAdditionalQuestions] | None = None,
+        apply_type: ApplyProcessingApplyType | None = None,
         bonuses: list[BonusesValue] | None = None,
         citizenship: list[CitizenshipCriteriaValue] | None = None,
         construction_work_type: list[ConstructionWorkTypeValue] | None = None,
-        contacts: Contacts | None = None,
-        coordinates: Coordinates | None = None,
+        email: str | None = None,
+        contacts_name: str | None = None,
+        phone: Phone | None = None,
         cuisine: list[CuisineValue] | None = None,
         custom_employer_name: str | None = None,
         delivery_method: list[VacancyCreate2DeliveryMethod] | None = None,
-        driving_experience: VacancyCreate2DrivingExperience | None = None,
         driving_license_category: list[DrivingLicenseCategoryValue] | None = None,
         eatery_type: list[EateryTypeValue] | None = None,
         education_level: VacancyEducationLevel | None = None,
@@ -384,14 +409,16 @@ class JobFacade(FacadeBase):
         medical_book: MedicalBookVacancy | None = None,
         medical_specialization: list[str] | None = None,
         medical_specialization_ids: list[int] | None = None,
-        payout_frequency: VacancyCreate2PayoutFrequency | None = None,
         profession: int | None = None,
         registration_method: list[RegistrationMethodValue] | None = None,
         retail_equipment_type: list[RetailEquipmentTypeValue] | None = None,
         retail_shop_type: list[RetailShopTypeValue] | None = None,
         salary: int | None = None,
-        salary_detail: SalaryDetail | None = None,
-        salary_range: VacancyCreate2SalaryRange | None = None,
+        base: SalaryDetailBase | None = None,
+        paid_period: PaidPeriod | None = None,
+        taxes: Taxes | None = None,
+        salary_range_from_: int | None = None,
+        salary_range_to: int | None = None,
         shifts: list[int] | None = None,
         tools_availability: ToolsAvailability | None = None,
         vacancy_code: str | None = None,
@@ -407,52 +434,58 @@ class JobFacade(FacadeBase):
             address: Полный адрес объекта (строка длиной от 1 до 256 символов). Обязательное, если не указаны координаты.
             age_preferences: Блок \"в том числе для кандидатов\" (массив строк) Возможные значения элементов массива: - \"olderThan45\" - старше 45 лет; - \"olderThan14\" - от 14 лет; - \"olderThan16\" - от 16 лет; - \"withHealthProblems\" - с нарушениями здоровья; - \"students\" - для студентов; - \"pensioners\" - для пенсионеров.
             allow_messages: Возможность откликнуться на вакансию через сайт. Если передается apply_processing, то значение allow_messages будет игнорироваться и равно true.
+            additional_questions: *DEPRECATED* Заполнение поля не влияет на вакансию. Массив со списком дополнительных вопросов, которые задаст ассистент Авито. - `experience` - вопрос про опыт работы. В качестве критерия будет использоваться значение поля `experience`. В результатах опроса ассистент отметит, достаточно у кандидата опыта или нет. - `citizenship` - вопрос про гражданство. В качестве критерия будет использоваться значение поля `citizenship`, если оно заполнено. - `age` - вопрос про возраст. В качестве критерия будет использоваться значение поля `age`, если оно заполнено.
+            apply_type: Принимает два значения: - `with_assistant` - на вакансию смогут откликнуться кандидаты с резюме и без. - `only_with_resume` - на вакансию смогут откликаться только кандидаты с резюме. Если у кандидата нет резюме, Авито поможет создать его и откликнуться на вакансию
             billing_type: Вариант платного размещения Возможные значения: - \"package\" - размещение объявления осуществляется только при наличии подходящего пакета размещения - \"packageOrSingle\" - при наличии подходящего пакета оплата размещения объявления произойдет с него; если нет подходящего пакета, но достаточно денег на кошельке Авито, то произойдет разовое размещение - \"single\" - только разовое размещение, произойдет при наличии достаточной суммы на кошельке Авито; если есть подходящий пакет размещения, он будет проигнорирован
+            email: Email контактного лица по данному объявлению. Учитывается только при публикации вакансии от имени Сотрудника. Если не заполнено то при публикации от Сотрудника будет использована почта из Профиля Сотрудника. При публикации от Компании или Пользователя будет использоваться почта из Профиля, переданное значение будет проигнорировано.
+            contacts_name: Имя менеджера, контактного лица по данному объявлению. Учитывается только при публикации вакансии от имени Сотрудника. Если не заполнено то при публикации от Сотрудника будет использовано \"Имя сотрудника, которое видят пользователи при просмотре объявления\". При публикации от Компании или Пользователя не заполняется, переданное значение будет проигнорировано.
+            latitude: Широта
+            longitude: Долгота
             custom_employer_name: Название компании (строка длиной до 60 символов)
             delivery_method: Способ доставки
             description: Описание вакансии (строка длиной от 1 до 5000 символов) Поддерживает html-тэги `p`, `ul`, `ol`, `li`, `br`, `strong`, `em`
-            driving_experience: Стаж вождения
             employee_id: employee_id - Идентификатор сотрудника на Авито. Если этот параметр указан, то вакансия будет закреплена за сотрудником и с его баланса в Avito Pro будет списано размещение. Использовать параметр можно только с billing_type равным package. Сотрудник должен быть активен.
             employment: Занятость Возможные значения: - temporary - Временная - full - Полная - partial - Частичная Если ничего не выбрать то будет автоматически проставляться в зависимости от режима работы: При flexible и partTime, тип занятости - partial. Для всех остальных full. deprecated значение internship будет заменено на temporary
-            experience: Опыт работы
             image_url: URL-адрес логотипа вакансии. Ссылка на файл должна быть прямой | (при переходе не открываются элементы другого сайта (логотипы, кнопки или другие детали интерфейса) и не запрашивается логин и пароль) и доступной для IP 185.89.12.0/22, 146.158.48.0/21, 185.79.237.224/28 и 87.245.204.32/28;
             is_company_car: Предоставляет ли компания автомобиль
             is_side_job: Подработка
             name: Название вакансии (строка длиной от 1 до 50 символов)
-            payout_frequency: Частота выплат Возможные значения: - \"dailyPay\" - Каждый день; - \"biweeklyPay\" - Дважды в месяц; - \"weeklyPay\" - Раз в неделю; - \"thriceMonthlyPay\" - три раза в месяц; - \"monthlyPay\" - Раз в месяц. Для paid_period равным month и week недоступно для выбора dailyPay. deprecated значение hourlyPay будет заменено на dailyPay
             salary: Зарплата, рублей в месяц, если заполнено вместе с salary_range, то приоритет у salary_range
-            salary_range: Блок с вилкой зарплаты, если одновременно с salary, имеет приоритет
-            schedule: Режим работы Возможные значения: - flyInFlyOut - Вахта - fixed - Фиксированный - flexible - Гибкий - shift - Сменный deprecated значения fiveDay, sixDay, partTime, fullDay и remote будут заменены на fixed flyInFlyOut - Вахта, при выборе данного режима работы, адрес вакансии может быть только \"Город\", если адрес передается полноценный, то улица будет отрезана и адрес будет до \"Города\".
+            base: Оклад
+            salary_range_from_: Нижняя граница зарплаты, рублей в месяц
+            salary_range_to: Верхняя граница зарплаты, рублей в месяц
             vacancy_code: Внутренний идентификатор вакансии или номер заявки на подбор, максимум 150 символов
             work_format: Блок \"Формат работы\" (массив строк) Возможные значения элементов массива: - \"office\" - В офисе или на объекте; - \"remote\" - Удалённо; - \"gibrid\" - Гибрид.
         """
-        return await self(
+        return await self.execute(
             VacancyCreate2(
                 address=address,
                 administrator_organization_type=administrator_organization_type,
-                age=age,
+                age=AgeCriteria(from_=from_, to=to),
                 age_preferences=age_preferences,
                 allow_calls=allow_calls,
                 allow_messages=allow_messages,
-                apply_processing=apply_processing,
+                apply_processing=ApplyProcessing(
+                    additional_questions=additional_questions, apply_type=apply_type
+                ),
                 billing_type=billing_type,
                 bonuses=bonuses,
                 business_area=business_area,
                 citizenship=citizenship,
                 construction_work_type=construction_work_type,
-                contacts=contacts,
-                coordinates=coordinates,
+                contacts=Contacts(email=email, name=contacts_name, phone=phone),
+                coordinates=Coordinates(latitude=latitude, longitude=longitude),
                 cuisine=cuisine,
                 custom_employer_name=custom_employer_name,
                 delivery_method=delivery_method,
                 description=description,
-                driving_experience=driving_experience,
+                driving_experience=VacancyCreate2DrivingExperience(id=id),
                 driving_license_category=driving_license_category,
                 eatery_type=eatery_type,
                 education_level=education_level,
                 employee_id=employee_id,
                 employment=employment,
-                experience=experience,
+                experience=VacancyCreate2Experience(id=experience_id),
                 facility_type=facility_type,
                 food_production_shop_type=food_production_shop_type,
                 grade=grade,
@@ -464,15 +497,17 @@ class JobFacade(FacadeBase):
                 medical_specialization=medical_specialization,
                 medical_specialization_ids=medical_specialization_ids,
                 name=name,
-                payout_frequency=payout_frequency,
+                payout_frequency=VacancyCreate2PayoutFrequency(id=payout_frequency_id),
                 profession=profession,
                 registration_method=registration_method,
                 retail_equipment_type=retail_equipment_type,
                 retail_shop_type=retail_shop_type,
                 salary=salary,
-                salary_detail=salary_detail,
-                salary_range=salary_range,
-                schedule=schedule,
+                salary_detail=SalaryDetail(base=base, paid_period=paid_period, taxes=taxes),
+                salary_range=VacancyCreate2SalaryRange(
+                    from_=salary_range_from_, to=salary_range_to
+                ),
+                schedule=VacancyCreate2Schedule(id=schedule_id),
                 shifts=shifts,
                 tools_availability=tools_availability,
                 vacancy_code=vacancy_code,
@@ -491,34 +526,40 @@ class JobFacade(FacadeBase):
             vacancy_id: Идентификатор вакансии на сайте
             employee_id: employee_id - Идентификатор сотрудника на Авито. Сотрудник может останавливать только закрепленные за ним вакансии в Avito Pro. Сотрудник должен быть в активен.
         """
-        return await self(VacancyArchive2(vacancy_id=vacancy_id, employee_id=employee_id))
+        return await self.execute(VacancyArchive2(vacancy_id=vacancy_id, employee_id=employee_id))
 
     async def vacancy_update2(
         self,
         vacancy_id: int,
         billing_type: VacancyUpdate2BillingType,
+        latitude: float,
+        longitude: float,
+        id: VacancyUpdate2DrivingExperienceId,
+        experience_id: VacancyUpdate2ExperienceId,
+        payout_frequency_id: VacancyUpdate2PayoutFrequencyId,
         address: str | None = None,
         administrator_organization_type: int | None = None,
-        age: AgeCriteria | None = None,
+        from_: int | None = None,
+        to: int | None = None,
         age_preferences: list[VacancyUpdate2AgePreferences] | None = None,
         allow_calls: bool | None = None,
         allow_messages: bool | None = None,
-        apply_processing: ApplyProcessing | None = None,
+        additional_questions: list[ApplyProcessingAdditionalQuestions] | None = None,
+        apply_type: ApplyProcessingApplyType | None = None,
         bonuses: list[BonusesValue] | None = None,
         citizenship: list[CitizenshipCriteriaValue] | None = None,
         construction_work_type: list[ConstructionWorkTypeValue] | None = None,
-        contacts: Contacts | None = None,
-        coordinates: Coordinates | None = None,
+        email: str | None = None,
+        contacts_name: str | None = None,
+        phone: Phone | None = None,
         cuisine: list[CuisineValue] | None = None,
         custom_employer_name: str | None = None,
         delivery_method: list[VacancyUpdate2DeliveryMethod] | None = None,
         description: VacancyUpdate2Description | None = None,
-        driving_experience: VacancyUpdate2DrivingExperience | None = None,
         driving_license_category: list[DrivingLicenseCategoryValue] | None = None,
         eatery_type: list[EateryTypeValue] | None = None,
         education_level: VacancyEducationLevel | None = None,
         employee_id: int | None = None,
-        experience: VacancyUpdate2Experience | None = None,
         facility_type: list[FacilityTypeValue] | None = None,
         food_production_shop_type: list[FoodProductionShopTypeValue] | None = None,
         grade: Grade | None = None,
@@ -530,14 +571,16 @@ class JobFacade(FacadeBase):
         medical_specialization: list[str] | None = None,
         medical_specialization_ids: list[int] | None = None,
         name: str | None = None,
-        payout_frequency: VacancyUpdate2PayoutFrequency | None = None,
         profession: int | None = None,
         registration_method: list[RegistrationMethodValue] | None = None,
         retail_equipment_type: list[RetailEquipmentTypeValue] | None = None,
         retail_shop_type: list[RetailShopTypeValue] | None = None,
         salary: int | None = None,
-        salary_detail: SalaryDetail | None = None,
-        salary_range: VacancyUpdate2SalaryRange | None = None,
+        base: SalaryDetailBase | None = None,
+        paid_period: PaidPeriod | None = None,
+        taxes: Taxes | None = None,
+        salary_range_from_: int | None = None,
+        salary_range_to: int | None = None,
         shifts: list[int] | None = None,
         tools_availability: ToolsAvailability | None = None,
         vacancy_code: str | None = None,
@@ -553,49 +596,56 @@ class JobFacade(FacadeBase):
             vacancy_id: Идентификатор вакансии на сайте
             address: Полный адрес объекта (строка длиной от 0 до 256 символов)
             allow_messages: Возможность откликнуться на вакансию через сайт. Если передается apply_processing, то значение allow_messages будет игнорироваться и равно true.
+            additional_questions: *DEPRECATED* Заполнение поля не влияет на вакансию. Массив со списком дополнительных вопросов, которые задаст ассистент Авито. - `experience` - вопрос про опыт работы. В качестве критерия будет использоваться значение поля `experience`. В результатах опроса ассистент отметит, достаточно у кандидата опыта или нет. - `citizenship` - вопрос про гражданство. В качестве критерия будет использоваться значение поля `citizenship`, если оно заполнено. - `age` - вопрос про возраст. В качестве критерия будет использоваться значение поля `age`, если оно заполнено.
+            apply_type: Принимает два значения: - `with_assistant` - на вакансию смогут откликнуться кандидаты с резюме и без. - `only_with_resume` - на вакансию смогут откликаться только кандидаты с резюме. Если у кандидата нет резюме, Авито поможет создать его и откликнуться на вакансию
             billing_type: Вариант платного размещения Возможные значения: - \"package\" - размещение объявления осуществляется только при наличии подходящего пакета размещения - \"packageOrSingle\" - при наличии подходящего пакета оплата размещения объявления произойдет с него; если нет подходящего пакета, но достаточно денег на кошельке Авито, то произойдет разовое размещение - \"single\" - только разовое размещение, произойдет при наличии достаточной суммы на кошельке Авито; если есть подходящий пакет размещения, он будет проигнорирован
+            email: Email контактного лица по данному объявлению. Учитывается только при публикации вакансии от имени Сотрудника. Если не заполнено то при публикации от Сотрудника будет использована почта из Профиля Сотрудника. При публикации от Компании или Пользователя будет использоваться почта из Профиля, переданное значение будет проигнорировано.
+            contacts_name: Имя менеджера, контактного лица по данному объявлению. Учитывается только при публикации вакансии от имени Сотрудника. Если не заполнено то при публикации от Сотрудника будет использовано \"Имя сотрудника, которое видят пользователи при просмотре объявления\". При публикации от Компании или Пользователя не заполняется, переданное значение будет проигнорировано.
+            latitude: Широта
+            longitude: Долгота
             custom_employer_name: Название компании (строка длиной до 60 символов)
             delivery_method: Способ доставки
             description: Описание вакансии (строка длиной от 1 до 5000 символов) Поддерживает html-тэги `p`, `ul`, `ol`, `li`, `br`, `strong`, `em`
-            driving_experience: Стаж вождения
             employee_id: employee_id - Идентификатор сотрудника на Авито. Сотрудник может редактировать только закрепленные за ним вакансии в Avito Pro. Сотрудник должен быть в активен.
-            experience: Опыт работы
             image_url: URL-адрес логотипа вакансии. Ссылка на файл должна быть прямой | (при переходе не открываются элементы другого сайта (логотипы, кнопки или другие детали интерфейса) и не запрашивается логин и пароль) и доступной для IP 185.89.12.0/22, 146.158.48.0/21, 185.79.237.224/28 и 87.245.204.32/28;
             is_company_car: Предоставляет ли компания автомобиль
             is_side_job: Подработка
             name: Название вакансии (строка длиной от 0 до 50 символов)
-            payout_frequency: Частота выплат Возможные значения: - \"dailyPay\" - Каждый день; - \"biweeklyPay\" - Дважды в месяц; - \"weeklyPay\" - Раз в неделю; - \"thriceMonthlyPay\" - три раза в месяц - \"monthlyPay\" - Раз в месяц. deprecated значение hourlyPay будет заменено на dailyPay
             salary: Зарплата, рублей в месяц, если заполнено вместе с salary_range, то приоритет у salary_range
-            salary_range: Блок с вилкой зарплаты, если заполнен одновременно с salary, то имеет приоритет
+            base: Оклад
+            salary_range_from_: Нижняя граница зарплаты, рублей в месяц
+            salary_range_to: Верхняя граница зарплаты, рублей в месяц
             vacancy_code: Внутренний идентификатор вакансии или номер заявки на подбор, максимум 150 символов
             work_format: Блок \"Формат работы\" (массив строк) Возможные значения элементов массива: - \"office\" - В офисе или на объекте; - \"remote\" - Удалённо; - \"gibrid\" - Гибрид.
         """
-        return await self(
+        return await self.execute(
             VacancyUpdate2(
                 vacancy_id=vacancy_id,
                 address=address,
                 administrator_organization_type=administrator_organization_type,
-                age=age,
+                age=AgeCriteria(from_=from_, to=to),
                 age_preferences=age_preferences,
                 allow_calls=allow_calls,
                 allow_messages=allow_messages,
-                apply_processing=apply_processing,
+                apply_processing=ApplyProcessing(
+                    additional_questions=additional_questions, apply_type=apply_type
+                ),
                 billing_type=billing_type,
                 bonuses=bonuses,
                 citizenship=citizenship,
                 construction_work_type=construction_work_type,
-                contacts=contacts,
-                coordinates=coordinates,
+                contacts=Contacts(email=email, name=contacts_name, phone=phone),
+                coordinates=Coordinates(latitude=latitude, longitude=longitude),
                 cuisine=cuisine,
                 custom_employer_name=custom_employer_name,
                 delivery_method=delivery_method,
                 description=description,
-                driving_experience=driving_experience,
+                driving_experience=VacancyUpdate2DrivingExperience(id=id),
                 driving_license_category=driving_license_category,
                 eatery_type=eatery_type,
                 education_level=education_level,
                 employee_id=employee_id,
-                experience=experience,
+                experience=VacancyUpdate2Experience(id=experience_id),
                 facility_type=facility_type,
                 food_production_shop_type=food_production_shop_type,
                 grade=grade,
@@ -607,14 +657,16 @@ class JobFacade(FacadeBase):
                 medical_specialization=medical_specialization,
                 medical_specialization_ids=medical_specialization_ids,
                 name=name,
-                payout_frequency=payout_frequency,
+                payout_frequency=VacancyUpdate2PayoutFrequency(id=payout_frequency_id),
                 profession=profession,
                 registration_method=registration_method,
                 retail_equipment_type=retail_equipment_type,
                 retail_shop_type=retail_shop_type,
                 salary=salary,
-                salary_detail=salary_detail,
-                salary_range=salary_range,
+                salary_detail=SalaryDetail(base=base, paid_period=paid_period, taxes=taxes),
+                salary_range=VacancyUpdate2SalaryRange(
+                    from_=salary_range_from_, to=salary_range_to
+                ),
                 shifts=shifts,
                 tools_availability=tools_availability,
                 vacancy_code=vacancy_code,
@@ -639,7 +691,7 @@ class JobFacade(FacadeBase):
             billing_type: Вариант платного размещения Возможные значения: - \"package\" - размещение объявления осуществляется только при наличии подходящего пакета размещения - \"packageOrSingle\" - при наличии подходящего пакета оплата размещения объявления произойдет с него; если нет подходящего пакета, но достаточно денег на кошельке Авито, то произойдет разовое размещение - \"single\" - только разовое размещение, произойдет при наличии достаточной суммы на кошельке Авито; если есть подходящий пакет размещения, он будет проигнорирован
             employee_id: employee_id - Идентификатор сотрудника на Авито. Если этот параметр указан, то с баланса сотрудника в Avito Pro будет списано размещение. Использовать параметр можно только с billing_type равным package. Сотрудник должен быть в активен.
         """
-        return await self(
+        return await self.execute(
             VacancyProlongate2(
                 vacancy_id=vacancy_id, billing_type=billing_type, employee_id=employee_id
             )
@@ -660,7 +712,7 @@ class JobFacade(FacadeBase):
             params: Дополнительные поля, которые входят в params (можно указать несколько значений через запятую). По умолчанию отображаются все поля.
             photos: Признак того, нужно ли отдавать картинки, по умолчанию false
         """
-        return await self(
+        return await self.execute(
             ResumeGetItem(resume_id=resume_id, fields=fields, params=params, photos=photos)
         )
 
@@ -683,7 +735,7 @@ class JobFacade(FacadeBase):
             work_format: Формат работы (можно указать несколько значений через запятую) Получить актуальный список доступных значений можно из справочника `work_format` через метод [getDictByID](/api-catalog/job/documentation#operation/getDictByID).
             schedule: Режим работы (можно указать несколько значений через запятую) Получить актуальный список доступных значений можно из справочника `schedules` через метод [getDictByID](/api-catalog/job/documentation#operation/getDictByID).
         """
-        return await self(
+        return await self.execute(
             SearchVacancy(
                 per_page=per_page,
                 page=page,
@@ -698,14 +750,20 @@ class JobFacade(FacadeBase):
         self,
         billing_type: VacancyCreateV2BillingType,
         administrator_organization_type: int | None = None,
-        age: AgeCriteria | None = None,
+        from_: int | None = None,
+        to: int | None = None,
         age_preferences: list[VacancyCreateV2AgePreferences] | None = None,
-        apply_processing: ApplyProcessing | None = None,
+        additional_questions: list[ApplyProcessingAdditionalQuestions] | None = None,
+        apply_type: ApplyProcessingApplyType | None = None,
         bonuses: list[BonusesValue] | None = None,
         business_area: int | None = None,
         citizenship: list[CitizenshipCriteriaValue] | None = None,
         construction_work_type: list[ConstructionWorkTypeValue] | None = None,
-        contacts: VacancyCreateV2Contacts | None = None,
+        allow_calls: bool | None = None,
+        allow_messages: bool | None = None,
+        email: str | None = None,
+        name: str | None = None,
+        phone: str | None = None,
         cuisine: list[CuisineValue] | None = None,
         delivery_method: list[VacancyCreateV2DeliveryMethod] | None = None,
         description: VacancyCreateV2Description | None = None,
@@ -718,11 +776,12 @@ class JobFacade(FacadeBase):
         facility_type: list[FacilityTypeValue] | None = None,
         food_production_shop_type: list[FoodProductionShopTypeValue] | None = None,
         grade: Grade | None = None,
-        hierarchy: VacancyCreateV2Hierarchy | None = None,
+        employee_id: int | None = None,
         image_url: str | None = None,
         is_company_car: bool | None = None,
         is_side_job: bool | None = None,
-        location: VacancyCreateV2Location | None = None,
+        address: LocationAddress | None = None,
+        coordinates: Coordinates | None = None,
         medical_book: MedicalBookVacancy | None = None,
         medical_specialization: list[str] | None = None,
         medical_specialization_ids: list[int] | None = None,
@@ -732,8 +791,11 @@ class JobFacade(FacadeBase):
         registration_method: list[RegistrationMethodValue] | None = None,
         retail_equipment_type: list[RetailEquipmentTypeValue] | None = None,
         retail_shop_type: list[RetailShopTypeValue] | None = None,
-        salary: VacancyCreateV2Salary | None = None,
-        salary_detail: SalaryDetail | None = None,
+        salary_from_: int | None = None,
+        salary_to: int | None = None,
+        base: SalaryDetailBase | None = None,
+        paid_period: PaidPeriod | None = None,
+        taxes: Taxes | None = None,
         schedule: VacancyCreateV2Schedule | None = None,
         shifts: list[int] | None = None,
         title: str | None = None,
@@ -749,39 +811,53 @@ class JobFacade(FacadeBase):
 
         Args:
             age_preferences: Блок \"в том числе для кандидатов\" (массив строк) Возможные значения элементов массива: - \"olderThan45\" - старше 45 лет; - \"olderThan14\" - от 14 лет; - \"olderThan16\" - от 16 лет; - \"withHealthProblems\" - с нарушениями здоровья; - \"students\" - для студентов; - \"pensioners\" - для пенсионеров.
+            additional_questions: *DEPRECATED* Заполнение поля не влияет на вакансию. Массив со списком дополнительных вопросов, которые задаст ассистент Авито. - `experience` - вопрос про опыт работы. В качестве критерия будет использоваться значение поля `experience`. В результатах опроса ассистент отметит, достаточно у кандидата опыта или нет. - `citizenship` - вопрос про гражданство. В качестве критерия будет использоваться значение поля `citizenship`, если оно заполнено. - `age` - вопрос про возраст. В качестве критерия будет использоваться значение поля `age`, если оно заполнено.
+            apply_type: Принимает два значения: - `with_assistant` - на вакансию смогут откликнуться кандидаты с резюме и без. - `only_with_resume` - на вакансию смогут откликаться только кандидаты с резюме. Если у кандидата нет резюме, Авито поможет создать его и откликнуться на вакансию
             billing_type: Вариант платного размещения Возможные значения: - \"package\" - размещение объявления осуществляется только при наличии подходящего пакета размещения - \"packageOrSingle\" - при наличии подходящего пакета оплата размещения объявления произойдет с него; если нет подходящего пакета, но достаточно денег на кошельке Авито, то произойдет разовое размещение
             business_area: Идентификатор сферы деятельности Получить актуальный список доступных значений можно из справочника `business_area` через метод [getDictByID](/api-catalog/job/documentation#operation/getDictByID).
-            contacts: Контактная информация
+            allow_messages: Возможность откликнуться на вакансию через сайт. Если передается apply_processing, то значение allow_messages будет игнорироваться и равно true
+            email: Email контактного лица по данному объявлению. Учитывается только при публикации вакансии от имени Сотрудника. Если не заполнено то при публикации от Сотрудника будет использована почта из Профиля Сотрудника. При публикации от Компании или Пользователя будет использоваться почта из Профиля, переданное значение будет проигнорировано.
+            name: Имя менеджера, контактного лица по данному объявлению. Учитывается только при публикации вакансии от имени Сотрудника. Если не заполнено то при публикации от Сотрудника будет использовано \"Имя сотрудника, которое видят пользователи при просмотре объявления\". При публикации от Компании или Пользователя не заполняется, переданное значение будет проигнорировано.
+            phone: Контактный телефон, если не передать - подставляется номер из профиля который используется по умолчанию. Если передать номер телефона которого нет в профиле, то он будет добавлен в профиль, но по нему необходимо будет пройти верификацию. Если номер телефона принадлежит другому пользователю, то вакансия не будет опубликована. Если вакансия публикуется от имени сотрудника и номер телефона ему не принадлежит - объявление так же не будет опубликовано.
             delivery_method: Способ доставки
             description: Описание вакансии (строка длиной от 1 до 5000 символов) Можно использовать HTML-теги в тексте. Поддерживаемые тэги - `p`, `ul`, `ol`, `li`, `br`, `strong`, `em`
             driving_experience: Стаж вождения
             employment: Занятость Возможные значения: - temporary - Временная - full - Полная - partial - Частичная Если ничего не выбрать то будет автоматически проставляться в зависимости от графика работы: При flexible и partTime, тип занятости - partial. ßДля всех остальных full. deprecated значение internship будет заменено на temporary
             experience: Опыт работы
-            hierarchy: employee_id - Идентификатор сотрудника на Авито. Если этот параметр указан, то с баланса сотрудника в Avito Pro будет списано размещение. Использовать параметр можно только с billing_type равным package. Сотрудник должен быть в активен.
+            employee_id: Идентификатор сотрудника на Авито
             image_url: URL-адрес логотипа вакансии. Ссылка на файл должна быть прямой | (при переходе не открываются элементы другого сайта (логотипы, кнопки или другие детали интерфейса) и не запрашивается логин и пароль) и доступной для IP 185.89.12.0/22, 146.158.48.0/21, 185.79.237.224/28 и 87.245.204.32/28;
             is_company_car: Предоставляет ли компания автомобиль
             is_side_job: Подработка
-            location: Геолокация вакансии (как минимум одно из значений)
             payout_frequency: Частота выплат Возможные значения: - \"dailyPay\" - Каждый день; - \"biweeklyPay\" - Дважды в месяц; - \"weeklyPay\" - Раз в неделю; - \"thriceMonthlyPay\" - три раза в месяц; - \"monthlyPay\" - Раз в месяц. Для paid_period равным month и week недоступно для выбора dailyPay. deprecated значение hourlyPay будет заменено на dailyPay
             programs: Блок участие вакансии в программах (массив строк) Если у компании от лица которой создается вакансия нет всех необходимых разрешений на участие, программа у вакансии не будет включена. Возможные значения элементов массива: - \"chastyeVyplaty\" - Частые выплаты.
-            salary: Блок с вилкой зарплаты
+            salary_from_: Нижняя граница зарплаты, рублей в месяц
+            salary_to: Верхняя граница зарплаты, рублей в месяц
+            base: Оклад
             schedule: Режим работы Возможные значения: - flyInFlyOut - Вахта - fixed - Фиксированный - flexible - Гибкий - shift - Сменный flyInFlyOut - Вахта, при выборе данного режима работы, адрес вакансии может быть только \"Город\", если адрес передается полноценный, то улица будет отрезана и адрес будет до \"Города\". deprecated значения fiveDay, sixDay, partTime, fullDay и remote будут заменены на fixed
             title: Название вакансии (строка длиной от 1 до 50 символов)
             vacancy_code: Внутренний идентификатор вакансии или номер заявки на подбор, максимум 150 символов
             work_format: Блок \"Формат работы\" (массив строк) Возможные значения элементов массива: - \"office\" - В офисе или на объекте; - \"remote\" - Удалённо; - \"gibrid\" - Гибрид.
         """
-        return await self(
+        return await self.execute(
             VacancyCreateV2(
                 administrator_organization_type=administrator_organization_type,
-                age=age,
+                age=AgeCriteria(from_=from_, to=to),
                 age_preferences=age_preferences,
-                apply_processing=apply_processing,
+                apply_processing=ApplyProcessing(
+                    additional_questions=additional_questions, apply_type=apply_type
+                ),
                 billing_type=billing_type,
                 bonuses=bonuses,
                 business_area=business_area,
                 citizenship=citizenship,
                 construction_work_type=construction_work_type,
-                contacts=contacts,
+                contacts=VacancyCreateV2Contacts(
+                    allow_calls=allow_calls,
+                    allow_messages=allow_messages,
+                    email=email,
+                    name=name,
+                    phone=phone,
+                ),
                 cuisine=cuisine,
                 delivery_method=delivery_method,
                 description=description,
@@ -794,11 +870,11 @@ class JobFacade(FacadeBase):
                 facility_type=facility_type,
                 food_production_shop_type=food_production_shop_type,
                 grade=grade,
-                hierarchy=hierarchy,
+                hierarchy=VacancyCreateV2Hierarchy(employee_id=employee_id),
                 image_url=image_url,
                 is_company_car=is_company_car,
                 is_side_job=is_side_job,
-                location=location,
+                location=VacancyCreateV2Location(address=address, coordinates=coordinates),
                 medical_book=medical_book,
                 medical_specialization=medical_specialization,
                 medical_specialization_ids=medical_specialization_ids,
@@ -808,8 +884,8 @@ class JobFacade(FacadeBase):
                 registration_method=registration_method,
                 retail_equipment_type=retail_equipment_type,
                 retail_shop_type=retail_shop_type,
-                salary=salary,
-                salary_detail=salary_detail,
+                salary=VacancyCreateV2Salary(from_=salary_from_, to=salary_to),
+                salary_detail=SalaryDetail(base=base, paid_period=paid_period, taxes=taxes),
                 schedule=schedule,
                 shifts=shifts,
                 title=title,
@@ -836,25 +912,31 @@ class JobFacade(FacadeBase):
             ids: Идентификаторы вакансий на сайте
             params: Дополнительные поля, которые входят в params (можно указать несколько значений через запятую). Если значение не задано - возвращаются все поля. Устаревшие значения: * change (используйте shifts) * is_remote (используйте work_format) Удалённые значения (более недоступны): * manufacturing_type * industry_type * piecework_flag * programs * warehouse_functionality * where_to_work
         """
-        return await self(VacanciesGetByIds(fields=fields, ids=ids, params=params))
+        return await self.execute(VacanciesGetByIds(fields=fields, ids=ids, params=params))
 
     async def vacancy_get_statuses(self, ids: list[str] | None = None) -> VacancyStatusesResult:
         """Получение статуса публикации вакансий V2 via ``POST /job/v2/vacancies/statuses``."""
-        return await self(VacancyGetStatuses(ids=ids))
+        return await self.execute(VacancyGetStatuses(ids=ids))
 
     async def vacancy_update_v2(
         self,
         vacancy_uuid: str,
         billing_type: VacancyUpdateV2BillingType,
         administrator_organization_type: int | None = None,
-        age: AgeCriteria | None = None,
+        from_: int | None = None,
+        to: int | None = None,
         age_preferences: list[VacancyUpdateV2AgePreferences] | None = None,
-        apply_processing: ApplyProcessing | None = None,
+        additional_questions: list[ApplyProcessingAdditionalQuestions] | None = None,
+        apply_type: ApplyProcessingApplyType | None = None,
         bonuses: list[BonusesValue] | None = None,
         business_area: int | None = None,
         citizenship: list[CitizenshipCriteriaValue] | None = None,
         construction_work_type: list[ConstructionWorkTypeValue] | None = None,
-        contacts: VacancyUpdateV2Contacts | None = None,
+        allow_calls: bool | None = None,
+        allow_messages: bool | None = None,
+        email: str | None = None,
+        name: str | None = None,
+        phone: str | None = None,
         cuisine: list[CuisineValue] | None = None,
         delivery_method: list[VacancyUpdateV2DeliveryMethod] | None = None,
         description: VacancyUpdateV2Description | None = None,
@@ -867,11 +949,12 @@ class JobFacade(FacadeBase):
         facility_type: list[FacilityTypeValue] | None = None,
         food_production_shop_type: list[FoodProductionShopTypeValue] | None = None,
         grade: Grade | None = None,
-        hierarchy: VacancyUpdateV2Hierarchy | None = None,
+        employee_id: int | None = None,
         image_url: str | None = None,
         is_company_car: bool | None = None,
         is_side_job: bool | None = None,
-        location: VacancyUpdateV2Location | None = None,
+        address: LocationAddress | None = None,
+        coordinates: Coordinates | None = None,
         medical_book: MedicalBookVacancy | None = None,
         medical_specialization: list[str] | None = None,
         medical_specialization_ids: list[int] | None = None,
@@ -881,8 +964,11 @@ class JobFacade(FacadeBase):
         registration_method: list[RegistrationMethodValue] | None = None,
         retail_equipment_type: list[RetailEquipmentTypeValue] | None = None,
         retail_shop_type: list[RetailShopTypeValue] | None = None,
-        salary: VacancyUpdateV2Salary | None = None,
-        salary_detail: SalaryDetail | None = None,
+        salary_from_: int | None = None,
+        salary_to: int | None = None,
+        base: SalaryDetailBase | None = None,
+        paid_period: PaidPeriod | None = None,
+        taxes: Taxes | None = None,
         schedule: VacancyUpdateV2Schedule | None = None,
         shifts: list[int] | None = None,
         title: str | None = None,
@@ -899,40 +985,54 @@ class JobFacade(FacadeBase):
         Args:
             vacancy_uuid: UUID Идентификатор вакансии для V2 ручек (возвращается ручкой [Публикация вакансии V2](https://developers.avito.ru/api-catalog/job/documentation#operation/vacancyCreateV2) )
             age_preferences: Блок \"в том числе для кандидатов\" (массив строк) Возможные значения элементов массива: - \"olderThan45\" - старше 45 лет; - \"olderThan14\" - от 14 лет; - \"olderThan16\" - от 16 лет; - \"withHealthProblems\" - с нарушениями здоровья; - \"students\" - для студентов; - \"pensioners\" - для пенсионеров.
+            additional_questions: *DEPRECATED* Заполнение поля не влияет на вакансию. Массив со списком дополнительных вопросов, которые задаст ассистент Авито. - `experience` - вопрос про опыт работы. В качестве критерия будет использоваться значение поля `experience`. В результатах опроса ассистент отметит, достаточно у кандидата опыта или нет. - `citizenship` - вопрос про гражданство. В качестве критерия будет использоваться значение поля `citizenship`, если оно заполнено. - `age` - вопрос про возраст. В качестве критерия будет использоваться значение поля `age`, если оно заполнено.
+            apply_type: Принимает два значения: - `with_assistant` - на вакансию смогут откликнуться кандидаты с резюме и без. - `only_with_resume` - на вакансию смогут откликаться только кандидаты с резюме. Если у кандидата нет резюме, Авито поможет создать его и откликнуться на вакансию
             billing_type: Вариант платного размещения Возможные значения: - \"package\" - размещение объявления осуществляется только при наличии подходящего пакета размещения - \"packageOrSingle\" - при наличии подходящего пакета оплата размещения объявления произойдет с него; если нет подходящего пакета, но достаточно денег на кошельке Авито, то произойдет разовое размещение
             business_area: Идентификатор сферы деятельности Получить актуальный список доступных значений можно из справочника `business_area` через метод [getDictByID](/api-catalog/job/documentation#operation/getDictByID).
-            contacts: Контактная информация
+            allow_messages: Возможность откликнуться на вакансию через сайт. Если передается apply_processing, то значение allow_messages будет игнорироваться и равно true
+            email: Email контактного лица по данному объявлению. Учитывается только при публикации вакансии от имени Сотрудника. Если не заполнено то при публикации от Сотрудника будет использована почта из Профиля Сотрудника. При публикации от Компании или Пользователя будет использоваться почта из Профиля, переданное значение будет проигнорировано.
+            name: Имя менеджера, контактного лица по данному объявлению. Учитывается только при публикации вакансии от имени Сотрудника. Если не заполнено то при публикации от Сотрудника будет использовано \"Имя сотрудника, которое видят пользователи при просмотре объявления\". При публикации от Компании или Пользователя не заполняется, переданное значение будет проигнорировано.
+            phone: Контактный телефон, если не передать - подставляется номер из профиля который используется по умолчанию. Если передать номер телефона которого нет в профиле, то он будет добавлен в профиль, но по нему необходимо будет пройти верификацию. Если номер телефона принадлежит другому пользователю, то вакансия не будет опубликована. Если вакансия публикуется от имени сотрудника и номер телефона ему не принадлежит - объявление так же не будет опубликовано.
             delivery_method: Способ доставки
             description: Описание вакансии (строка длиной от 1 до 5000 символов) Можно использовать HTML-теги в тексте. Поддерживаемые тэги - `p`, `ul`, `ol`, `li`, `br`, `strong`, `em`
             driving_experience: Стаж вождения
             employment: Занятость Возможные значения: - temporary - Временная - full - Полная - partial - Частичная Если ничего не выбрать то будет автоматически проставляться в зависимости от графика работы: При flexible и partTime, тип занятости - partial. ßДля всех остальных full. deprecated значение internship будет заменено на temporary
             experience: Опыт работы
-            hierarchy: employee_id - Идентификатор сотрудника на Авито. Если этот параметр указан, то с баланса сотрудника в Avito Pro будет списано размещение. Использовать параметр можно только с billing_type равным package. Сотрудник должен быть в активен.
+            employee_id: Идентификатор сотрудника на Авито
             image_url: URL-адрес логотипа вакансии. Ссылка на файл должна быть прямой | (при переходе не открываются элементы другого сайта (логотипы, кнопки или другие детали интерфейса) и не запрашивается логин и пароль) и доступной для IP 185.89.12.0/22, 146.158.48.0/21, 185.79.237.224/28 и 87.245.204.32/28;
             is_company_car: Предоставляет ли компания автомобиль
             is_side_job: Подработка
-            location: Геолокация вакансии (как минимум одно из значений)
             payout_frequency: Частота выплат Возможные значения: - \"dailyPay\" - Каждый день; - \"biweeklyPay\" - Дважды в месяц; - \"weeklyPay\" - Раз в неделю; - \"thriceMonthlyPay\" - три раза в месяц; - \"monthlyPay\" - Раз в месяц. Для paid_period равным month и week недоступно для выбора dailyPay. deprecated значение hourlyPay будет заменено на dailyPay
             programs: Блок участие вакансии в программах (массив строк) Если у компании от лица которой создается вакансия нет всех необходимых разрешений на участие, программа у вакансии не будет включена. Возможные значения элементов массива: - \"chastyeVyplaty\" - Частые выплаты.
-            salary: Блок с вилкой зарплаты
+            salary_from_: Нижняя граница зарплаты, рублей в месяц
+            salary_to: Верхняя граница зарплаты, рублей в месяц
+            base: Оклад
             schedule: Режим работы Возможные значения: - flyInFlyOut - Вахта - fixed - Фиксированный - flexible - Гибкий - shift - Сменный flyInFlyOut - Вахта, при выборе данного режима работы, адрес вакансии может быть только \"Город\", если адрес передается полноценный, то улица будет отрезана и адрес будет до \"Города\". deprecated значения fiveDay, sixDay, partTime, fullDay и remote будут заменены на fixed
             title: Название вакансии (строка длиной от 1 до 50 символов)
             vacancy_code: Внутренний идентификатор вакансии или номер заявки на подбор, максимум 150 символов
             work_format: Блок \"Формат работы\" (массив строк) Возможные значения элементов массива: - \"office\" - В офисе или на объекте; - \"remote\" - Удалённо; - \"gibrid\" - Гибрид.
         """
-        return await self(
+        return await self.execute(
             VacancyUpdateV2(
                 vacancy_uuid=vacancy_uuid,
                 administrator_organization_type=administrator_organization_type,
-                age=age,
+                age=AgeCriteria(from_=from_, to=to),
                 age_preferences=age_preferences,
-                apply_processing=apply_processing,
+                apply_processing=ApplyProcessing(
+                    additional_questions=additional_questions, apply_type=apply_type
+                ),
                 billing_type=billing_type,
                 bonuses=bonuses,
                 business_area=business_area,
                 citizenship=citizenship,
                 construction_work_type=construction_work_type,
-                contacts=contacts,
+                contacts=VacancyUpdateV2Contacts(
+                    allow_calls=allow_calls,
+                    allow_messages=allow_messages,
+                    email=email,
+                    name=name,
+                    phone=phone,
+                ),
                 cuisine=cuisine,
                 delivery_method=delivery_method,
                 description=description,
@@ -945,11 +1045,11 @@ class JobFacade(FacadeBase):
                 facility_type=facility_type,
                 food_production_shop_type=food_production_shop_type,
                 grade=grade,
-                hierarchy=hierarchy,
+                hierarchy=VacancyUpdateV2Hierarchy(employee_id=employee_id),
                 image_url=image_url,
                 is_company_car=is_company_car,
                 is_side_job=is_side_job,
-                location=location,
+                location=VacancyUpdateV2Location(address=address, coordinates=coordinates),
                 medical_book=medical_book,
                 medical_specialization=medical_specialization,
                 medical_specialization_ids=medical_specialization_ids,
@@ -959,8 +1059,8 @@ class JobFacade(FacadeBase):
                 registration_method=registration_method,
                 retail_equipment_type=retail_equipment_type,
                 retail_shop_type=retail_shop_type,
-                salary=salary,
-                salary_detail=salary_detail,
+                salary=VacancyUpdateV2Salary(from_=salary_from_, to=salary_to),
+                salary_detail=SalaryDetail(base=base, paid_period=paid_period, taxes=taxes),
                 schedule=schedule,
                 shifts=shifts,
                 title=title,
@@ -987,7 +1087,9 @@ class JobFacade(FacadeBase):
             fields: Поля основного тела ответа (можно указать несколько значений через запятую). По умолчанию отображаются все поля.
             params: Дополнительные поля, которые входят в params (можно указать несколько значений через запятую). Если значение не задано - возвращаются все поля. Устаревшие значения: * change (используйте shifts) * is_remote (используйте work_format) Удалённые значения (более недоступны): * manufacturing_type * industry_type * piecework_flag * programs * warehouse_functionality * where_to_work
         """
-        return await self(VacancyGetItem(vacancy_id=vacancy_id, fields=fields, params=params))
+        return await self.execute(
+            VacancyGetItem(vacancy_id=vacancy_id, fields=fields, params=params)
+        )
 
     async def vacancy_auto_renewal2(
         self, vacancy_uuid: str, auto_renewal: bool | None = None
@@ -997,11 +1099,13 @@ class JobFacade(FacadeBase):
         Args:
             vacancy_uuid: UUID Идентификатор вакансии для V2 ручек (возвращается ручкой [Публикация вакансии V2](https://developers.avito.ru/api-catalog/job/documentation#operation/vacancyCreateV2) )
         """
-        return await self(VacancyAutoRenewal2(vacancy_uuid=vacancy_uuid, auto_renewal=auto_renewal))
+        return await self.execute(
+            VacancyAutoRenewal2(vacancy_uuid=vacancy_uuid, auto_renewal=auto_renewal)
+        )
 
     async def get_dicts(self) -> None:
         """Получение списка доступных словарей via ``GET /job/v2/vacancy/dict``."""
-        return await self(GetDicts())
+        return await self.execute(GetDicts())
 
     async def get_dict_by_id(self, dictionary_id: str) -> None:
         """Получение доступных значений списка по ID словаря via ``GET /job/v2/vacancy/dict/{dictionary_id}``.
@@ -1009,4 +1113,4 @@ class JobFacade(FacadeBase):
         Args:
             dictionary_id: Идентификатор словаря
         """
-        return await self(GetDictById(dictionary_id=dictionary_id))
+        return await self.execute(GetDictById(dictionary_id=dictionary_id))

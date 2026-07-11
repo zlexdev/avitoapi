@@ -17,6 +17,7 @@ from ..enums.ads import (
     LegalType,
     UserRole,
 )
+from ..models._shared import IdResponse
 from ..models.ads import (
     AdvertiserFilter,
     CampaignsFilter,
@@ -27,8 +28,6 @@ from ..models.ads import (
     GroupsFilter,
     V1CreateAccountContact,
     V1CreateAccountOut,
-    V1CreateAdvertiserOut,
-    V1CreateContractOut,
     V1CreateNonPayerAccountOut,
     V1GetAccountBalanceByIdOut,
     V1GetAccountByIdOut,
@@ -289,7 +288,7 @@ class V1GetContractsList(BaseMethod[V1GetContractsListOut]):
     page: int = Field(..., ge=1)
 
 
-class V1CreateAdvertiser(BaseMethod[V1CreateAdvertiserOut]):
+class V1CreateAdvertiser(BaseMethod[IdResponse]):
     """Создать рекламодателя via ``POST /ads/v1/account/{account_id}/create-advertiser``.
 
     See: https://developers.avito.ru/api-catalog/ads/documentation
@@ -319,7 +318,7 @@ class V1CreateAdvertiser(BaseMethod[V1CreateAdvertiserOut]):
     short_name: str = Field(..., alias="shortName")
 
 
-class V1CreateContract(BaseMethod[V1CreateContractOut]):
+class V1CreateContract(BaseMethod[IdResponse]):
     """Создание изначального договора via ``POST /ads/v1/account/{account_id}/create-contract``.
 
     See: https://developers.avito.ru/api-catalog/ads/documentation

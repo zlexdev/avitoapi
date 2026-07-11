@@ -34,6 +34,7 @@ class OrderStatus(StrEnum):
     COMPLETED = "completed"
     CANCELLED = "cancelled"
     REFUNDED = "refunded"
+    UNKNOWN = "unknown"  # unmapped upstream status — never silently coerced to a real state
 
 
 class OrderEvent(BaseEvent, event_name="orders"):
@@ -41,13 +42,6 @@ class OrderEvent(BaseEvent, event_name="orders"):
 
     account_id: str
     order_id: str
-
-    def __init__(self, *, account_id: str, order_id: str, **kwargs: object) -> None:
-        super().__init__()
-        self.account_id = account_id
-        self.order_id = order_id
-        for k, v in kwargs.items():
-            setattr(self, k, v)
 
 
 class OrderStatusChanged(OrderEvent, event_name="orders.status_changed"):
@@ -57,29 +51,11 @@ class OrderStatusChanged(OrderEvent, event_name="orders.status_changed"):
     current: OrderStatus
     occurred_at: datetime
 
-    def __init__(
-        self,
-        *,
-        account_id: str,
-        order_id: str,
-        previous: OrderStatus,
-        current: OrderStatus,
-        occurred_at: datetime,
-    ) -> None:
-        super().__init__(account_id=account_id, order_id=order_id)
-        self.previous = previous
-        self.current = current
-        self.occurred_at = occurred_at
-
 
 class OrderCreated(OrderEvent, event_name="orders.created"):
     """A new order was created on the seller's account."""
 
     created_at: datetime
-
-    def __init__(self, *, account_id: str, order_id: str, created_at: datetime) -> None:
-        super().__init__(account_id=account_id, order_id=order_id)
-        self.created_at = created_at
 
 
 class OrderConfirmed(OrderEvent, event_name="orders.confirmed"):
@@ -87,28 +63,12 @@ class OrderConfirmed(OrderEvent, event_name="orders.confirmed"):
 
     confirmed_at: datetime
 
-    def __init__(self, *, account_id: str, order_id: str, confirmed_at: datetime) -> None:
-        super().__init__(account_id=account_id, order_id=order_id)
-        self.confirmed_at = confirmed_at
-
 
 class OrderShipped(OrderEvent, event_name="orders.shipped"):
     """A track number was attached and the order entered shipping."""
 
-    track_number: str | None
     shipped_at: datetime
-
-    def __init__(
-        self,
-        *,
-        account_id: str,
-        order_id: str,
-        shipped_at: datetime,
-        track_number: str | None = None,
-    ) -> None:
-        super().__init__(account_id=account_id, order_id=order_id)
-        self.shipped_at = shipped_at
-        self.track_number = track_number
+    track_number: str | None = None
 
 
 class OrderDelivered(OrderEvent, event_name="orders.delivered"):
@@ -116,57 +76,25 @@ class OrderDelivered(OrderEvent, event_name="orders.delivered"):
 
     delivered_at: datetime
 
-    def __init__(self, *, account_id: str, order_id: str, delivered_at: datetime) -> None:
-        super().__init__(account_id=account_id, order_id=order_id)
-        self.delivered_at = delivered_at
-
 
 class OrderCompleted(OrderEvent, event_name="orders.completed"):
     """The buyer accepted the order — terminal happy-path state."""
 
     completed_at: datetime
 
-    def __init__(self, *, account_id: str, order_id: str, completed_at: datetime) -> None:
-        super().__init__(account_id=account_id, order_id=order_id)
-        self.completed_at = completed_at
-
 
 class OrderCancelled(OrderEvent, event_name="orders.cancelled"):
     """The order was cancelled before delivery."""
 
     cancelled_at: datetime
-    reason: str | None
-
-    def __init__(
-        self,
-        *,
-        account_id: str,
-        order_id: str,
-        cancelled_at: datetime,
-        reason: str | None = None,
-    ) -> None:
-        super().__init__(account_id=account_id, order_id=order_id)
-        self.cancelled_at = cancelled_at
-        self.reason = reason
+    reason: str | None = None
 
 
 class OrderRefunded(OrderEvent, event_name="orders.refunded"):
     """An order entered the refunded terminal state."""
 
-    reason: str | None
     refunded_at: datetime
-
-    def __init__(
-        self,
-        *,
-        account_id: str,
-        order_id: str,
-        refunded_at: datetime,
-        reason: str | None = None,
-    ) -> None:
-        super().__init__(account_id=account_id, order_id=order_id)
-        self.reason = reason
-        self.refunded_at = refunded_at
+    reason: str | None = None
 
 
 __all__ = [

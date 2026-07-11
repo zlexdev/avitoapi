@@ -4,11 +4,13 @@ from __future__ import annotations
 
 from ._routers import EventObserver, Router
 from .context import CtxQueue, EventContext
+from .errors import CancelPropagation, RoutingError, SkipHandler
 from .middleware import BaseMiddleware, MiddlewareChain, NextHandler
 from .observer import HandlerManager, HandlerSpec
 
 __all__ = [
     "BaseMiddleware",
+    "CancelPropagation",
     "CtxQueue",
     "EventContext",
     "EventObserver",
@@ -17,4 +19,6 @@ __all__ = [
     "MiddlewareChain",
     "NextHandler",
     "Router",
+    "RoutingError",
+    "SkipHandler",
 ]

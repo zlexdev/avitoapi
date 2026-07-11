@@ -8,6 +8,7 @@ from datetime import date
 from ..enums.items import (
     GetItemsInfoStatus,
     Groupings,
+    ItemAnalyticsSortOrder,
     PutItemVasPackageV2PackageId,
     PutItemVasVasId,
     SpendingsGroupings,
@@ -57,13 +58,13 @@ class ItemsFacade(FacadeBase):
             user_id: Номер пользователя в Личном кабинете Авито
             item_ids: Набор идентификаторов объявлений на сайте
         """
-        return await self(
+        return await self.execute(
             VasPrices(
                 user_id=_resolve_user_id(self) if user_id is None else user_id, item_ids=item_ids
             )
         )
 
-    async def post_calls_stats(
+    async def calls_stats(
         self,
         date_from: str,
         date_to: str,
@@ -78,7 +79,7 @@ class ItemsFacade(FacadeBase):
             date_to: Конечная дата периода (YYYY-MM-DD)
             item_ids: Идентификаторы объявлений
         """
-        return await self(
+        return await self.execute(
             PostCallsStats(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 date_from=date_from,
@@ -94,7 +95,7 @@ class ItemsFacade(FacadeBase):
             user_id: Номер пользователя в Личном кабинете Авито
             item_id: Идентификатор объявления на сайте
         """
-        return await self(
+        return await self.execute(
             GetItemInfo(
                 user_id=_resolve_user_id(self) if user_id is None else user_id, item_id=item_id
             )
@@ -110,7 +111,7 @@ class ItemsFacade(FacadeBase):
             item_id: Идентификатор объявления на сайте
             vas_id: Идентификатор услуги, возможные его варианты значения: - `highlight` — [выделение объявления](https://support.avito.ru/articles/200026858) - `xl` – [XL-объявление](https://support.avito.ru/articles/685)
         """
-        return await self(
+        return await self.execute(
             PutItemVas(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 item_id=item_id,
@@ -131,7 +132,9 @@ class ItemsFacade(FacadeBase):
             updated_at_from: Фильтр больше либо равно по дате обновления/редактирования объявления в формате YYYY-MM-DD
             category: Идентификатор категории объявления см. возможные варианты категорий в [ справочнике ](https://www.avito.st/s/openapi/catalog-categories.xml)
         """
-        return self(GetItemsInfo(status=status, updated_at_from=updated_at_from, category=category))
+        return self.paginate(
+            GetItemsInfo(status=status, updated_at_from=updated_at_from, category=category)
+        )
 
     async def update_price(self, item_id: int, price: int) -> UpdatePriceResponse:
         """Обновление цены объявления via ``POST /core/v1/items/{item_id}/update_price``.
@@ -140,7 +143,7 @@ class ItemsFacade(FacadeBase):
             item_id: Идентификатор объявления на сайте
             price: Цена
         """
-        return await self(UpdatePrice(item_id=item_id, price=price))
+        return await self.execute(UpdatePrice(item_id=item_id, price=price))
 
     async def put_item_vas_package_v2(
         self, item_id: int, package_id: PutItemVasPackageV2PackageId, user_id: int | None = None
@@ -152,7 +155,7 @@ class ItemsFacade(FacadeBase):
             item_id: Идентификатор объявления на сайте
             package_id: Идентификатор пакета услуг, возможные варианты значения: - `x2_1` - применение пакета До 2 раз больше просмотров на 1 день - `x2_7` - применение пакета До 2 раз больше просмотров на 7 дней - `x5_1` - применение пакета До 5 раз больше просмотров на 1 день - `x5_7` - применение пакета До 5 раз больше просмотров на 7 дней - `x10_1` - применение пакета До 10 раз больше просмотров на 1 день - `x10_7` - применение пакета До 10 раз больше просмотров на 7 дней В некоторых регионах и категориях также доступны дополнительные варианты: - `x15_1` - применение пакета До 15 раз больше просмотров на 1 день - `x15_7` - применение пакета До 15 раз больше просмотров на 7 дней - `x20_1` - применение пакета До 20 раз больше просмотров на 1 день - `x20_7` - применение пакета До 20 раз больше просмотров на 7 дней Если попытаться применить эти пакеты в недоступных для них регионе и категории, оплата не пройдёт.
         """
-        return await self(
+        return await self.execute(
             PutItemVasPackageV2(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 item_id=item_id,
@@ -170,7 +173,7 @@ class ItemsFacade(FacadeBase):
             slugs: Список идентификаторов услуг
             stickers: Список значков
         """
-        return await self(ApplyVas(item_id=item_id, slugs=slugs, stickers=stickers))
+        return await self.execute(ApplyVas(item_id=item_id, slugs=slugs, stickers=stickers))
 
     async def item_stats_shallow(
         self,
@@ -186,7 +189,7 @@ class ItemsFacade(FacadeBase):
         Args:
             user_id: Идентификатор пользователя (клиента)
         """
-        return await self(
+        return await self.execute(
             ItemStatsShallow(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 date_from=date_from,
@@ -205,9 +208,11 @@ class ItemsFacade(FacadeBase):
         limit: int,
         metrics: list[str],
         offset: int,
+        key: str,
+        order: ItemAnalyticsSortOrder,
         user_id: int | None = None,
-        filter: ItemAnalyticsFilter | None = None,
-        sort: ItemAnalyticsSort | None = None,
+        category_ids: list[int] | None = None,
+        employee_ids: list[int] | None = None,
     ) -> AnalyticsResponse:
         """Получение статистических показателей по профилю via ``POST /stats/v2/accounts/{user_id}/items``.
 
@@ -215,23 +220,25 @@ class ItemsFacade(FacadeBase):
             user_id: Идентификатор пользователя (клиента)
             date_from: Дата (в формате YYYY-MM-DD), с которой (включительно) надо получить статистику
             date_to: Дата (в формате YYYY-MM-DD), по которую (включительно) надо получить статистику
-            filter: Набор ограничений, по которым нужно отфильтровать данные
+            category_ids: Идентификаторы категорий [ Справочник идентификаторов категорий ](https://www.avito.st/s/openapi/catalog-categories.xml)
+            employee_ids: Идентификаторы сотрудников [ Метод получения идентификаторов сотрудников ](https://developers.avito.ru/api-catalog/accounts-hierarchy/documentation#operation/getEmployeesV1)
             limit: Инструмент пагинации для ограничения количества сущностей в response;
             metrics: Набор доступных показателей, которые должны присутствовать в ответе
             offset: инструмент пагинации или смещение, с которого начинается выборка данных;
-            sort: Сортировка по заданному показателю
+            key: Показатель статистики, по которому нужно отсортировать;
+            order: Порядок сортировки (asc, desc);
         """
-        return await self(
+        return await self.execute(
             ItemAnalytics(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 date_from=date_from,
                 date_to=date_to,
-                filter=filter,
+                filter=ItemAnalyticsFilter(category_ids=category_ids, employee_ids=employee_ids),
                 grouping=grouping,
                 limit=limit,
                 metrics=metrics,
                 offset=offset,
-                sort=sort,
+                sort=ItemAnalyticsSort(key=key, order=order),
             )
         )
 
@@ -242,7 +249,9 @@ class ItemsFacade(FacadeBase):
         grouping: SpendingsGroupings,
         spending_types: list[str],
         user_id: int | None = None,
-        filter: AccountSpendingsFilter | None = None,
+        category_ids: list[int] | None = None,
+        item_ids: list[int] | None = None,
+        location_ids: list[int] | None = None,
     ) -> SpendingsResponse:
         """Получение статистики расходов профиля via ``POST /stats/v2/accounts/{user_id}/spendings``.
 
@@ -250,15 +259,19 @@ class ItemsFacade(FacadeBase):
             user_id: Идентификатор пользователя (клиента)
             date_from: Дата начала периода статистики расходов в формате YYYY-MM-DD
             date_to: Дата конца периода статистики расходов в формате YYYY-MM-DD
-            filter: Набор ограничений, по которым необходимо отфильтровать расходы
+            category_ids: Идентификаторы категорий [ Справочник идентификаторов категорий ](https://www.avito.st/s/openapi/catalog-categories.xml)
+            item_ids: Идентификаторы объявлений
+            location_ids: Идентификаторы населенных пунктов
             spending_types: Набор необходимых типов расходов
         """
-        return await self(
+        return await self.execute(
             AccountSpendings(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 date_from=date_from,
                 date_to=date_to,
-                filter=filter,
+                filter=AccountSpendingsFilter(
+                    category_ids=category_ids, item_ids=item_ids, location_ids=location_ids
+                ),
                 grouping=grouping,
                 spending_types=spending_types,
             )

@@ -22,20 +22,19 @@ from ..methods.order_management import (
     SetCourierDeliveryRange,
     SetOrderTrackingNumber,
 )
+from ..models._shared import SuccessResponse
 from ..models.common import TZDatetime
 from ..models.order_management import (
     AcceptReturnOrderRecipient,
     ApplyTransitionParams,
+    ApplyTransitionParamsCnc,
     GetDeliveryCourierConfirmationResponse,
     Marking,
-    OrderAcceptReturnOrderResponse,
-    OrderApplyTransitionResponse,
     OrderCheckConfirmationCodeResponse,
     OrderCncSetDetailsResponse,
     OrderSetTrackingNumberResponse,
     OrdersInfo,
     OrdersLabelsResponse,
-    SetCourierDeliveryRangeResponse,
     SetOrderMarkingResponse,
 )
 from ._base import FacadeBase
@@ -50,41 +49,49 @@ class OrderManagementFacade(FacadeBase):
         Args:
             markings: Массив маркировок, которые требуется передать
         """
-        return await self(Markings(markings=markings))
+        return await self.execute(Markings(markings=markings))
 
     async def accept_return_order(
         self,
         order_id: str | None = None,
-        recipient: AcceptReturnOrderRecipient | None = None,
+        name: str | None = None,
+        phone: str | None = None,
         terminal_number: str | None = None,
-    ) -> OrderAcceptReturnOrderResponse:
+    ) -> SuccessResponse:
         """Выбор отделения отделения Почты России для получения возврата via ``POST /order-management/1/order/acceptReturnOrder``.
 
         Args:
             order_id: ID заказа в Авито
-            recipient: Данные человека, который будет забирать возвратную посылку
+            name: ФИО получателя
+            phone: Номер телефона человека, который будет забирать возвратную посылку
             terminal_number: Номер отделения Почты России, куда придёт возвратная посылка.
         """
-        return await self(
+        return await self.execute(
             AcceptReturnOrder(
-                order_id=order_id, recipient=recipient, terminal_number=terminal_number
+                order_id=order_id,
+                recipient=AcceptReturnOrderRecipient(name=name, phone=phone),
+                terminal_number=terminal_number,
             )
         )
 
     async def apply_transition(
         self,
         order_id: str | None = None,
-        params: ApplyTransitionParams | None = None,
+        cnc: ApplyTransitionParamsCnc | None = None,
         transition: ApplyTransitionTransition | None = None,
-    ) -> OrderApplyTransitionResponse:
+    ) -> SuccessResponse:
         """Изменение статуса заказа via ``POST /order-management/1/order/applyTransition``.
 
         Args:
             order_id: ID заказа в Авито
-            params: Дополнительные параметры доставки
+            cnc: Параметры для подготовки заказа с самовывозом
             transition: Название перехода. * `confirm` - подтверждение заказа; * `reject` - отмена заказа; * `perform` - подтверждение отправки заказа (RDBS); * `receive` - подтверждение доставки заказа (RDBS, CNC).
         """
-        return await self(ApplyTransition(order_id=order_id, params=params, transition=transition))
+        return await self.execute(
+            ApplyTransition(
+                order_id=order_id, params=ApplyTransitionParams(cnc=cnc), transition=transition
+            )
+        )
 
     async def check_confirmation_code_order_management(
         self, confirm_code: str | None = None, parcel_id: str | None = None
@@ -95,7 +102,9 @@ class OrderManagementFacade(FacadeBase):
             confirm_code: Код, который показал пользователь
             parcel_id: ID посылки в Авито
         """
-        return await self(CheckConfirmationCode(confirm_code=confirm_code, parcel_id=parcel_id))
+        return await self.execute(
+            CheckConfirmationCode(confirm_code=confirm_code, parcel_id=parcel_id)
+        )
 
     async def cnc_set_details(
         self,
@@ -114,7 +123,7 @@ class OrderManagementFacade(FacadeBase):
             id: ID заказа в Авито
             marketplace_id: Номер заказа в Авито в новой системе
         """
-        return await self(
+        return await self.execute(
             CncSetDetails(
                 address=address,
                 booking_period=booking_period,
@@ -133,7 +142,7 @@ class OrderManagementFacade(FacadeBase):
             order_id: ID заказа
             address: Адрес продавца
         """
-        return await self(GetCourierDeliveryRange(order_id=order_id, address=address))
+        return await self.execute(GetCourierDeliveryRange(order_id=order_id, address=address))
 
     async def set_courier_delivery_range(
         self,
@@ -145,7 +154,7 @@ class OrderManagementFacade(FacadeBase):
         phone: str,
         start_date: TZDatetime,
         address_details: str | None = None,
-    ) -> SetCourierDeliveryRangeResponse:
+    ) -> SuccessResponse:
         """Метод выбора определённого доступного временного промежутка для приезда курьера via ``POST /order-management/1/order/setCourierDeliveryRange``.
 
         Args:
@@ -158,7 +167,7 @@ class OrderManagementFacade(FacadeBase):
             phone: Телефон
             start_date: Начальная дата приезда курьера
         """
-        return await self(
+        return await self.execute(
             SetCourierDeliveryRange(
                 address=address,
                 address_details=address_details,
@@ -180,7 +189,7 @@ class OrderManagementFacade(FacadeBase):
             order_id: ID заказа в Авито
             tracking_number: Трек-номер посылки
         """
-        return await self(
+        return await self.execute(
             SetOrderTrackingNumber(order_id=order_id, tracking_number=tracking_number)
         )
 
@@ -201,7 +210,7 @@ class OrderManagementFacade(FacadeBase):
             page: Номер страницы для пагинации
             limit: Максимальное количество заказов на странице
         """
-        return await self(
+        return await self.execute(
             GetOrders(ids=ids, statuses=statuses, date_from=date_from, page=page, limit=limit)
         )
 
@@ -211,7 +220,7 @@ class OrderManagementFacade(FacadeBase):
         Args:
             order_ids: ID заказов в сервисе сделок (marketplace)
         """
-        return await self(GenerateLabels(order_ids=order_ids))
+        return await self.execute(GenerateLabels(order_ids=order_ids))
 
     async def generate_labels_extended(self, order_ids: list[str]) -> OrdersLabelsResponse:
         """Создать задачу на генерацию этикеток (до 1000). via ``POST /order-management/1/orders/labels/extended``.
@@ -219,7 +228,7 @@ class OrderManagementFacade(FacadeBase):
         Args:
             order_ids: ID заказов в сервисе сделок (marketplace)
         """
-        return await self(GenerateLabelsExtended(order_ids=order_ids))
+        return await self.execute(GenerateLabelsExtended(order_ids=order_ids))
 
     async def download_label(self, task_id: str) -> bytes:
         """Скачать сгенерированный PDF-файл (этикетку). via ``GET /order-management/1/orders/labels/{task_id}/download``.
@@ -227,4 +236,4 @@ class OrderManagementFacade(FacadeBase):
         Args:
             task_id: ID задачи на генерацию
         """
-        return await self(DownloadLabel(task_id=task_id))
+        return await self.execute(DownloadLabel(task_id=task_id))

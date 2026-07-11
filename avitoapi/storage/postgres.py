@@ -157,6 +157,36 @@ class PostgresStorage(BaseStorage[object, str]):
                 expires_at,
             )
 
+    async def add(self, key: str, value: object, *, ttl: timedelta | None = None) -> bool:
+        """Atomic set-if-absent via ``INSERT ... ON CONFLICT`` — cross-process safe.
+
+        A fresh key inserts and returns the row. A key whose row is present but
+        expired is taken over by the guarded ``DO UPDATE`` (returns a row). A
+        live key matches neither branch, returns no row → ``False``.
+        """
+
+        pool = await self._pool()
+        payload = json.dumps(value, default=str, ensure_ascii=False)
+        full = self._full_key(key)
+        expires_at = datetime.now(UTC) + ttl if ttl is not None else None
+        async with pool.acquire() as conn:
+            row = await conn.fetchrow(
+                f"""
+                INSERT INTO {self._table} (key, value, expires_at)
+                VALUES ($1, $2::jsonb, $3)
+                ON CONFLICT (key) DO UPDATE
+                    SET value = EXCLUDED.value,
+                        expires_at = EXCLUDED.expires_at
+                    WHERE {self._table}.expires_at IS NOT NULL
+                      AND {self._table}.expires_at <= now()
+                RETURNING key
+                """,
+                full,
+                payload,
+                expires_at,
+            )
+        return row is not None
+
     async def delete(self, key: str) -> None:
         pool = await self._pool()
         async with pool.acquire() as conn:

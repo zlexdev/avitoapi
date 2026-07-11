@@ -113,7 +113,7 @@ def _bind(op: Operation, entities: dict[str, Entity], field_specs: dict[str, Fie
             continue
         args.append(BoundArg(name=fs.name, annotation=fs.annotation, required=fs.required, default_expr=fs.default_expr))
 
-    method_name = naming.snake(op.class_name)
+    method_name = naming.facade_method_name(op.class_name)
     return BoundMethod(
         owner_model=entity.model,
         method_name=method_name,

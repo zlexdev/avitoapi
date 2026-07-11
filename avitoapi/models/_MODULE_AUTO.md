@@ -42,13 +42,64 @@ _resolve_user_id(client: Any) -> int
 # Shared models — cross-domain DTOs collapsed by codegen dedup (auto-generated from the Avito OpenAPI spec).
 
 
-cls ErrorMessage(AvitoObject)
-  # ErrorMessage — shared across domains.
+cls AmountResponse(AvitoObject)
+  # Информация о балансе аванса тарифа клиента
+
+cls BalanceResponse(AvitoObject)
+
+cls CampaignIdResponse(AvitoObject)
+
+cls CampaignIdsResponse(AvitoObject)
+
+cls CodeResponse(AvitoObject)
+
+cls CountResponse(AvitoObject)
+
+cls CreativeIdResponse(AvitoObject)
+
+cls CreativeIdsResponse(AvitoObject)
+
+cls DataResponse(AvitoObject)
+
+cls EmployeeIdResponse(AvitoObject)
+
+cls ErrorResponse(AvitoObject)
+  # ErrorResponse — shared across domains.
+
+cls GetAccessTokenResponse(AvitoObject)
 
 cls GetTokenRequest(AvitoObject)
   # GetTokenRequest — shared across domains.
 
-cls TooManyRequestsErrorError(AvitoObject)
+cls GibddValueResponse(AvitoObject)
+
+cls GroupIdsResponse(AvitoObject)
+
+cls IdResponse(AvitoObject)
+  # IdResponse — shared across domains.
+
+cls ItemIdsResponse(AvitoObject)
+
+cls MessageResponse(AvitoObject)
+
+cls NameResponse(AvitoObject)
+  # NameResponse — shared across domains.
+
+cls OkResponse(AvitoObject)
+  # OkResponse — shared across domains.
+
+cls PreviewIdResponse(AvitoObject)
+
+cls SizesResponse(AvitoObject)
+
+cls StatusResponse(AvitoObject)
+
+cls SuccessResponse(AvitoObject)
+
+cls TaskIdResponse(AvitoObject)
+  # Идентификатор задачи проверки ИНН клиентов
+
+cls ValidatingErrorError(AvitoObject)
 
 ```
 
@@ -58,6 +109,7 @@ cls TooManyRequestsErrorError(AvitoObject)
 
 
 cls CompanyPhonesResult(AvitoObject)
+  # CompanyPhonesResult response model.
 
 cls CompanyPhonesResultResult(AvitoObject)
 
@@ -70,6 +122,7 @@ cls ListItemsByEmployeeIdBody(AvitoObject)
 cls ListItemsByEmployeeIdResult(AvitoObject)
 
 cls OpenApiError(AvitoObject)
+  # OpenApiError response model.
 
 cls OpenApiErrorError(AvitoObject)
 
@@ -78,6 +131,7 @@ cls CheckAhUserV1Response(AvitoObject)
 cls CheckAhUserV2Response(AvitoObject)
 
 cls GetAhInfoV1Response(AvitoObject)
+  # Данные пользователя о статусе в иерархии аккаунтов
 
 cls GetAhInfoV1ResponseCompany(AvitoObject)
 
@@ -96,10 +150,13 @@ cls GetEmployeesResult(RootModel[list[GetEmployeesResultRoot]])
 cls Account(AvitoObject)
 
 cls AccountContact(AvitoObject)
+  # Контактное лицо
 
 cls AccountManager(AvitoObject)
+  # MSD Менеджер
 
 cls Advertiser(AvitoObject)
+  # Advertiser response model.
 
 cls AdvertiserFilter(AvitoObject)
 
@@ -110,12 +167,15 @@ cls CampaignStatistic(AvitoObject)
 cls CampaignsFilter(AvitoObject)
 
 cls Contract(AvitoObject)
+  # Contract response model.
 
 cls ContractForChildAccount(AvitoObject)
+  # ContractForChildAccount response model.
 
 cls ContractsFilter(AvitoObject)
 
 cls CreateGroupActivitySchedule(AvitoObject)
+  # Кастомное расписание активности
 
 cls Creative(AvitoObject)
 
@@ -128,50 +188,66 @@ cls CreteIntermediaryIn(AvitoObject)
 cls DateRange(AvitoObject)
 
 cls DetailedError(AvitoObject)
+  # DetailedError response model.
 
 cls DetailedErrorItem(AvitoObject)
 
 cls Disclaimer(AvitoObject)
+  # Disclaimer response model.
 
 cls DisclaimerInput(AvitoObject)
+  # DisclaimerInput response model.
 
 cls EmptyResponse(AvitoObject)
+  # EmptyResponse response model.
 
 cls EnumObject(AvitoObject)
+  # EnumObject response model.
 
 cls FrequencyRule(AvitoObject)
 
 cls Group(AvitoObject)
 
 cls GroupActivitySchedule(AvitoObject)
+  # Расписание активности по дням
 
 cls GroupReferenceData(AvitoObject)
+  # GroupReferenceData response model.
 
 cls GroupStatistic(AvitoObject)
 
 cls GroupsFilter(AvitoObject)
 
 cls IdNameObject(AvitoObject)
+  # IdNameObject response model.
 
 cls KktuItem(AvitoObject)
+  # KktuItem response model.
 
 cls LegalInfo(AvitoObject)
 
 cls ObjectSize(AvitoObject)
+  # ObjectSize response model.
 
 cls ShortAccount(AvitoObject)
+  # ShortAccount response model.
 
 cls ShortAccountWithBalance(AvitoObject)
+  # ShortAccountWithBalance response model.
 
 cls ShortAccountWithContract(AvitoObject)
+  # ShortAccountWithContract response model.
 
 cls StatsData(AvitoObject)
 
 cls StringIdNameObject(AvitoObject)
+  # StringIdNameObject response model.
 
 cls TemplateData(AvitoObject)
+  # TemplateData response model.
 
 cls TemplateField(AvitoObject)
+  # TemplateField response model.
 
 cls ThresholdItem(AvitoObject)
 
@@ -189,10 +265,6 @@ cls V1CopyCampaignIn(AvitoObject)
 
 cls V1CopyCampaignOut(AvitoObject)
 
-cls V1CopyCreativeIn(AvitoObject)
-
-cls V1CopyCreativeOut(AvitoObject)
-
 cls V1CopyGroupIn(AvitoObject)
 
 cls V1CopyGroupOut(AvitoObject)
@@ -205,39 +277,29 @@ cls V1CreateAccountOut(AvitoObject)
 
 cls V1CreateAdvertiserIn(AvitoObject)
 
-cls V1CreateAdvertiserOut(AvitoObject)
-
 cls V1CreateCampaignIn(AvitoObject)
-
-cls V1CreateCampaignOut(AvitoObject)
 
 cls V1CreateContractIn(AvitoObject)
 
-cls V1CreateContractOut(AvitoObject)
-
 cls V1CreateGroupIn(AvitoObject)
-
-cls V1CreateGroupOut(AvitoObject)
 
 cls V1CreateNonPayerAccountIn(AvitoObject)
 
 cls V1CreateNonPayerAccountOut(AvitoObject)
-
-cls V1DeleteCampaignsIn(AvitoObject)
-
-cls V1DeleteCreativesIn(AvitoObject)
-
-cls V1DeleteGroupsIn(AvitoObject)
+  # V1CreateNonPayerAccountOut response model.
 
 cls V1GetAccountBalanceByIdOut(AvitoObject)
 
 cls V1GetAccountByIdOut(AvitoObject)
+  # V1GetAccountByIdOut response model.
 
 cls V1GetAdvertisersListIn(AvitoObject)
 
 cls V1GetAdvertisersListOut(AvitoObject)
+  # V1GetAdvertisersListOut response model.
 
 cls V1GetCampaignByIdWithFieldsOut(AvitoObject)
+  # V1GetCampaignByIdWithFieldsOut response model.
 
 cls V1GetCampaignStatisticIn(AvitoObject)
 
@@ -246,28 +308,35 @@ cls V1GetCampaignStatisticOut(AvitoObject)
 cls V1GetCampaignsListIn(AvitoObject)
 
 cls V1GetCampaignsListOut(AvitoObject)
+  # V1GetCampaignsListOut response model.
 
 cls V1GetChildAccountsListOut(AvitoObject)
+  # V1GetChildAccountsListOut response model.
 
 cls V1GetChildAccountsWithBalancesListOut(AvitoObject)
+  # V1GetChildAccountsWithBalancesListOut response model.
 
 cls V1GetContractsListIn(AvitoObject)
 
 cls V1GetContractsListOut(AvitoObject)
+  # V1GetContractsListOut response model.
 
 cls V1GetCreativesListIn(AvitoObject)
 
 cls V1GetCreativesListOut(AvitoObject)
+  # V1GetCreativesListOut response model.
 
 cls V1GetCreativesStatisticIn(AvitoObject)
 
 cls V1GetCreativesStatisticOut(AvitoObject)
 
 cls V1GetGroupReferenceDataOut(AvitoObject)
+  # V1GetGroupReferenceDataOut response model.
 
 cls V1GetGroupsListIn(AvitoObject)
 
 cls V1GetGroupsListOut(AvitoObject)
+  # V1GetGroupsListOut response model.
 
 cls V1GetGroupsStatisticIn(AvitoObject)
 
@@ -280,34 +349,20 @@ cls V1GetImageOut(AvitoObject)
 cls V1GetLegalAttachmentsOut(AvitoObject)
 
 cls V1GetUsersListByAccountOut(AvitoObject)
+  # V1GetUsersListByAccountOut response model.
 
 cls V1GetVideoOut(AvitoObject)
 
-cls V1LaunchCampaignsIn(AvitoObject)
-
 cls V1LaunchGroupIn(AvitoObject)
 
-cls V1PauseCampaignsIn(AvitoObject)
-
-cls V1PauseCreativesIn(AvitoObject)
-
-cls V1PauseGroupsIn(AvitoObject)
-
 cls V1ReferenceDataCreateCreativeOut(AvitoObject)
+  # V1ReferenceDataCreateCreativeOut response model.
 
 cls V1SetUserRoleIn(AvitoObject)
-
-cls V1StopCampaignsIn(AvitoObject)
 
 cls V1TransferBonusIn(AvitoObject)
 
 cls V1TransferFundsIn(AvitoObject)
-
-cls V1UnpauseCampaignsIn(AvitoObject)
-
-cls V1UnpauseCreativesIn(AvitoObject)
-
-cls V1UnpauseGroupsIn(AvitoObject)
 
 cls V1UploadHtmlOut(AvitoObject)
 
@@ -338,11 +393,11 @@ cls FrequencyCount(RootModel[int])
 # CPA-аукцион — domain models (auto-generated from the Avito OpenAPI spec).
 
 
-cls Error(AvitoObject)
-
 cls TooManyRequestsError(AvitoObject)
+  # TooManyRequestsError response model.
 
 cls GetUserBidsResponse(AvitoObject)
+  # GetUserBidsResponse response model.
 
 cls GetUserBidsResponseItems(AvitoObject)
 
@@ -358,10 +413,9 @@ cls SaveItemBidsItems(AvitoObject)
 
 
 cls GetTokenOAuthRequest(AvitoObject)
+  # GetTokenOAuthRequest response model.
 
 cls RefreshRequest(AvitoObject)
-
-cls GetAccessTokenResponse(AvitoObject)
 
 cls GetAccessTokenAuthorizationCodeResponse(AvitoObject)
 
@@ -379,10 +433,12 @@ cls ApFieldsNodeAlert(AvitoObject)
 cls ApiCategoryNode(AvitoObject)
 
 cls ApiCategoryTreeOut(AvitoObject)
+  # ApiCategoryTreeOut response model.
 
 cls ApiDependency(AvitoObject)
 
 cls ApiDependencyPair(AvitoObject)
+  # ApiDependencyPair response model.
 
 cls ApiField(AvitoObject)
 
@@ -395,10 +451,12 @@ cls ApiFieldsOut(AvitoObject)
 cls CategoryNode(AvitoObject)
 
 cls CategoryTreeOut(AvitoObject)
+  # CategoryTreeOut response model.
 
 cls ChildApiField(AvitoObject)
 
 cls ErrorAutoload(AvitoObject)
+  # ErrorAutoload response model.
 
 cls ErrorAutoloadError(AvitoObject)
 
@@ -406,11 +464,10 @@ cls ExportScheduleRoot(AvitoObject)
 
 cls FeedsDataRoot(AvitoObject)
 
-cls FieldErrorV2(AvitoObject)
-
 cls FieldValue(AvitoObject)
 
 cls FieldValueRange(AvitoObject)
+  # Промежуток допустимых значений. Применимо для типов данных int и float. Для типа данных string является ограничением длины строки.
 
 cls FieldWarning(AvitoObject)
 
@@ -457,10 +514,13 @@ cls ReportAutoloadAdsMessages(AvitoObject)
 cls ReportAutoloadAdsStatuses(AvitoObject)
 
 cls ReportAutoloadAdsStatusesAvito(AvitoObject)
+  # Статус размещения на сайте
 
 cls ReportAutoloadAdsStatusesGeneral(AvitoObject)
+  # Общий статус обработки объявления
 
 cls ReportAutoloadAdsStatusesProcessing(AvitoObject)
+  # Статус предварительной обработки
 
 cls ReportAutoloadListingFee(AvitoObject)
 
@@ -549,6 +609,7 @@ cls GetAvitoIdsByAdIdsResponseItems(AvitoObject)
 cls GetProfileV2Response(AvitoObject)
 
 cls GetReportsV2Response(AvitoObject)
+  # GetReportsV2Response response model.
 
 cls ReportShortAutoloadV2Value(AvitoObject)
 
@@ -599,43 +660,37 @@ cls Campaign(AvitoObject)
 
 cls Campaigns(AvitoObject)
 
-cls ConflictError(AvitoObject)
-
 cls CreateCampaignBadRequestError(AvitoObject)
+  # CreateCampaignBadRequestError response model.
 
 cls CreateCampaignBadRequestErrorError(AvitoObject)
 
 cls CreateCampaignBadRequestErrorErrorFieldErrors(AvitoObject)
 
-cls CreateCampaignConflictError(AvitoObject)
-
 cls CreateCampaignRequestBody(AvitoObject)
 
 cls EditCampaignBadRequestError(AvitoObject)
+  # EditCampaignBadRequestError response model.
 
 cls EditCampaignBadRequestErrorError(AvitoObject)
 
 cls EditCampaignBadRequestErrorErrorFieldErrors(AvitoObject)
 
-cls EditCampaignConflictError(AvitoObject)
-
 cls EditCampaignRequestBody(AvitoObject)
 
 cls GetBudgetBadRequestError(AvitoObject)
+  # GetBudgetBadRequestError response model.
 
 cls GetBudgetBadRequestErrorError(AvitoObject)
 
 cls GetBudgetBadRequestErrorErrorFieldErrors(AvitoObject)
 
-cls GetBudgetConflictError(AvitoObject)
-
 cls GetBudgetRequestBody(AvitoObject)
 
 cls GetCampaignInfoBadRequestError(AvitoObject)
+  # GetCampaignInfoBadRequestError response model.
 
 cls GetCampaignInfoBadRequestErrorError(AvitoObject)
-
-cls GetCampaignInfoBadRequestErrorErrorFieldErrors(AvitoObject)
 
 cls GetCampaignInfoForecastResult(AvitoObject)
 
@@ -646,6 +701,7 @@ cls GetCampaignInfoForecastResultViews(AvitoObject)
 cls GetCampaignInfoRequestBody(AvitoObject)
 
 cls GetCampaignsBadRequestError(AvitoObject)
+  # GetCampaignsBadRequestError response model.
 
 cls GetCampaignsBadRequestErrorError(AvitoObject)
 
@@ -664,10 +720,9 @@ cls GetCampaignsRequestBodyOrderBy(AvitoObject)
 cls GetStatRequestBody(AvitoObject)
 
 cls GetStatRequestError(AvitoObject)
+  # GetStatRequestError response model.
 
 cls GetStatRequestErrorError(AvitoObject)
-
-cls GetStatRequestErrorErrorFieldErrors(AvitoObject)
 
 cls StatRoot(AvitoObject)
 
@@ -676,6 +731,7 @@ cls StatRootCallsForecast(AvitoObject)
 cls StatRootViewsForecast(AvitoObject)
 
 cls StopCampaignBadRequestError(AvitoObject)
+  # StopCampaignBadRequestError response model.
 
 cls StopCampaignBadRequestErrorError(AvitoObject)
 
@@ -683,31 +739,26 @@ cls StopCampaignBadRequestErrorErrorFieldErrors(AvitoObject)
 
 cls StopCampaignRequestBody(AvitoObject)
 
-cls AuthError(AvitoObject)
-
 cls AutostrategyAuthError(AvitoObject)
-
-cls AutostrategyAuthErrorError(AvitoObject)
+  # AutostrategyAuthError response model.
 
 cls AutostrategyServiceError(AvitoObject)
-
-cls AutostrategyServiceErrorError(AvitoObject)
-
-cls NotFoundError(AvitoObject)
-
-cls ServiceError(AvitoObject)
+  # AutostrategyServiceError response model.
 
 cls GetAutostrategyBudgetResponse(AvitoObject)
 
 cls CreateAutostrategyCampaignResponse(AvitoObject)
+  # CreateAutostrategyCampaignResponse response model.
 
 cls EditAutostrategyCampaignResponse(AvitoObject)
+  # EditAutostrategyCampaignResponse response model.
 
 cls GetAutostrategyCampaignInfoResponse(AvitoObject)
 
 cls GetAutostrategyCampaignInfoResponseItems(AvitoObject)
 
 cls StopAutostrategyCampaignResponse(AvitoObject)
+  # StopAutostrategyCampaignResponse response model.
 
 cls GetAutostrategyCampaignsFilter(AvitoObject)
 
@@ -736,6 +787,7 @@ cls Stat(RootModel[list[StatRoot]])
 
 
 cls ArbitrationCases(AvitoObject)
+  # Арбитражные дела
 
 cls ArbitrationCasesCases(AvitoObject)
 
@@ -764,30 +816,41 @@ cls CatalogsFieldAutoteka(AvitoObject)
 cls CatalogsFieldAutotekaValues(AvitoObject)
 
 cls CatalogsResolveResponseBodyAutoteka(AvitoObject)
+  # CatalogsResolveResponseBodyAutoteka response model.
 
 cls CatalogsResolveResponseDataAutoteka(AvitoObject)
+  # CatalogsResolveResponseDataAutoteka response model.
 
 cls CrashesHistoryAutoteka(AvitoObject)
 
 cls CrashesHistoryAutotekaDamageTypes(AvitoObject)
 
 cls CreateEptsResponseDataAutoteka(AvitoObject)
+  # CreateEptsResponseDataAutoteka response model.
 
 cls CreateReportResponseBodyAutoteka(AvitoObject)
+  # CreateReportResponseBodyAutoteka response model.
 
 cls CreateReportResponseDataAutoteka(AvitoObject)
+  # CreateReportResponseDataAutoteka response model.
 
 cls CreateScoringResponseBodyAutoteka(AvitoObject)
+  # CreateScoringResponseBodyAutoteka response model.
 
 cls CreateScoringResponseDataAutoteka(AvitoObject)
+  # CreateScoringResponseDataAutoteka response model.
 
 cls CreateSpecificationResponseBodyAutoteka(AvitoObject)
+  # CreateSpecificationResponseBodyAutoteka response model.
 
 cls CreateSpecificationResponseDataAutoteka(AvitoObject)
+  # CreateSpecificationResponseDataAutoteka response model.
 
 cls CreateTeaserResponseBodyAutoteka(AvitoObject)
+  # CreateTeaserResponseBodyAutoteka response model.
 
 cls CreateTeaserResponseDataAutoteka(AvitoObject)
+  # CreateTeaserResponseDataAutoteka response model.
 
 cls Customs(AvitoObject)
 
@@ -892,30 +955,43 @@ cls FineEventAutoteka(AvitoObject)
 cls FinesAutoteka(AvitoObject)
 
 cls GetActivePackageResponseBodyAutoteka(AvitoObject)
+  # GetActivePackageResponseBodyAutoteka response model.
 
 cls GetActivePackageResponseDataAutoteka(AvitoObject)
+  # GetActivePackageResponseDataAutoteka response model.
 
 cls GetEptsResult(AvitoObject)
+  # GetEptsResult response model.
 
 cls GetPreviewResponseBodyAutoteka(AvitoObject)
+  # GetPreviewResponseBodyAutoteka response model.
 
 cls GetPreviewResponseDataAutoteka(AvitoObject)
+  # GetPreviewResponseDataAutoteka response model.
 
 cls GetReport(AvitoObject)
+  # GetReport response model.
 
 cls GetReportAsync(AvitoObject)
+  # GetReportAsync response model.
 
 cls GetReportResult(AvitoObject)
+  # GetReportResult response model.
 
 cls GetReportResultAsync(AvitoObject)
+  # GetReportResultAsync response model.
 
 cls GetReportsListResponseDataAutoteka(AvitoObject)
+  # GetReportsListResponseDataAutoteka response model.
 
 cls GetScoring(AvitoObject)
+  # GetScoring response model.
 
 cls GetScoringResult(AvitoObject)
+  # GetScoringResult response model.
 
 cls GetSpecificationResponseBodyAutoteka(AvitoObject)
+  # GetSpecificationResponseBodyAutoteka response model.
 
 cls GetSpecificationResponseDataAutoteka(AvitoObject)
 
@@ -957,15 +1033,15 @@ cls PreviewAutoteka(AvitoObject)
 
 cls PreviewDataAutoteka(AvitoObject)
 
-cls PreviewIdOnlyAutoteka(AvitoObject)
-
 cls PriceStatAutoteka(AvitoObject)
 
 cls PriceStatForNewCarsAutoteka(AvitoObject)
 
 cls PriceStatForNewCarsAutotekaItems(AvitoObject)
+  # PriceStatForNewCarsAutotekaItems response model.
 
 cls PriceStatForNewCarsAutotekaItemsPrices(AvitoObject)
+  # PriceStatForNewCarsAutotekaItemsPrices response model.
 
 cls PriceStatForNewCarsAutotekaPrice(AvitoObject)
 
@@ -984,6 +1060,7 @@ cls RecallItem(AvitoObject)
 cls RecallItemCompleteInfo(AvitoObject)
 
 cls RecapAutoteka(AvitoObject)
+  # RecapAutoteka response model.
 
 cls ReportDataAutoteka(AvitoObject)
 
@@ -1013,19 +1090,15 @@ cls RequestGetLeads(AvitoObject)
 
 cls RequestGetLeadsFeed(AvitoObject)
 
-cls RequestMonitoringAddVinBucket(AvitoObject)
-
-cls RequestMonitoringRemoveVinBucket(AvitoObject)
-
 cls RequestPreviewByItemIdAutoteka(AvitoObject)
 
 cls RequestPreviewResponseBodyAutoteka(AvitoObject)
+  # RequestPreviewResponseBodyAutoteka response model.
 
 cls RequestPreviewResponseDataAutoteka(AvitoObject)
+  # RequestPreviewResponseDataAutoteka response model.
 
 cls RequestReportByPlateNumberAutoteka(AvitoObject)
-
-cls RequestReportByPreviewIdAutoteka(AvitoObject)
 
 cls RequestReportByVehicleIdAutoteka(AvitoObject)
 
@@ -1034,6 +1107,7 @@ cls RequestTeaserByVehicleIdAutoteka(AvitoObject)
 cls RequestValuationBySpecificationResolve(AvitoObject)
 
 cls RequestValuationBySpecificationResolveLocation(AvitoObject)
+  # RequestValuationBySpecificationResolveLocation response model.
 
 cls RequestValuationBySpecificationResolveSpecification(AvitoObject)
 
@@ -1058,32 +1132,44 @@ cls RequestValuationBySpecificationResolveSpecificationOwnersCount(AvitoObject)
 cls RequestValuationBySpecificationResolveSpecificationYear(AvitoObject)
 
 cls ResponseGetLeads(AvitoObject)
+  # ResponseGetLeads response model.
 
 cls ResponseGetLeadsPagination(AvitoObject)
+  # ResponseGetLeadsPagination response model.
 
 cls ResponseGetLeadsResult(AvitoObject)
+  # ResponseGetLeadsResult response model.
 
 cls ResponseGetLeadsResultPayload(AvitoObject)
+  # ResponseGetLeadsResultPayload response model.
 
 cls ResponseGetLeadsResultPayloadExtraPayload(AvitoObject)
+  # ResponseGetLeadsResultPayloadExtraPayload response model.
 
 cls ResponseGetLeadsResultPayloadExtraPayloadPriceAnalytics(AvitoObject)
+  # ResponseGetLeadsResultPayloadExtraPayloadPriceAnalytics response model.
 
 cls ResponseGetLeadsResultPayloadExtraPayloadTeaser(AvitoObject)
+  # ResponseGetLeadsResultPayloadExtraPayloadTeaser response model.
 
 cls ResponseGetLeadsResultPayloadTriggerPayload(AvitoObject)
+  # ResponseGetLeadsResultPayloadTriggerPayload response model.
 
 cls ResponseGetLeadsResultPayloadTriggerPayloadLastEvents(AvitoObject)
+  # ResponseGetLeadsResultPayloadTriggerPayloadLastEvents response model.
 
 cls ResponseMonitoringAddVinBucket(AvitoObject)
+  # ResponseMonitoringAddVinBucket response model.
 
 cls ResponseMonitoringAddVinBucketResult(AvitoObject)
 
 cls ResponseMonitoringAddVinBucketResultInvalidVehicles(AvitoObject)
 
 cls ResponseMonitoringDeleteVinBucket(AvitoObject)
+  # ResponseMonitoringDeleteVinBucket response model.
 
 cls ResponseMonitoringDeleteVinBucketResult(AvitoObject)
+  # ResponseMonitoringDeleteVinBucketResult response model.
 
 cls ResponseMonitoringGetRegAction(AvitoObject)
 
@@ -1092,6 +1178,7 @@ cls ResponseMonitoringGetRegActions(AvitoObject)
 cls ResponseMonitoringGetRegActionsPagination(AvitoObject)
 
 cls ResponseMonitoringRemoveVinBucket(AvitoObject)
+  # ResponseMonitoringRemoveVinBucket response model.
 
 cls ResponseMonitoringRemoveVinBucketResult(AvitoObject)
 
@@ -1102,6 +1189,7 @@ cls RestrictionsAutoteka(AvitoObject)
 cls RestrictionsAutotekaPledge(AvitoObject)
 
 cls RestrictionsAutotekaPledgeHistory(AvitoObject)
+  # История залогов, подключается в отчёт по дополнительному согласованию
 
 cls RestrictionsAutotekaPledgeHistoryPledges(AvitoObject)
 
@@ -1116,6 +1204,7 @@ cls RestrictionsAutotekaRegistrationAdditionalInfo(AvitoObject)
 cls RestrictionsAutotekaStealing(AvitoObject)
 
 cls RestrictionsAutotekaStealingAdditionalInfo(AvitoObject)
+  # RestrictionsAutotekaStealingAdditionalInfo response model.
 
 cls SalvageCarAuctionRecordsRoot(AvitoObject)
 
@@ -1157,15 +1246,9 @@ cls ScoringSeriousDamageSalvageCarAuctions(AvitoObject)
 
 cls ScoringTechSpecification(AvitoObject)
 
-cls ScoringTechSpecificationBodyNumber(AvitoObject)
-
 cls ScoringTechSpecificationBrand(AvitoObject)
 
-cls ScoringTechSpecificationChasisNumber(AvitoObject)
-
 cls ScoringTechSpecificationColor(AvitoObject)
-
-cls ScoringTechSpecificationEngineNumber(AvitoObject)
 
 cls ScoringTechSpecificationEngineType(AvitoObject)
 
@@ -1282,6 +1365,7 @@ cls TechInspectionHistory(AvitoObject)
 cls TechInspectionHistoryEvent(AvitoObject)
 
 cls ValuationBySpecificationResponseBodyAutoteka(AvitoObject)
+  # ValuationBySpecificationResponseBodyAutoteka response model.
 
 cls ValuationBySpecificationResultAutoteka(AvitoObject)
 
@@ -1289,19 +1373,13 @@ cls VehicleSpecifications(AvitoObject)
 
 cls VehicleSpecificationsParam(AvitoObject)
 
-cls ForbiddenError(AvitoObject)
-
-cls InternalError(AvitoObject)
-
-cls NotFoundError(AvitoObject)
-
 cls TooManyRequestsError(AvitoObject)
-
-cls ValidatingError(AvitoObject)
+  # TooManyRequestsError response model.
 
 cls CatalogsResolveFieldsValueIds(AvitoObject)
 
 cls ValuationBySpecificationLocation(AvitoObject)
+  # ValuationBySpecificationLocation response model.
 
 cls ValuationBySpecificationSpecification(AvitoObject)
 
@@ -1325,8 +1403,6 @@ cls ValuationBySpecificationSpecificationOwnersCount(AvitoObject)
 
 cls ValuationBySpecificationSpecificationYear(AvitoObject)
 
-cls GetAccessTokenResponse(AvitoObject)
-
 cls InsurancePayments(RootModel[list[InsurancePaymentsItem]])
   # Root wrapper for a top-level ``list[InsurancePaymentsItem]`` response.
 
@@ -1346,14 +1422,13 @@ cls SalvageCarAuctionRecords(RootModel[list[SalvageCarAuctionRecordsRoot]])
 cls DefaultErrorResponse(AvitoObject)
 
 cls ErrorFieldsRoot(AvitoObject)
+  # Ошибка валидации поля
 
 cls ErrorResponse(AvitoObject)
-
-cls ErrorResult(AvitoObject)
+  # ErrorResponse response model.
 
 cls InviteId(AvitoObject)
-
-cls TargetTaskId(AvitoObject)
+  # Идентификатор приглашения нового клиента
 
 cls AgencyBalanceResponse(AvitoObject)
 
@@ -1362,10 +1437,12 @@ cls AgencyBalanceResponseResult(AvitoObject)
 cls AgencyTransactionsResponse(AvitoObject)
 
 cls AgencyTransactionsResponseResult(AvitoObject)
+  # Информация о транзакции
 
 cls AgencyTransactionResponse(AvitoObject)
 
 cls AgencyTransactionResponseResult(AvitoObject)
+  # Информация о транзакции
 
 cls AgencyClientsResponse(AvitoObject)
 
@@ -1373,17 +1450,16 @@ cls AgencyClientsResponseResult(AvitoObject)
 
 cls AgencyClientsResponseResultClients(AvitoObject)
 
-cls AgencyClientsResponseResultClientsAdvance(AvitoObject)
-
-cls AgencyClientsResponseResultClientsBalance(AvitoObject)
-
 cls AgencyClientsResponseResultClientsStatistics(AvitoObject)
+  # Статистика клиента
 
 cls AgencyClientsResponseResultClientsSubscription(AvitoObject)
 
 cls AgencyClientsExtra(AvitoObject)
+  # Настройка дополнительной информации о клиентах
 
 cls AgencyClientsTargetCreateResponse(AvitoObject)
+  # AgencyClientsTargetCreateResponse response model.
 
 cls AgencyClientsTargetResultResponse(AvitoObject)
 
@@ -1394,12 +1470,14 @@ cls AgencyClientsTargetResultResponseResultItems(AvitoObject)
 cls AgencyClientsTargetResultResponseResultItemsResults(AvitoObject)
 
 cls AgencyFinancesBalanceResponse(AvitoObject)
+  # AgencyFinancesBalanceResponse response model.
 
 cls AgencyFinancesTransactionsHistoryResponse(AvitoObject)
 
 cls AgencyFinancesTransactionsHistoryResponseItems(AvitoObject)
 
 cls AgencyUsersInviteSendResponse(AvitoObject)
+  # AgencyUsersInviteSendResponse response model.
 
 cls AgencyUsersInviteStatusResponse(AvitoObject)
 
@@ -1416,8 +1494,10 @@ cls StatsAccountsItemsResponseResult(AvitoObject)
 cls StatsAccountsItemsResponseResultGroupings(AvitoObject)
 
 cls StatsAccountsItemsResponseResultGroupingsMetrics(AvitoObject)
+  # Статистический показатель
 
 cls StatsAccountsItemsFilter(AvitoObject)
+  # Набор ограничений, по которым будут отфильтрованы данные статистики
 
 cls StatsAccountsItemsSort(AvitoObject)
 
@@ -1432,6 +1512,7 @@ cls StatsAccountsSpendingsResponseResultGroupingsSpendings(AvitoObject)
 cls StatsAccountsSpendingsResponseResultGroupingsSpendingsServices(AvitoObject)
 
 cls StatsAccountsSpendingsFilter(AvitoObject)
+  # Набор ограничений, по которым будут отфильтрованы данные статистики
 
 cls AmountDouble(RootModel[float])
   # Root wrapper for a top-level ``float`` response.
@@ -1491,8 +1572,10 @@ cls TransactionId(RootModel[str])
 cls Call(AvitoObject)
 
 cls GetCallByIdResponse(AvitoObject)
+  # GetCallByIdResponse response model.
 
 cls GetCallsResponse(AvitoObject)
+  # GetCallsResponse response model.
 
 ```
 
@@ -1533,6 +1616,7 @@ cls CallV2(AvitoObject)
 cls CallsByTime(AvitoObject)
 
 cls CpaErrorChat(AvitoObject)
+  # CpaErrorChat response model.
 
 cls CpaErrorChatResult(AvitoObject)
 
@@ -1540,21 +1624,16 @@ cls CreateComplaint(AvitoObject)
 
 cls CreateComplaintV4In(AvitoObject)
 
-cls CreateComplaintV4Out(AvitoObject)
-
-cls Error(AvitoObject)
-
-cls ErrorPayload(AvitoObject)
-
-cls InternalError(AvitoObject)
-
 cls InternalErrorResult(AvitoObject)
+  # InternalErrorResult response model.
 
 cls OpenApiChatsByTimeFilters(AvitoObject)
+  # OpenApiChatsByTimeFilters response model.
 
 cls OpenApiChatsByTimeIn(AvitoObject)
 
 cls OpenApiChatsByTimeMetaFilters(AvitoObject)
+  # OpenApiChatsByTimeMetaFilters response model.
 
 cls OpenApiChatsByTimeOut(AvitoObject)
 
@@ -1571,6 +1650,7 @@ cls OpenApiChat(AvitoObject)
 cls OpenApiChatByActionIdIn(AvitoObject)
 
 cls OpenApiChatByActionIdOut(AvitoObject)
+  # OpenApiChatByActionIdOut response model.
 
 cls OpenApiChatsBuyer(AvitoObject)
 
@@ -1579,30 +1659,29 @@ cls OpenApiChatsComposition(AvitoObject)
 cls OpenApiChatsItem(AvitoObject)
 
 cls OpenApiError(AvitoObject)
+  # OpenApiError response model.
 
 cls OpenApiErrorResult(AvitoObject)
+  # OpenApiErrorResult response model.
 
 cls OpenApiErrorResultError(AvitoObject)
 
 cls OpenApiErrorResultErrorPayload(AvitoObject)
+  # OpenApiErrorResultErrorPayload response model.
 
 cls OpenApiErrorOld(AvitoObject)
+  # OpenApiErrorOld response model.
 
 cls OpenApiErrorOldResult(AvitoObject)
 
-cls NotFoundError(AvitoObject)
-
-cls ServiceError(AvitoObject)
-
 cls TooManyRequestsError(AvitoObject)
-
-cls ValidatingError(AvitoObject)
-
-cls ValidatingErrorError(AvitoObject)
+  # TooManyRequestsError response model.
 
 cls ChatByActionIdResponse(AvitoObject)
+  # ChatByActionIdResponse response model.
 
 cls ChatsByTimeResponse(AvitoObject)
+  # ChatsByTimeResponse response model.
 
 cls PostCreateComplaintResponse(AvitoObject)
 
@@ -1613,12 +1692,12 @@ cls PhonesInfoFromChatsResponse(AvitoObject)
 cls BalanceInfoV2Response(AvitoObject)
 
 cls GetCallByIdV2Response(AvitoObject)
+  # GetCallByIdV2Response response model.
 
 cls GetCallsByTimeV2Response(AvitoObject)
 
 cls ChatsByTime2Response(AvitoObject)
-
-cls BalanceInfoV3Response(AvitoObject)
+  # ChatsByTime2Response response model.
 
 ```
 
@@ -1643,13 +1722,13 @@ cls Budget(AvitoObject)
 
 cls BudgetValue(AvitoObject)
 
-cls Error(AvitoObject)
-
 cls GetBidsOut(AvitoObject)
 
 cls GetPromotionsByItemIdsIn(AvitoObject)
+  # GetPromotionsByItemIdsIn response model.
 
 cls GetPromotionsByItemIdsOut(AvitoObject)
+  # GetPromotionsByItemIdsOut response model.
 
 cls GetPromotionsByItemIdsOutItems(AvitoObject)
 
@@ -1658,8 +1737,7 @@ cls Manual(AvitoObject)
 cls ManualPromotion(AvitoObject)
 
 cls TooManyRequestsError(AvitoObject)
-
-cls RemovePromotion2Response(AvitoObject)
+  # TooManyRequestsError response model.
 
 ```
 
@@ -1669,6 +1747,7 @@ cls RemovePromotion2Response(AvitoObject)
 
 
 cls AddTariffReply(AvitoObject)
+  # AddTariffReply response model.
 
 cls AddTariffReplyData(AvitoObject)
 
@@ -1677,10 +1756,12 @@ cls AddTariffRequest(AvitoObject)
 cls AddTariffRequestV2(AvitoObject)
 
 cls AddTaskReply(AvitoObject)
+  # AddTaskReply response model.
 
 cls AddTaskReplyData(AvitoObject)
 
 cls AddTerminalsReply(AvitoObject)
+  # AddTerminalsReply response model.
 
 cls AddTerminalsReplyData(AvitoObject)
 
@@ -1705,6 +1786,7 @@ cls AnnouncementsPackage3Pl(AvitoObject)
 cls AnnouncementsParcel3Pl(AvitoObject)
 
 cls AnnouncementsSuccessResponse(AvitoObject)
+  # AnnouncementsSuccessResponse response model.
 
 cls AnnouncementsSuccessResponseData(AvitoObject)
 
@@ -1713,20 +1795,25 @@ cls AnnouncementsTrackAnnouncementRequest(AvitoObject)
 cls Area(AvitoObject)
 
 cls AreasCustomScheduleTaskResult(AvitoObject)
+  # AreasCustomScheduleTaskResult response model.
 
 cls AreasTaskResult(AvitoObject)
-
-cls Breadcrumb(AvitoObject)
+  # AreasTaskResult response model.
 
 cls CancelSandboxParcelOptions(AvitoObject)
+  # CancelSandboxParcelOptions response model.
 
 cls CancelSandboxParcelReply(AvitoObject)
+  # CancelSandboxParcelReply response model.
 
 cls CancelSandboxParcelReplyData(AvitoObject)
+  # CancelSandboxParcelReplyData response model.
 
 cls CancelSandxobParcelRequest(AvitoObject)
+  # CancelSandxobParcelRequest response model.
 
 cls ChangeParcelReply(AvitoObject)
+  # ChangeParcelReply response model.
 
 cls ChangeParcelReplyData(AvitoObject)
 
@@ -1737,6 +1824,7 @@ cls ChangeParcelRequestApplication(AvitoObject)
 cls ChangeParcelRequestOptions(AvitoObject)
 
 cls ChangeParcelResultReply(AvitoObject)
+  # ChangeParcelResultReply response model.
 
 cls ChangeParcelResultRequest(AvitoObject)
 
@@ -1751,14 +1839,18 @@ cls ChangeParcelsData(AvitoObject)
 cls ChangeParcelsRequest(AvitoObject)
 
 cls ChangeParcelsResponse(AvitoObject)
+  # ChangeParcelsResponse response model.
 
 cls ChangeParcelsTerminal(AvitoObject)
 
 cls CheckConfirmationCodeReply(AvitoObject)
+  # CheckConfirmationCodeReply response model.
 
 cls CheckConfirmationCodeReplyData(AvitoObject)
+  # CheckConfirmationCodeReplyData response model.
 
 cls CheckConfirmationCodeRequest(AvitoObject)
+  # CheckConfirmationCodeRequest response model.
 
 cls CreateParcelClient(AvitoObject)
 
@@ -1797,10 +1889,9 @@ cls CreateParcelCourierOptions(AvitoObject)
 cls CreateParcelData(AvitoObject)
 
 cls CreateParcelDeliveryCourier(AvitoObject)
+  # CreateParcelDeliveryCourier response model.
 
 cls CreateParcelItem(AvitoObject)
-
-cls CreateParcelItemBreadcrumb(AvitoObject)
 
 cls CreateParcelItemDimensions(AvitoObject)
 
@@ -1811,46 +1902,57 @@ cls CreateParcelItemWeight(AvitoObject)
 cls CreateParcelOptions(AvitoObject)
 
 cls CreateParcelOptionsReturn(AvitoObject)
+  # Опции возврата. Опции определяют политику возвратов. Доступен ли возврат, или что делать в определенных случаях.
 
 cls CreateParcelOptionsReturnPolicy(AvitoObject)
 
 cls CreateParcelOptionsReturnPolicyAfter(AvitoObject)
 
 cls CreateParcelPackage(AvitoObject)
+  # CreateParcelPackage response model.
 
 cls CreateParcelPayment(AvitoObject)
+  # CreateParcelPayment response model.
 
 cls CreateParcelPaymentDelivery(AvitoObject)
 
 cls CreateParcelPaymentItems(AvitoObject)
 
 cls CreateParcelReply(AvitoObject)
+  # CreateParcelReply response model.
 
 cls CreateParcelReplyData(AvitoObject)
 
 cls CreateParcelRequest(AvitoObject)
 
 cls CreateParcelResponse(AvitoObject)
+  # CreateParcelResponse response model.
 
 cls CreateParcelUserDeliveryTerminal(AvitoObject)
 
 cls CreateSandboxParcelItem(AvitoObject)
 
 cls CreateSandboxParcelItemDimensions(AvitoObject)
+  # Габариты товара в сантиметрах. Порядок [ширина, высота, длина]. Например, [15, 25, 35].
 
 cls CreateSandboxParcelItemWeight(AvitoObject)
+  # CreateSandboxParcelItemWeight response model.
 
 cls CreateSandboxParcelOptions(AvitoObject)
 
 cls CreateSandboxParcelOptionsXDelivery(AvitoObject)
 
 cls CreateSandboxParcelReceiverDelivery(AvitoObject)
+  # CreateSandboxParcelReceiverDelivery response model.
 
 cls CreateSandboxParcelUserDelivery(AvitoObject)
+  # CreateSandboxParcelUserDelivery response model.
 
 cls CreateSandboxParcelV2(AvitoObject)
+  # CreateSandboxParcelV2 response model.
 
 cls CreateSandboxParcelV2Receiver(AvitoObject)
+  # CreateSandboxParcelV2Receiver response model.
 
 cls CreateSandboxParcelV2Sender(AvitoObject)
 
@@ -1861,30 +1963,33 @@ cls DeliveryCoordinates(AvitoObject)
 cls DeliveryDateInterval(AvitoObject)
 
 cls DeliveryParams(AvitoObject)
+  # DeliveryParams response model.
 
 cls DeliveryTerms(AvitoObject)
+  # DeliveryTerms response model.
 
 cls DeliveryError4Xx(AvitoObject)
 
 cls DeliveryIntervalInDate(AvitoObject)
 
 cls DeliverySetOrderPropertiesReply(AvitoObject)
-
-cls DeliverySetOrderPropertiesReplyData(AvitoObject)
+  # DeliverySetOrderPropertiesReply response model.
 
 cls DeliverySetOrderPropertiesRequest(AvitoObject)
+  # DeliverySetOrderPropertiesRequest response model.
 
 cls DeliverySetOrderRealAddresseReply(AvitoObject)
-
-cls DeliverySetOrderRealAddresseReplyData(AvitoObject)
+  # DeliverySetOrderRealAddresseReply response model.
 
 cls DeliverySetRealAddressRequest(AvitoObject)
+  # DeliverySetRealAddressRequest response model.
 
 cls DeliverySetRealAddressRequestAddress(AvitoObject)
 
 cls DeliverySetStatusDetails(AvitoObject)
 
 cls DeliverySetStatusReply(AvitoObject)
+  # DeliverySetStatusReply response model.
 
 cls DeliverySetStatusReplyData(AvitoObject)
 
@@ -1925,6 +2030,7 @@ cls Direction(AvitoObject)
 cls DirectionV2(AvitoObject)
 
 cls GetChangeParcelInfoReply(AvitoObject)
+  # GetChangeParcelInfoReply response model.
 
 cls GetChangeParcelInfoReplyData(AvitoObject)
 
@@ -1935,36 +2041,48 @@ cls GetChangeParcelInfoRequest(AvitoObject)
 cls GetInfoByOrderIdErrorReply(AvitoObject)
 
 cls GetRegisteredParcelIdReply(AvitoObject)
+  # GetRegisteredParcelIdReply response model.
 
 cls GetRegisteredParcelIdReplyData(AvitoObject)
+  # GetRegisteredParcelIdReplyData response model.
 
 cls GetRegisteredParcelIdRequest(AvitoObject)
+  # GetRegisteredParcelIdRequest response model.
 
 cls GetSandboxParcelInfoDimensions(AvitoObject)
+  # GetSandboxParcelInfoDimensions response model.
 
 cls GetSandboxParcelInfoParcelHistory(AvitoObject)
+  # GetSandboxParcelInfoParcelHistory response model.
 
 cls GetSandboxParcelInfoReply(AvitoObject)
+  # GetSandboxParcelInfoReply response model.
 
 cls GetSandboxParcelInfoReplyData(AvitoObject)
 
 cls GetSandboxParcelInfoReplyDataReceiver(AvitoObject)
+  # GetSandboxParcelInfoReplyDataReceiver response model.
 
 cls GetSandboxParcelInfoReplyDataSender(AvitoObject)
+  # GetSandboxParcelInfoReplyDataSender response model.
 
 cls GetSandboxParcelInfoRequest(AvitoObject)
+  # GetSandboxParcelInfoRequest response model.
 
 cls GetSandboxParcelInfoTerminals(AvitoObject)
 
 cls GetTariffTaskReply(AvitoObject)
+  # GetTariffTaskReply response model.
 
 cls GetTariffTaskReplyData(AvitoObject)
 
 cls GetTaskData(AvitoObject)
 
 cls GetTaskReply(AvitoObject)
+  # GetTaskReply response model.
 
 cls GetTerminalsTaskReply(AvitoObject)
+  # GetTerminalsTaskReply response model.
 
 cls GetTerminalsTaskReplyData(AvitoObject)
 
@@ -1975,6 +2093,7 @@ cls Restriction(AvitoObject)
 cls SandboxCancelAnnouncementOptions(AvitoObject)
 
 cls SandboxCancelAnnouncementReply(AvitoObject)
+  # SandboxCancelAnnouncementReply response model.
 
 cls SandboxCancelAnnouncementReplyData(AvitoObject)
 
@@ -1991,18 +2110,21 @@ cls SandboxCreateAnnouncementParticipant(AvitoObject)
 cls SandboxCreateAnnouncementParticipantDelivery(AvitoObject)
 
 cls SandboxCreateAnnouncementReply(AvitoObject)
+  # SandboxCreateAnnouncementReply response model.
 
 cls SandboxCreateAnnouncementReplyData(AvitoObject)
 
 cls SandboxCreateAnnouncementRequest(AvitoObject)
 
 cls SandboxGetAnnouncementEventReply(AvitoObject)
+  # SandboxGetAnnouncementEventReply response model.
 
 cls SandboxGetAnnouncementEventReplyData(AvitoObject)
 
 cls SandboxGetAnnouncementEventRequest(AvitoObject)
 
 cls Schedule(AvitoObject)
+  # Значения интервала времени в течение дня должны быть в диапазоне от `00:00:00` до `23:59:59`. Интервал работы после полуночи необходимо переносить в следующий день недели. Правильно: - `"fri": ["09:00:00/12:00:00", "13:00:00/18:00:00"]` – расписание в пятницу с 9 до 18 с перерывом с 12 до 13 - `"sun": []` – выходной в воскресенье Неправильно: - `"mon": ["09:00/18:00"]` – не хватает значения секунд - `"tue": ["09:00:00/01:00:00"]` – интервал заходит на следующий день - `"wen": ["09:00:00/00:00:00"]` – максимальное значение границы должно быть `23:59:59`
 
 cls SetStatusErrorReply(AvitoObject)
 
@@ -2011,6 +2133,7 @@ cls SetStatusReply(AvitoObject)
 cls SetStatusRequest(AvitoObject)
 
 cls SortingCenterGet(AvitoObject)
+  # SortingCenterGet response model.
 
 cls SortingCenterGetData(AvitoObject)
 
@@ -2018,11 +2141,8 @@ cls SortingCenterId(AvitoObject)
 
 cls SortingCenterPost(AvitoObject)
 
-cls SortingCentersTagsTaskResult(AvitoObject)
-
-cls SortingCentersTaskResult(AvitoObject)
-
 cls TaggedSortingCenter(AvitoObject)
+  # TaggedSortingCenter response model.
 
 cls TariffTaskResult(AvitoObject)
 
@@ -2035,8 +2155,7 @@ cls TerminalsTaskResult(AvitoObject)
 cls TermsZone(AvitoObject)
 
 cls UpdateTermsReply(AvitoObject)
-
-cls UpdateTermsReplyData(AvitoObject)
+  # UpdateTermsReply response model.
 
 cls ValuesByDimension(AvitoObject)
 
@@ -2053,6 +2172,7 @@ cls ValuesByWeightValues(AvitoObject)
 cls Zone(AvitoObject)
 
 cls CancelParcelReply(AvitoObject)
+  # CancelParcelReply response model.
 
 cls CancelParcelReplyData(AvitoObject)
 
@@ -2061,28 +2181,30 @@ cls CancelParcelRequest(AvitoObject)
 cls CustomAreaScheduleRequestObject(AvitoObject)
 
 cls CutoffAndSchedule(AvitoObject)
+  # CutoffAndSchedule response model.
 
 cls CutoffAndScheduleCutoff(AvitoObject)
 
 cls ProhibitOrderAcceptanceReply(AvitoObject)
+  # ProhibitOrderAcceptanceReply response model.
 
 cls ProhibitOrderAcceptanceReplyData(AvitoObject)
 
 cls ProhibitOrderAcceptanceRequest(AvitoObject)
+  # ProhibitOrderAcceptanceRequest response model.
 
 cls UpdateReceiverInfoReply(AvitoObject)
-
-cls UpdateReceiverInfoReplyData(AvitoObject)
+  # UpdateReceiverInfoReply response model.
 
 cls UpdateReturnInfoReply(AvitoObject)
-
-cls UpdateReturnInfoReplyData(AvitoObject)
+  # UpdateReturnInfoReply response model.
 
 cls SetOrderRealAddressAddress(AvitoObject)
 
 cls TrackingOptions(AvitoObject)
 
 cls CreateSandboxParcelV22Receiver(AvitoObject)
+  # CreateSandboxParcelV22Receiver response model.
 
 cls CreateSandboxParcelV22Sender(AvitoObject)
 
@@ -2192,12 +2314,16 @@ cls AnalyticsRequestFilter(AvitoObject)
 cls AnalyticsRequestSort(AvitoObject)
 
 cls AnalyticsResponse(AvitoObject)
+  # AnalyticsResponse response model.
 
 cls AnalyticsResponseResult(AvitoObject)
+  # AnalyticsResponseResult response model.
 
 cls AnalyticsResponseResultGroupings(AvitoObject)
+  # AnalyticsResponseResultGroupings response model.
 
 cls AnalyticsResponseResultGroupingsMetrics(AvitoObject)
+  # AnalyticsResponseResultGroupingsMetrics response model.
 
 cls ApplyVasResp(AvitoObject)
 
@@ -2208,10 +2334,12 @@ cls CallsStatsItem(AvitoObject)
 cls CallsStatsRequest(AvitoObject)
 
 cls CallsStatsResponse(AvitoObject)
+  # CallsStatsResponse response model.
 
 cls CallsStatsResponseResult(AvitoObject)
 
 cls ErrorResponse(AvitoObject)
+  # ErrorResponse response model.
 
 cls InfoVas(AvitoObject)
 
@@ -2230,6 +2358,7 @@ cls ItemInfoAvito(AvitoObject)
 cls ItemVasPricesResp(AvitoObject)
 
 cls ItemsInfoWithCategoryAvito(AvitoObject)
+  # ItemsInfoWithCategoryAvito response model.
 
 cls ItemsInfoWithCategoryAvitoMeta(AvitoObject)
 
@@ -2242,6 +2371,7 @@ cls SpendingsRequest(AvitoObject)
 cls SpendingsRequestFilter(AvitoObject)
 
 cls SpendingsResponse(AvitoObject)
+  # SpendingsResponse response model.
 
 cls SpendingsResponseResult(AvitoObject)
 
@@ -2258,20 +2388,21 @@ cls StatisticsCountersRootStats(AvitoObject)
 cls StatisticsResponse(AvitoObject)
 
 cls StatisticsResponseResult(AvitoObject)
+  # Статистические счетчики объявления
 
 cls StatisticsCountersValue(AvitoObject)
 
 cls StatisticsCountersValueStats(AvitoObject)
 
 cls StatisticsShallowRequestBody(AvitoObject)
+  # StatisticsShallowRequestBody response model.
 
 cls StickerResp(AvitoObject)
 
 cls UpdatePriceRequest(AvitoObject)
 
 cls UpdatePriceResponse(AvitoObject)
-
-cls UpdatePriceResponseResult(AvitoObject)
+  # UpdatePriceResponse response model.
 
 cls VasAmountAvito(AvitoObject)
 
@@ -2279,31 +2410,17 @@ cls VasApplyAvito(AvitoObject)
 
 cls VasResp(AvitoObject)
 
-cls AuthError(AvitoObject)
-
-cls BadRequestError(AvitoObject)
-
 cls ItemIdsRequestBody(AvitoObject)
-
-cls NotFoundError(AvitoObject)
 
 cls PackageIdRequestBodyV2(AvitoObject)
 
-cls PricesItemIdsRequestBody(AvitoObject)
-
-cls ServiceError(AvitoObject)
-
-cls ServiceUnavailableError(AvitoObject)
-
 cls TooManyRequests(AvitoObject)
-
-cls ValidatingError(AvitoObject)
-
-cls ValidatingErrorError(AvitoObject)
+  # TooManyRequests response model.
 
 cls VasIdRequestBody(AvitoObject)
 
 cls ApplyVasResponse(AvitoObject)
+  # ApplyVasResponse response model.
 
 cls ItemAnalyticsFilter(AvitoObject)
 
@@ -2340,12 +2457,14 @@ cls VasPricesResp(RootModel[list[ItemVasPricesResp]])
 
 
 cls ActivationForbiddenError(AvitoObject)
+  # ActivationForbiddenError response model.
 
 cls ActivationForbiddenErrorError(AvitoObject)
 
 cls AddressDetails(AvitoObject)
 
 cls AgeCriteria(AvitoObject)
+  # Возраст кандидата. Если выберите значения, в данных кандидата будет отметка, что кандидат соответствует этому критерию или нет. Кандидаты не увидят этого в вакансии.
 
 cls ApplicationsApplyActionsRequestBody(AvitoObject)
 
@@ -2356,18 +2475,17 @@ cls ApplicationsGetStatesResultStates(AvitoObject)
 cls ApplyProcessing(AvitoObject)
 
 cls BadRequest(AvitoObject)
-
-cls BadRequestError(AvitoObject)
+  # BadRequest response model.
 
 cls BadRequestOnVacancy(AvitoObject)
+  # BadRequestOnVacancy response model.
 
 cls BadRequestShort(AvitoObject)
+  # BadRequestShort response model.
 
 cls BadRequestShortError(AvitoObject)
 
 cls Citizenship(AvitoObject)
-
-cls ConflictError(AvitoObject)
 
 cls ConflictErrorError(AvitoObject)
 
@@ -2376,10 +2494,12 @@ cls Contacts(AvitoObject)
 cls Coordinates(AvitoObject)
 
 cls CreationForbiddenError(AvitoObject)
+  # CreationForbiddenError response model.
 
 cls CreationForbiddenErrorError(AvitoObject)
 
 cls EditingForbiddenError(AvitoObject)
+  # EditingForbiddenError response model.
 
 cls EditingForbiddenErrorError(AvitoObject)
 
@@ -2402,6 +2522,7 @@ cls GetApplicationsByIdsResult(AvitoObject)
 cls GetApplicationsByIdsResultApplies(AvitoObject)
 
 cls GetApplicationsByIdsResultAppliesApplicant(AvitoObject)
+  # Данные соискателя
 
 cls GetApplicationsByIdsResultAppliesApplicantData(AvitoObject)
 
@@ -2422,6 +2543,7 @@ cls GetApplicationsIdsResult(AvitoObject)
 cls GetApplicationsIdsResultApplies(AvitoObject)
 
 cls ItemNotFoundError(AvitoObject)
+  # ItemNotFoundError response model.
 
 cls ItemNotFoundErrorError(AvitoObject)
 
@@ -2429,11 +2551,10 @@ cls Location(AvitoObject)
 
 cls LocationAddress(AvitoObject)
 
-cls NotFoundError(AvitoObject)
-
 cls NotFoundErrorError(AvitoObject)
 
 cls PaymentError(AvitoObject)
+  # PaymentError response model.
 
 cls PaymentErrorError(AvitoObject)
 
@@ -2466,6 +2587,7 @@ cls SalaryBaseRange(AvitoObject)
 cls SalaryDetail(AvitoObject)
 
 cls SalaryDetailBase(AvitoObject)
+  # Оклад
 
 cls SetApplicationsIsViewedResult(AvitoObject)
 
@@ -2474,12 +2596,15 @@ cls SetApplicationsIsViewedResultApplies(AvitoObject)
 cls SimplifiedResume(AvitoObject)
 
 cls SimplifiedVacancy(AvitoObject)
+  # SimplifiedVacancy response model.
 
 cls SimplifiedVacancyAddressDetails(AvitoObject)
+  # SimplifiedVacancyAddressDetails response model.
 
 cls Specialization(AvitoObject)
 
 cls StoppingForbiddenError(AvitoObject)
+  # StoppingForbiddenError response model.
 
 cls StoppingForbiddenErrorError(AvitoObject)
 
@@ -2493,8 +2618,6 @@ cls Vacancy20AddressDetailsCoordinates(AvitoObject)
 
 cls Vacancy20Contacts(AvitoObject)
 
-cls Vacancy20Hierarchy(AvitoObject)
-
 cls Vacancy20Params(AvitoObject)
 
 cls Vacancy20ParamsCoordinates(AvitoObject)
@@ -2503,21 +2626,24 @@ cls Vacancy20ParamsSalary(AvitoObject)
 
 cls Vacancy20ParamsSalaryBaseRange(AvitoObject)
 
-cls VacancyArchive(AvitoObject)
-
 cls VacancyAutoRenewal(AvitoObject)
+  # VacancyAutoRenewal response model.
 
 cls VacancyCreate(AvitoObject)
 
 cls VacancyCreateDrivingExperience(AvitoObject)
+  # Стаж вождения
 
 cls VacancyCreateExperience(AvitoObject)
+  # Опыт работы
 
 cls VacancyCreatePayoutFrequency(AvitoObject)
+  # Частота выплат Возможные значения: - "dailyPay" - Каждый день; - "biweeklyPay" - Дважды в месяц; - "weeklyPay" - Раз в неделю; - "thriceMonthlyPay" - три раза в месяц; - "monthlyPay" - Раз в месяц. Для paid_period равным month и week недоступно для выбора dailyPay. deprecated значение hourlyPay будет заменено на dailyPay
 
 cls VacancyCreateSalaryRange(AvitoObject)
 
 cls VacancyCreateSchedule(AvitoObject)
+  # Режим работы Возможные значения: - flyInFlyOut - Вахта - fixed - Фиксированный - flexible - Гибкий - shift - Сменный deprecated значения fiveDay, sixDay, partTime, fullDay и remote будут заменены на fixed flyInFlyOut - Вахта, при выборе данного режима работы, адрес вакансии может быть только "Город", если адрес передается полноценный, то улица будет отрезана и адрес будет до "Города".
 
 cls VacancyCreateResult(AvitoObject)
 
@@ -2526,6 +2652,7 @@ cls VacancyProlongate(AvitoObject)
 cls VacancySearchMeta(AvitoObject)
 
 cls VacancyStatusesBody(AvitoObject)
+  # VacancyStatusesBody response model.
 
 cls VacancyStatusesResultRoot(AvitoObject)
 
@@ -2536,10 +2663,13 @@ cls VacancyStatusesResultRootVacancy(AvitoObject)
 cls VacancyUpdate(AvitoObject)
 
 cls VacancyUpdateDrivingExperience(AvitoObject)
+  # Стаж вождения
 
 cls VacancyUpdateExperience(AvitoObject)
+  # Опыт работы
 
 cls VacancyUpdatePayoutFrequency(AvitoObject)
+  # Частота выплат Возможные значения: - "dailyPay" - Каждый день; - "biweeklyPay" - Дважды в месяц; - "weeklyPay" - Раз в неделю; - "thriceMonthlyPay" - три раза в месяц - "monthlyPay" - Раз в месяц. deprecated значение hourlyPay будет заменено на dailyPay
 
 cls VacancyUpdateSalaryRange(AvitoObject)
 
@@ -2547,9 +2677,8 @@ cls VacancyV2Create(AvitoObject)
 
 cls VacancyV2CreateContacts(AvitoObject)
 
-cls VacancyV2CreateHierarchy(AvitoObject)
-
 cls VacancyV2CreateLocation(AvitoObject)
+  # Геолокация вакансии (как минимум одно из значений)
 
 cls VacancyV2CreateSalary(AvitoObject)
 
@@ -2559,27 +2688,10 @@ cls WebhookSubscribeRequestBody(AvitoObject)
 
 cls WebhooksSubscriptionResultList(AvitoObject)
 
-cls AuthError(AvitoObject)
-
-cls ForbiddenError(AvitoObject)
-
-cls PurchasingError(AvitoObject)
-
-cls ServiceError(AvitoObject)
-
-cls ServiceUnavailableError(AvitoObject)
-
 cls TooManyRequestsError(AvitoObject)
-
-cls ValidatingError(AvitoObject)
-
-cls ValidatingErrorError(AvitoObject)
-
-cls VerificationNeededError(AvitoObject)
+  # TooManyRequestsError response model.
 
 cls ApplicationsSetIsViewedApplies(AvitoObject)
-
-cls ApplicationsWebhookDeleteResponse(AvitoObject)
 
 cls ResumesGetResponse(AvitoObject)
 
@@ -2588,20 +2700,27 @@ cls ResumesGetRadius(AvitoObject)
 cls ResumesGetRadiusPoint(AvitoObject)
 
 cls VacancyCreate2DrivingExperience(AvitoObject)
+  # Стаж вождения
 
 cls VacancyCreate2Experience(AvitoObject)
+  # Опыт работы
 
 cls VacancyCreate2PayoutFrequency(AvitoObject)
+  # Частота выплат Возможные значения: - "dailyPay" - Каждый день; - "biweeklyPay" - Дважды в месяц; - "weeklyPay" - Раз в неделю; - "thriceMonthlyPay" - три раза в месяц; - "monthlyPay" - Раз в месяц. Для paid_period равным month и week недоступно для выбора dailyPay. deprecated значение hourlyPay будет заменено на dailyPay
 
 cls VacancyCreate2SalaryRange(AvitoObject)
 
 cls VacancyCreate2Schedule(AvitoObject)
+  # Режим работы Возможные значения: - flyInFlyOut - Вахта - fixed - Фиксированный - flexible - Гибкий - shift - Сменный deprecated значения fiveDay, sixDay, partTime, fullDay и remote будут заменены на fixed flyInFlyOut - Вахта, при выборе данного режима работы, адрес вакансии может быть только "Город", если адрес передается полноценный, то улица будет отрезана и адрес будет до "Города".
 
 cls VacancyUpdate2DrivingExperience(AvitoObject)
+  # Стаж вождения
 
 cls VacancyUpdate2Experience(AvitoObject)
+  # Опыт работы
 
 cls VacancyUpdate2PayoutFrequency(AvitoObject)
+  # Частота выплат Возможные значения: - "dailyPay" - Каждый день; - "biweeklyPay" - Дважды в месяц; - "weeklyPay" - Раз в неделю; - "thriceMonthlyPay" - три раза в месяц - "monthlyPay" - Раз в месяц. deprecated значение hourlyPay будет заменено на dailyPay
 
 cls VacancyUpdate2SalaryRange(AvitoObject)
 
@@ -2612,6 +2731,7 @@ cls VacancyCreateV2Contacts(AvitoObject)
 cls VacancyCreateV2Hierarchy(AvitoObject)
 
 cls VacancyCreateV2Location(AvitoObject)
+  # Геолокация вакансии (как минимум одно из значений)
 
 cls VacancyCreateV2Salary(AvitoObject)
 
@@ -2620,6 +2740,7 @@ cls VacancyUpdateV2Contacts(AvitoObject)
 cls VacancyUpdateV2Hierarchy(AvitoObject)
 
 cls VacancyUpdateV2Location(AvitoObject)
+  # Геолокация вакансии (как минимум одно из значений)
 
 cls VacancyUpdateV2Salary(AvitoObject)
 
@@ -2712,9 +2833,9 @@ cls WorkerClass(RootModel[list[WorkerClassRoot]])
 
 
 cls Chat(AvitoObject)
-  post_send_message(message: PostSendMessageMessage? = None, type_: PostSendMessageType? = None) -> PostSendMessage
+  send_message(message: PostSendMessageMessage? = None, type_: PostSendMessageType? = None) -> PostSendMessage
     # Build an awaitable :class:`PostSendMessage` bound to this object (await to execute).
-  post_send_image_message(image_id: str) -> PostSendImageMessage
+  send_image_message(image_id: str) -> PostSendImageMessage
     # Build an awaitable :class:`PostSendImageMessage` bound to this object (await to execute).
   chat_read() -> ChatRead
     # Build an awaitable :class:`ChatRead` bound to this object (await to execute).
@@ -2738,6 +2859,7 @@ cls ChatUsers(AvitoObject)
 cls ChatUsersPublicUserProfile(AvitoObject)
 
 cls ChatUsersPublicUserProfileAvatar(AvitoObject)
+  # Фотография пользователя (аватар)
 
 cls ChatUsersPublicUserProfileAvatarImages(AvitoObject)
 
@@ -2746,44 +2868,40 @@ cls Chats(AvitoObject)
 cls MessageContent(AvitoObject)
 
 cls MessageContentCall(AvitoObject)
-
-cls MessageContentImage(AvitoObject)
+  # Объект, описывающий звонок, для сообщения типа call
 
 cls MessageContentItem(AvitoObject)
+  # Объект, описывающий объявление, для сообщения типа item
 
 cls MessageContentLink(AvitoObject)
+  # Объект, описывающий ссылку, для сообщения типа link
 
 cls MessageContentLinkPreview(AvitoObject)
 
 cls MessageContentLocation(AvitoObject)
+  # Объект, описывающий геометку, для сообщения типа location
 
 cls MessageContentVoice(AvitoObject)
+  # Объект, описывающий голосовое сообщение, для сообщения типа voice
 
 cls MessageQuote(AvitoObject)
+  # цитируемое сообщение
 
 cls MessagesRoot(AvitoObject)
 
 cls PayloadStruct(AvitoObject)
 
 cls VoiceFiles(AvitoObject)
+  # VoiceFiles response model.
 
 cls WebhookMessage(AvitoObject)
 
 cls AddBlacklistRequestBody(AvitoObject)
+  # AddBlacklistRequestBody response model.
 
 cls AddBlacklistRequestBodyUsers(AvitoObject)
 
 cls AddBlacklistRequestBodyUsersContext(AvitoObject)
-
-cls AuthError(AvitoObject)
-
-cls BadRequestError(AvitoObject)
-
-cls ForbiddenError(AvitoObject)
-
-cls NotFoundError(AvitoObject)
-
-cls PurchasingError(AvitoObject)
 
 cls SendImageMessageRequestBody(AvitoObject)
 
@@ -2791,45 +2909,36 @@ cls SendMessageRequestBody(AvitoObject)
 
 cls SendMessageRequestBodyMessage(AvitoObject)
 
-cls ServiceError(AvitoObject)
-
-cls ServiceUnavailableError(AvitoObject)
-
-cls ValidatingError(AvitoObject)
-
-cls ValidatingErrorError(AvitoObject)
-
 cls WebhookSubscribeRequestBody(AvitoObject)
 
 cls PostSendMessageResponse(AvitoObject)
+  # PostSendMessageResponse response model.
 
 cls PostSendMessageResponseContent(AvitoObject)
+  # PostSendMessageResponseContent response model.
 
 cls PostSendMessageMessage(AvitoObject)
 
 cls PostSendImageMessageResponse(AvitoObject)
+  # PostSendImageMessageResponse response model.
 
 cls PostSendImageMessageResponseContent(AvitoObject)
-
-cls PostSendImageMessageResponseContentImage(AvitoObject)
+  # PostSendImageMessageResponseContent response model.
 
 cls DeleteMessageResponse(AvitoObject)
-
-cls ChatReadResponse(AvitoObject)
+  # DeleteMessageResponse response model.
 
 cls UploadImagesResponse(AvitoObject)
+  # UploadImagesResponse response model.
 
 cls GetSubscriptionsResponse(AvitoObject)
+  # GetSubscriptionsResponse response model.
 
 cls GetSubscriptionsResponseSubscriptions(AvitoObject)
-
-cls PostWebhookUnsubscribeResponse(AvitoObject)
 
 cls PostBlacklistV2Users(AvitoObject)
 
 cls PostBlacklistV2UsersContext(AvitoObject)
-
-cls PostWebhookV3Response(AvitoObject)
 
 cls Messages(RootModel[list[MessagesRoot]])
   # Root wrapper for a top-level ``list[MessagesRoot]`` response.
@@ -2871,27 +2980,24 @@ cls OrderAcceptReturnOrderRequest(AvitoObject)
 
 cls OrderAcceptReturnOrderRequestRecipient(AvitoObject)
 
-cls OrderAcceptReturnOrderResponse(AvitoObject)
-
 cls OrderApplyTransitionRequest(AvitoObject)
 
 cls OrderApplyTransitionRequestParams(AvitoObject)
 
 cls OrderApplyTransitionRequestParamsCnc(AvitoObject)
 
-cls OrderApplyTransitionResponse(AvitoObject)
-
 cls OrderCncSetDetailsRequest(AvitoObject)
 
 cls OrderCncSetDetailsResponse(AvitoObject)
-
-cls OrderCncSetDetailsResponseResult(AvitoObject)
+  # Ответ ручки подготовки заказа с самовывозом
 
 cls OrderCheckConfirmationCodeRequest(AvitoObject)
 
 cls OrderCheckConfirmationCodeResponse(AvitoObject)
+  # Ответ ручки проверки кода подтверждения
 
 cls OrderCheckConfirmationCodeResponseData(AvitoObject)
+  # OrderCheckConfirmationCodeResponseData response model.
 
 cls OrderPrices(AvitoObject)
 
@@ -2910,8 +3016,6 @@ cls ReturnPolicy(AvitoObject)
 cls Schedules(AvitoObject)
 
 cls SetCourierDeliveryRangeRequest(AvitoObject)
-
-cls SetCourierDeliveryRangeResponse(AvitoObject)
 
 cls SetOrderMarkingRequest(AvitoObject)
 
@@ -2976,8 +3080,6 @@ cls ListOrdersByUserV1Resp(AvitoObject)
 
 cls ListOrdersByUserV1RespPagination(AvitoObject)
 
-cls NotEnoughMoneyError(AvitoObject)
-
 cls OrderBbipForItemsV1Req(AvitoObject)
 
 cls OrderBbipForItemsV1Resp(AvitoObject)
@@ -3006,13 +3108,13 @@ cls GetDictOfServicesV1Resp(RootModel[list[ServiceInfoV1]])
 # Аналитика по недвижимости — domain models (auto-generated from the Avito OpenAPI spec).
 
 
-cls Error(AvitoObject)
-
 cls MarketPriceCorrespondenceV1Response(AvitoObject)
 
 cls CreateReportForClassifiedResponse(AvitoObject)
+  # CreateReportForClassifiedResponse response model.
 
 cls CreateReportForClassifiedResponseSuccess(AvitoObject)
+  # CreateReportForClassifiedResponseSuccess response model.
 
 cls CreateReportForClassifiedResponseSuccessErrors(AvitoObject)
 
@@ -3053,17 +3155,8 @@ cls ReviewItem(AvitoObject)
 
 cls ReviewSender(AvitoObject)
 
-cls ForbiddenError(AvitoObject)
-
-cls InternalError(AvitoObject)
-
-cls NotFoundError(AvitoObject)
-
 cls TooManyRequestsError(AvitoObject)
-
-cls ValidatingError(AvitoObject)
-
-cls ValidatingErrorError(AvitoObject)
+  # TooManyRequestsError response model.
 
 ```
 
@@ -3093,14 +3186,14 @@ cls ConflictedInterval(AvitoObject)
 cls ConflictedIntervalInterval(AvitoObject)
 
 cls DatesOverlapBookingError(AvitoObject)
+  # DatesOverlapBookingError response model.
 
 cls DatesOverlapBookingErrorError(AvitoObject)
-
-cls Error(AvitoObject)
 
 cls ParamPriceItemRealty(AvitoObject)
 
 cls ParamPricesRealty(AvitoObject)
+  # Диапазоны дат и соответствующие им ценовые параметры
 
 cls PostCalendarData(AvitoObject)
 
@@ -3115,10 +3208,6 @@ cls RealtyBooking(AvitoObject)
 cls RealtyBookingContact(AvitoObject)
 
 cls RealtyBookingSafeDeposit(AvitoObject)
-
-cls ValidatingError(AvitoObject)
-
-cls ValidatingErrorError(AvitoObject)
 
 cls PutBookingsInfoResponse(AvitoObject)
 
@@ -3151,25 +3240,22 @@ cls PostBaseParamsRefund(AvitoObject)
 # Рассылка скидок и спецпредложений в мессенджере (beta-version) — domain models (auto-generated from the Avito OpenAPI spec).
 
 
-cls OpenApiAvailableRequestBody(AvitoObject)
-
 cls OpenApiAvailableResponseBody(AvitoObject)
 
 cls OpenApiAvailableResponseBodyItems(AvitoObject)
 
 cls OpenApiBadRequestError(AvitoObject)
+  # OpenApiBadRequestError response model.
 
 cls OpenApiForbiddenError(AvitoObject)
+  # OpenApiForbiddenError response model.
 
 cls OpenApiInternalError(AvitoObject)
+  # OpenApiInternalError response model.
 
 cls OpenApiMultiConfirmRequestBody(AvitoObject)
 
 cls OpenApiMultiConfirmRequestBodyDispatches(AvitoObject)
-
-cls OpenApiMultiConfirmResponseBody(AvitoObject)
-
-cls OpenApiMultiCreateRequestBody(AvitoObject)
 
 cls OpenApiMultiCreateResponseBody(AvitoObject)
 
@@ -3192,6 +3278,7 @@ cls OpenApiMultiCreateResponseBodyDispatchesItem(AvitoObject)
 cls OpenApiStatsRequestBody(AvitoObject)
 
 cls OpenApiStatsResponseBody(AvitoObject)
+  # OpenApiStatsResponseBody response model.
 
 cls OpenApiStatsResponseBodyStats(AvitoObject)
 
@@ -3200,6 +3287,7 @@ cls OpenApiTariffInfoResponseBody(AvitoObject)
 cls OpenApiTariffInfoResponseBodyTariffInfo(AvitoObject)
 
 cls OpenApiUnauthorizedError(AvitoObject)
+  # OpenApiUnauthorizedError response model.
 
 cls OpenApiMultiConfirmDispatches(AvitoObject)
 
@@ -3211,14 +3299,14 @@ cls OpenApiMultiConfirmDispatches(AvitoObject)
 
 
 cls StockEditResult(AvitoObject)
+  # StockEditResult response model.
 
 cls StockEditResultStocks(AvitoObject)
 
 cls StocksInfoResult(AvitoObject)
+  # StocksInfoResult response model.
 
 cls StocksInfoResultStocks(AvitoObject)
-
-cls UnauthError(AvitoObject)
 
 ```
 
@@ -3238,12 +3326,7 @@ cls TariffContractPackageCategories(AvitoObject)
 cls TariffContractPackagePriceConditions(AvitoObject)
 
 cls TariffInfo(AvitoObject)
-
-cls AuthError(AvitoObject)
-
-cls NotFoundError(AvitoObject)
-
-cls ServiceError(AvitoObject)
+  # Информация по текущему и запланированному контракту
 
 ```
 
@@ -3253,46 +3336,51 @@ cls ServiceError(AvitoObject)
 
 
 cls ApplyReq(AvitoObject)
+  # ApplyReq response model.
 
 cls ApplyReqItems(AvitoObject)
 
 cls ApplyResponse(AvitoObject)
+  # ApplyResponse response model.
 
 cls ApplyResponseSuccess(AvitoObject)
+  # ApplyResponseSuccess response model.
 
 cls ApplyResponseSuccessResult(AvitoObject)
+  # ApplyResponseSuccessResult response model.
 
 cls ApplyResponseSuccessResultValidCommissionRange(AvitoObject)
 
 cls CancelResponse(AvitoObject)
+  # CancelResponse response model.
 
 cls CancelResponseSuccess(AvitoObject)
+  # CancelResponseSuccess response model.
 
 cls CancelResponseSuccessResult(AvitoObject)
+  # CancelResponseSuccessResult response model.
 
 cls CommissionResponse(AvitoObject)
+  # CommissionResponse response model.
 
 cls CommissionResponseSuccess(AvitoObject)
+  # CommissionResponseSuccess response model.
 
 cls CommissionResponseSuccessResult(AvitoObject)
 
 cls CommissionResponseSuccessResultSettings(AvitoObject)
 
 cls ApiV3error400(AvitoObject)
-
-cls ApiV3error400BadRequest(AvitoObject)
+  # ApiV3error400 response model.
 
 cls ApiV3error401(AvitoObject)
-
-cls ApiV3error401Unauthenticated(AvitoObject)
+  # ApiV3error401 response model.
 
 cls ApiV3error403(AvitoObject)
-
-cls ApiV3error403Forbidden(AvitoObject)
+  # ApiV3error403 response model.
 
 cls ApiV3error500(AvitoObject)
-
-cls ApiV3error500InternalError(AvitoObject)
+  # ApiV3error500 response model.
 
 cls ApiTrxPromoOpenApiApplyItems(AvitoObject)
 
@@ -3308,21 +3396,13 @@ cls Balance(AvitoObject)
 cls RequestOperationsHistory(AvitoObject)
 
 cls ResponseOperationsHistory(AvitoObject)
+  # ResponseOperationsHistory response model.
 
 cls ResponseOperationsHistoryResult(AvitoObject)
+  # ResponseOperationsHistoryResult response model.
 
 cls ResponseOperationsHistoryItem(AvitoObject)
 
 cls UserInfoSelf(AvitoObject)
-
-cls AuthError(AvitoObject)
-
-cls ForbiddenError(AvitoObject)
-
-cls NotFoundError(AvitoObject)
-
-cls ServiceError(AvitoObject)
-
-cls ServiceUnavailableError(AvitoObject)
 
 ```

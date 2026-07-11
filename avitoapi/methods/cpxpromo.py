@@ -7,7 +7,8 @@ from typing import ClassVar
 
 from pydantic import Field
 
-from ..models.cpxpromo import GetBidsOut, GetPromotionsByItemIdsOut, RemovePromotion2Response
+from ..models._shared import MessageResponse
+from ..models.cpxpromo import GetBidsOut, GetPromotionsByItemIdsOut
 from ._base import BaseMethod
 
 
@@ -35,7 +36,7 @@ class GetPromotionsByItemIds(BaseMethod[GetPromotionsByItemIdsOut]):
     item_ids: list[int] = Field(..., min_length=1, max_length=200, alias="itemIDs")
 
 
-class RemovePromotion2(BaseMethod[RemovePromotion2Response]):
+class RemovePromotion2(BaseMethod[MessageResponse]):
     """Остановка продвижения via ``POST /cpxpromo/1/remove``.
 
     See: https://developers.avito.ru/api-catalog/cpxpromo/documentation

@@ -12,8 +12,9 @@ class WebhookRequestContext:
 
     ``raw_body`` and ``headers`` are available from the start (HMAC verify
     reads them). ``chat_id`` / ``message_id`` are populated by
-    :class:`~avitoapi.web.AvitoWebhookHandler` after parsing so idempotency
-    middleware can dedup without re-parsing.
+    :class:`~avitoapi.web.AvitoWebhookHandler` after parsing, for tracing and
+    for any custom middleware. Deduplication happens at the dispatch boundary
+    (``Dispatcher.dedup``), not here.
     """
 
     raw_body: bytes

@@ -13,7 +13,7 @@ from ._base import FacadeBase
 class UserFacade(FacadeBase):
     """``Client`` mixin — Информация о пользователе endpoints."""
 
-    async def post_operations_history(
+    async def operations_history(
         self, date_time_from: TZDatetime, date_time_to: TZDatetime
     ) -> ResponseOperationsHistory:
         """Получение истории операций пользователя via ``POST /core/v1/accounts/operations_history/``.
@@ -22,13 +22,13 @@ class UserFacade(FacadeBase):
             date_time_from: Время выборки от. Не далее одного года в прошлое от текущего момента.
             date_time_to: Время выборки до (диапазон между dateTimeFrom и dateTimeTo должен быть не более одной недели)
         """
-        return await self(
+        return await self.execute(
             PostOperationsHistory(date_time_from=date_time_from, date_time_to=date_time_to)
         )
 
     async def get_user_info_self(self) -> UserInfoSelf:
         """Получение информации об авторизованном пользователе via ``GET /core/v1/accounts/self``."""
-        return await self(GetUserInfoSelf())
+        return await self.execute(GetUserInfoSelf())
 
     async def get_user_balance(self, user_id: int | None = None) -> Balance:
         """Получение баланса кошелька пользователя via ``GET /core/v1/accounts/{user_id}/balance/``.
@@ -36,6 +36,6 @@ class UserFacade(FacadeBase):
         Args:
             user_id: Идентификатор пользователя (клиента)
         """
-        return await self(
+        return await self.execute(
             GetUserBalance(user_id=_resolve_user_id(self) if user_id is None else user_id)
         )

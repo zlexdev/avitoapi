@@ -77,11 +77,25 @@ class EventContext:
     workflow_data: dict[str, Any] = field(default_factory=dict)
     handled: bool = False
     queue: CtxQueue = field(default_factory=CtxQueue)
+    _stopped: bool = False
 
     async def atomic_completed(self) -> bool:
         """Convenience shortcut to :meth:`CtxQueue.atomic_completed`."""
 
         return await self.queue.atomic_completed()
+
+    def stop_propagation(self) -> None:
+        """Halt the walk after the current handler — no further handlers or sub-routers run.
+
+        Opt-in: broadcast (every matching handler fires) stays the default.
+        Equivalent to raising :class:`~avitoapi.routers.errors.CancelPropagation`.
+        """
+
+        self._stopped = True
+
+    @property
+    def is_stopped(self) -> bool:
+        return self._stopped
 
 
 __all__ = ["CtxQueue", "EventContext"]

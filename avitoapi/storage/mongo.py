@@ -101,6 +101,28 @@ class MongoStorage(BaseStorage[object, str]):
             upsert=True,
         )
 
+    async def add(self, key: str, value: object, *, ttl: timedelta | None = None) -> bool:
+        """Atomic set-if-absent via unique-``_id`` ``insert_one`` — cross-process safe.
+
+        An expired-but-not-yet-swept doc is removed first (single-doc atomic
+        delete filtered on expiry) so a stale key doesn't block a fresh reserve.
+        """
+
+        await self._ensure_index()
+        from pymongo.errors import DuplicateKeyError  # noqa: PLC0415 — optional dep, lazy
+
+        full = self._full_key(key)
+        now = datetime.now(UTC)
+        expires_at = now + ttl if ttl is not None else None
+        await self._collection().delete_one({"_id": full, "expires_at": {"$ne": None, "$lt": now}})
+        try:
+            await self._collection().insert_one(
+                {"_id": full, "value": value, "expires_at": expires_at},
+            )
+        except DuplicateKeyError:
+            return False
+        return True
+
     async def delete(self, key: str) -> None:
         await self._collection().delete_one({"_id": self._full_key(key)})
 

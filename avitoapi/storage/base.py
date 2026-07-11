@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from abc import ABC, abstractmethod
 from datetime import timedelta
 from typing import Generic, TypeVar
@@ -20,6 +21,7 @@ class BaseStorage(ABC, Generic[TDoc, TId]):
     """
 
     namespace: str = ""
+    _add_lock_obj: asyncio.Lock | None = None
 
     @abstractmethod
     async def get(self, key: str) -> TDoc | None:
@@ -43,6 +45,29 @@ class BaseStorage(ABC, Generic[TDoc, TId]):
         """Cheap probe — defaults to ``get(...) is not None`` for backends without EXISTS."""
 
         return await self.get(key) is not None
+
+    async def add(self, key: str, value: TDoc, *, ttl: timedelta | None = None) -> bool:
+        """Atomic set-if-absent. ``True`` if newly stored, ``False`` if the key already existed.
+
+        The default is a lock-guarded ``exists()`` + ``put()`` — atomic only
+        within one process. Backends with native compare-and-set (Redis
+        ``SET NX``, Postgres ``INSERT ... ON CONFLICT``, Mongo unique insert)
+        override this for cross-process atomicity. This is the primitive
+        idempotency/locking builds on, so the guarantee matters.
+        """
+
+        async with self._add_lock:
+            if await self.exists(key):
+                return False
+            await self.put(key, value, ttl=ttl)
+            return True
+
+    @property
+    def _add_lock(self) -> asyncio.Lock:
+        # Lazily created per-instance; ABC has no __init__ that backends must chain.
+        if self._add_lock_obj is None:
+            self._add_lock_obj = asyncio.Lock()
+        return self._add_lock_obj
 
     async def health(self) -> bool:
         """Round-trip a sentinel key. Override for backends with a cheaper liveness probe."""

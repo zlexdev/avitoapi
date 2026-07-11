@@ -7,6 +7,7 @@ from datetime import date
 
 from ..enums.avito_promo import (
     LinkType,
+    StatsAccountsItemsSortOrder,
     StatsAccountsSpendingsSpendingTypes,
     StatsMetric,
     StatsMetricsGrouping,
@@ -60,11 +61,11 @@ class AvitoPromoFacade(FacadeBase):
         Args:
             amount: Сумма в рублях
         """
-        return await self(AgencyBalance(amount=amount, user_id=user_id))
+        return await self.execute(AgencyBalance(amount=amount, user_id=user_id))
 
     async def agency_transactions(self) -> AgencyTransactionsResponse:
         """Получение списка незавершённых транзакций via ``GET /agency/transactions``."""
-        return await self(AgencyTransactions())
+        return await self.execute(AgencyTransactions())
 
     async def agency_transaction(self, transaction_id: str) -> AgencyTransactionResponse:
         """Получение информации о транзакции via ``GET /agency/transactions/{transaction_id}``.
@@ -72,18 +73,34 @@ class AvitoPromoFacade(FacadeBase):
         Args:
             transaction_id: Идентификатор транзакции
         """
-        return await self(AgencyTransaction(transaction_id=transaction_id))
+        return await self.execute(AgencyTransaction(transaction_id=transaction_id))
 
     async def agency_clients(
-        self, limit: int, extra: AgencyClientsExtra | None = None, offset: int | None = None
+        self,
+        limit: int,
+        advance: bool | None = None,
+        balance: bool | None = None,
+        statistics: bool | None = None,
+        subscription: bool | None = None,
+        offset: int | None = None,
     ) -> AgencyClientsResponse:
         """Получение списка клиентов via ``POST /api/1/agency/clients``.
 
         Args:
-            extra: Настройка дополнительной информации о клиентах
             limit: Ограничение количества сущностей в выборке
         """
-        return await self(AgencyClients(extra=extra, limit=limit, offset=offset))
+        return await self.execute(
+            AgencyClients(
+                extra=AgencyClientsExtra(
+                    advance=advance,
+                    balance=balance,
+                    statistics=statistics,
+                    subscription=subscription,
+                ),
+                limit=limit,
+                offset=offset,
+            )
+        )
 
     async def agency_clients_target_create(
         self, inn_list: list[str]
@@ -93,21 +110,21 @@ class AvitoPromoFacade(FacadeBase):
         Args:
             inn_list: Список ИНН
         """
-        return await self(AgencyClientsTargetCreate(inn_list=inn_list))
+        return await self.execute(AgencyClientsTargetCreate(inn_list=inn_list))
 
     async def agency_clients_target_result(self, task_id: int) -> AgencyClientsTargetResultResponse:
         """Получение результата проверки ИНН клиентов via ``POST /api/1/agency/clients/target/result``."""
-        return await self(AgencyClientsTargetResult(task_id=task_id))
+        return await self.execute(AgencyClientsTargetResult(task_id=task_id))
 
     async def agency_finances_balance(self) -> AgencyFinancesBalanceResponse:
         """Получение баланса агентства via ``GET /api/1/agency/finances/balance``."""
-        return await self(AgencyFinancesBalance())
+        return await self.execute(AgencyFinancesBalance())
 
     async def agency_finances_transactions_history(
         self, date_from: TZDatetime, date_to: TZDatetime, limit: int, offset: int
     ) -> AgencyFinancesTransactionsHistoryResponse:
         """Получение всех операций с балансом агентства via ``POST /api/1/agency/finances/transactionsHistory``."""
-        return await self(
+        return await self.execute(
             AgencyFinancesTransactionsHistory(
                 date_from=date_from, date_to=date_to, limit=limit, offset=offset
             )
@@ -117,17 +134,17 @@ class AvitoPromoFacade(FacadeBase):
         self, type_: LinkType, user_id: int
     ) -> AgencyUsersInviteSendResponse:
         """Отправка приглашения нового клиента via ``POST /api/1/agency/users/invite/send``."""
-        return await self(AgencyUsersInviteSend(type_=type_, user_id=user_id))
+        return await self.execute(AgencyUsersInviteSend(type_=type_, user_id=user_id))
 
     async def agency_users_invite_status(self, invite_id: int) -> AgencyUsersInviteStatusResponse:
         """Получение статуса приглашения нового клиента via ``POST /api/1/agency/users/invite/status``."""
-        return await self(AgencyUsersInviteStatus(invite_id=invite_id))
+        return await self.execute(AgencyUsersInviteStatus(invite_id=invite_id))
 
     async def agency_users_verification_status(
         self, invite_id: int
     ) -> AgencyUsersVerificationStatusResponse:
         """Получение статуса верификации нового клиента via ``POST /api/1/agency/users/verificationStatus``."""
-        return await self(AgencyUsersVerificationStatus(invite_id=invite_id))
+        return await self.execute(AgencyUsersVerificationStatus(invite_id=invite_id))
 
     async def stats_accounts_items(
         self,
@@ -135,31 +152,34 @@ class AvitoPromoFacade(FacadeBase):
         date_to: date,
         grouping: StatsMetricsGrouping,
         metrics: list[StatsMetric],
+        key: StatsMetric,
+        order: StatsAccountsItemsSortOrder,
         user_id: int | None = None,
-        filter: StatsAccountsItemsFilter | None = None,
+        category_ids: list[int] | None = None,
+        employee_ids: list[int] | None = None,
         limit: int | None = None,
         offset: int | None = None,
-        sort: StatsAccountsItemsSort | None = None,
     ) -> StatsAccountsItemsResponse:
         """Получение статистических показателей клиента via ``POST /stats/v2/accounts/{user_id}/items``.
 
         Args:
             user_id: Идентификатор пользователя клиента
-            filter: Набор ограничений, по которым будут отфильтрованы данные статистики
             metrics: Набор показателей, которые должны быть в статистике
-            sort: Сортировка данных статистики
+            order: Порядок сортировки
         """
-        return await self(
+        return await self.execute(
             StatsAccountsItems(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 date_from=date_from,
                 date_to=date_to,
-                filter=filter,
+                filter=StatsAccountsItemsFilter(
+                    category_ids=category_ids, employee_ids=employee_ids
+                ),
                 grouping=grouping,
                 limit=limit,
                 metrics=metrics,
                 offset=offset,
-                sort=sort,
+                sort=StatsAccountsItemsSort(key=key, order=order),
             )
         )
 
@@ -170,21 +190,21 @@ class AvitoPromoFacade(FacadeBase):
         grouping: StatsSpendingsGrouping,
         spending_types: list[StatsAccountsSpendingsSpendingTypes],
         user_id: int | None = None,
-        filter: StatsAccountsSpendingsFilter | None = None,
+        category_ids: list[int] | None = None,
+        item_ids: list[int] | None = None,
     ) -> StatsAccountsSpendingsResponse:
         """Получение статистики расходов клиента via ``POST /stats/v2/accounts/{user_id}/spendings``.
 
         Args:
             user_id: Идентификатор пользователя клиента
-            filter: Набор ограничений, по которым будут отфильтрованы данные статистики
             spending_types: Набор категорий расходов клиента
         """
-        return await self(
+        return await self.execute(
             StatsAccountsSpendings(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 date_from=date_from,
                 date_to=date_to,
-                filter=filter,
+                filter=StatsAccountsSpendingsFilter(category_ids=category_ids, item_ids=item_ids),
                 grouping=grouping,
                 spending_types=spending_types,
             )

@@ -23,6 +23,7 @@ from ..models.autostrategy import (
     GetAutostrategyBudgetResponse,
     GetAutostrategyCampaignInfoResponse,
     GetAutostrategyCampaignsFilter,
+    GetAutostrategyCampaignsFilterByUpdateTime,
     GetAutostrategyCampaignsOrderBy,
     GetAutostrategyStatResponse,
     StopAutostrategyCampaignResponse,
@@ -49,7 +50,7 @@ class AutostrategyFacade(FacadeBase):
             items: Список индентификаторов объявлений, которые будут продвигаться с помощью данной кампании. **Обязательно только для типа кампании `AS`**
             start_time: Время начала кампании. **Обязательно только для типа кампании `AS`**
         """
-        return await self(
+        return await self.execute(
             GetAutostrategyBudget(
                 campaign_type=campaign_type,
                 finish_time=finish_time,
@@ -85,7 +86,7 @@ class AutostrategyFacade(FacadeBase):
             start_time: Время начала кампании. **Обязательно только для типа кампании `AS`**
             title: Название кампании
         """
-        return await self(
+        return await self.execute(
             CreateAutostrategyCampaign(
                 budget=budget,
                 budget_bonus=budget_bonus,
@@ -125,7 +126,7 @@ class AutostrategyFacade(FacadeBase):
             title: Новое название кампании
             version: Текущая версия кампании
         """
-        return await self(
+        return await self.execute(
             EditAutostrategyCampaign(
                 budget=budget,
                 calc_id=calc_id,
@@ -147,7 +148,7 @@ class AutostrategyFacade(FacadeBase):
         Args:
             campaign_id: Идентификатор активной кампании
         """
-        return await self(GetAutostrategyCampaignInfo(campaign_id=campaign_id))
+        return await self.execute(GetAutostrategyCampaignInfo(campaign_id=campaign_id))
 
     async def stop_autostrategy_campaign(
         self, campaign_id: int, version: int
@@ -158,12 +159,14 @@ class AutostrategyFacade(FacadeBase):
             campaign_id: Идентификатор активной кампании
             version: Текущая версия кампании
         """
-        return await self(StopAutostrategyCampaign(campaign_id=campaign_id, version=version))
+        return await self.execute(
+            StopAutostrategyCampaign(campaign_id=campaign_id, version=version)
+        )
 
     async def get_autostrategy_campaigns(
         self,
         limit: int,
-        filter: GetAutostrategyCampaignsFilter | None = None,
+        by_update_time: GetAutostrategyCampaignsFilterByUpdateTime | None = None,
         offset: int | None = None,
         order_by: list[GetAutostrategyCampaignsOrderBy] | None = None,
         status_id: list[int] | None = None,
@@ -171,15 +174,19 @@ class AutostrategyFacade(FacadeBase):
         """Получение списка кампаний via ``POST /autostrategy/v1/campaigns``.
 
         Args:
-            filter: Фильтр
+            by_update_time: Фильтрация кампаний по дате обновления
             limit: Ограничение на выборку
             offset: Смещение выборки, по умолчанию равно 0
             order_by: Поля, по которым будет произведена сортировка, и тип сортировки
             status_id: Статусы кампании для выборки. Возможные статусы: `0` - Черновик, дата старта сегодня или раньше, денег на балансе нет `1` - Активная кампания `2` - Кампания приостановлена `3` - Кампания удалена `4` - Кампания остановлена `5` - Кампания запланирована, дата старта завтра или позже, на балансе есть деньги По умолчанию в выборку попадают кампании со статусами 0, 1, 2, 4, 5.
         """
-        return await self(
+        return await self.execute(
             GetAutostrategyCampaigns(
-                filter=filter, limit=limit, offset=offset, order_by=order_by, status_id=status_id
+                filter=GetAutostrategyCampaignsFilter(by_update_time=by_update_time),
+                limit=limit,
+                offset=offset,
+                order_by=order_by,
+                status_id=status_id,
             )
         )
 
@@ -189,4 +196,4 @@ class AutostrategyFacade(FacadeBase):
         Args:
             campaign_id: Идентификатор запущенной или уже прошедшей кампании
         """
-        return await self(GetAutostrategyStat(campaign_id=campaign_id))
+        return await self.execute(GetAutostrategyStat(campaign_id=campaign_id))

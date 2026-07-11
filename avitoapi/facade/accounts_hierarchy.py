@@ -28,19 +28,19 @@ class AccountsHierarchyFacade(FacadeBase):
 
     async def check_ah_user_v1(self) -> CheckAhUserV1Response:
         """Получение информации о статусе пользователя в ИА via ``GET /checkAhUserV1``."""
-        return await self(CheckAhUserV1())
+        return await self.execute(CheckAhUserV1())
 
     async def check_ah_user_v2(self) -> CheckAhUserV2Response:
         """Получение информации о статусе пользователя в ИА via ``GET /checkAhUserV2``."""
-        return await self(CheckAhUserV2())
+        return await self.execute(CheckAhUserV2())
 
     async def get_ah_info_v1(self) -> GetAhInfoV1Response:
         """Получение полной информации о статусе пользователя в ИА via ``GET /getAhInfoV1``."""
-        return await self(GetAhInfoV1())
+        return await self.execute(GetAhInfoV1())
 
     async def get_employees_v1(self) -> GetEmployeesResult:
         """Получение списка сотрудников иерархии via ``GET /getEmployeesV1``."""
-        return await self(GetEmployeesV1())
+        return await self.execute(GetEmployeesV1())
 
     async def link_items_v1(self, employee_id: int, item_ids: list[int]) -> None:
         """Прикрепление сотрудника иерархии к объявлениям, перезакрепление объявлений между сотрудниками иерархии via ``POST /linkItemsV1``.
@@ -49,7 +49,7 @@ class AccountsHierarchyFacade(FacadeBase):
             employee_id: Идентификатор сотрудника, к которому прилинкуются объявления
             item_ids: Список идентификаторов объявлений для линковки (max 50)
         """
-        return await self(LinkItemsV1(employee_id=employee_id, item_ids=item_ids))
+        return await self.execute(LinkItemsV1(employee_id=employee_id, item_ids=item_ids))
 
     async def list_company_phones_v1(self, cursor: str | None = None) -> CompanyPhonesResult:
         """Получение списка телефонов компании via ``GET /listCompanyPhonesV1``.
@@ -57,7 +57,7 @@ class AccountsHierarchyFacade(FacadeBase):
         Args:
             cursor: Курсор для получения следующей страницы. Передается из предыдущего ответа.
         """
-        return await self(ListCompanyPhonesV1(cursor=cursor))
+        return await self.execute(ListCompanyPhonesV1(cursor=cursor))
 
     async def list_items_by_employee_id_v1(
         self, category_id: int, employee_id: int, last_item_id: int | None = None
@@ -69,7 +69,7 @@ class AccountsHierarchyFacade(FacadeBase):
             employee_id: Идентификатор сотрудника, к которому прилинкованы объявления
             last_item_id: Идентификатор объявления для пагинации по курсору
         """
-        return await self(
+        return await self.execute(
             ListItemsByEmployeeIdV1(
                 category_id=category_id, employee_id=employee_id, last_item_id=last_item_id
             )

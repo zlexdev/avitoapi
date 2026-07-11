@@ -10,10 +10,10 @@ from ..methods.special_offers import (
     OpenApiStats,
     OpenApiTariffInfo,
 )
+from ..models._shared import OkResponse
 from ..models.special_offers import (
     OpenApiAvailableResponseBody,
     OpenApiMultiConfirmDispatches,
-    OpenApiMultiConfirmResponseBody,
     OpenApiMultiCreateResponseBody,
     OpenApiStatsResponseBody,
     OpenApiTariffInfoResponseBody,
@@ -30,19 +30,19 @@ class SpecialOffersFacade(FacadeBase):
         Args:
             item_ids: список id объявлений
         """
-        return await self(OpenApiAvailable(item_ids=item_ids))
+        return await self.execute(OpenApiAvailable(item_ids=item_ids))
 
     async def open_api_multi_confirm(
         self,
         dispatches: list[OpenApiMultiConfirmDispatches] | None = None,
         expires_at: int | None = None,
-    ) -> OpenApiMultiConfirmResponseBody:
+    ) -> OkResponse:
         """Отправка и оплата рассылки via ``POST /special-offers/v1/multiConfirm``.
 
         Args:
             expires_at: Дата окончания предложения
         """
-        return await self(OpenApiMultiConfirm(dispatches=dispatches, expires_at=expires_at))
+        return await self.execute(OpenApiMultiConfirm(dispatches=dispatches, expires_at=expires_at))
 
     async def open_api_multi_create(self, item_ids: list[int]) -> OpenApiMultiCreateResponseBody:
         """Создание рассылки via ``POST /special-offers/v1/multiCreate``.
@@ -50,7 +50,7 @@ class SpecialOffersFacade(FacadeBase):
         Args:
             item_ids: Список id выбранных для рассылки объявлений
         """
-        return await self(OpenApiMultiCreate(item_ids=item_ids))
+        return await self.execute(OpenApiMultiCreate(item_ids=item_ids))
 
     async def open_api_stats(
         self, date_time_from: str, date_time_to: str
@@ -61,8 +61,10 @@ class SpecialOffersFacade(FacadeBase):
             date_time_from: Время выборки От. RFC3339
             date_time_to: Время выборки До. RFC3339
         """
-        return await self(OpenApiStats(date_time_from=date_time_from, date_time_to=date_time_to))
+        return await self.execute(
+            OpenApiStats(date_time_from=date_time_from, date_time_to=date_time_to)
+        )
 
     async def open_api_tariff_info(self) -> OpenApiTariffInfoResponseBody:
         """Получение информации о тарифе via ``POST /special-offers/v1/tariffInfo``."""
-        return await self(OpenApiTariffInfo())
+        return await self.execute(OpenApiTariffInfo())

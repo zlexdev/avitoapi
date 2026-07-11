@@ -73,12 +73,12 @@ from ..enums.job import (
     VacancyUpdateV2WorkFormat,
     WorkerClassValue,
 )
+from ..models._shared import OkResponse
 from ..models.common import TZDatetime
 from ..models.job import (
     AgeCriteria,
     ApplicationsGetStatesResult,
     ApplicationsSetIsViewedApplies,
-    ApplicationsWebhookDeleteResponse,
     ApplyProcessing,
     Contacts,
     Coordinates,
@@ -197,7 +197,7 @@ class ApplicationsSetIsViewed(BaseMethod[SetApplicationsIsViewedResult]):
     applies: list[ApplicationsSetIsViewedApplies] | None = None
 
 
-class ApplicationsWebhookDelete(BaseMethod[ApplicationsWebhookDeleteResponse]):
+class ApplicationsWebhookDelete(BaseMethod[OkResponse]):
     """Отключение уведомлений по откликам (webhook) via ``DELETE /job/v1/applications/webhook``.
 
     See: https://developers.avito.ru/api-catalog/job/documentation

@@ -23,7 +23,7 @@ class RealtyReportsFacade(FacadeBase):
             item_id: Идентифиактор объявления
             price: Цена
         """
-        return await self(MarketPriceCorrespondenceV1(item_id=item_id, price=price))
+        return await self.execute(MarketPriceCorrespondenceV1(item_id=item_id, price=price))
 
     async def create_report_for_classified(self, item_id: int) -> CreateReportForClassifiedResponse:
         """Получение аналитического отчета по недвижимости via ``POST /realty/v1/report/create/{item_id}``.
@@ -31,4 +31,4 @@ class RealtyReportsFacade(FacadeBase):
         Args:
             item_id: Идентификатор объявления
         """
-        return await self(CreateReportForClassified(item_id=item_id))
+        return await self.execute(CreateReportForClassified(item_id=item_id))

@@ -11,6 +11,8 @@ from __future__ import annotations
 from datetime import datetime
 from decimal import Decimal
 
+from pydantic import model_validator
+
 from .messenger import BaseEvent
 
 
@@ -19,55 +21,28 @@ class BalanceEvent(BaseEvent, event_name="balance"):
 
     account_id: str
 
-    def __init__(self, *, account_id: str, **kwargs: object) -> None:
-        super().__init__()
-        self.account_id = account_id
-        for k, v in kwargs.items():
-            setattr(self, k, v)
-
 
 class BalanceChanged(BalanceEvent, event_name="balance.changed"):
     """The real-money balance changed (any direction)."""
 
     previous: Decimal
     current: Decimal
-    delta: Decimal
     occurred_at: datetime
+    # Derived, not caller-supplied — computed from previous/current below.
+    delta: Decimal = Decimal(0)
 
-    def __init__(
-        self,
-        *,
-        account_id: str,
-        previous: Decimal,
-        current: Decimal,
-        occurred_at: datetime,
-    ) -> None:
-        super().__init__(account_id=account_id)
-        self.previous = previous
-        self.current = current
-        self.delta = current - previous
-        self.occurred_at = occurred_at
+    @model_validator(mode="after")
+    def _compute_delta(self) -> BalanceChanged:
+        self.delta = self.current - self.previous
+        return self
 
 
 class BalanceToppedUp(BalanceEvent, event_name="balance.topped_up"):
     """An operation of type ``top_up`` (or equivalent) was observed."""
 
     amount: Decimal
-    operation_id: str | None
     occurred_at: datetime
-
-    def __init__(
-        self,
-        *,
-        account_id: str,
-        amount: Decimal,
-        occurred_at: datetime,
-        operation_id: str | None = None,
-    ) -> None:
-        super().__init__(account_id=account_id)
-        self.amount = amount
-        self.operation_id = operation_id
-        self.occurred_at = occurred_at
+    operation_id: str | None = None
 
 
 class BalanceLow(BalanceEvent, event_name="balance.low"):
@@ -77,39 +52,13 @@ class BalanceLow(BalanceEvent, event_name="balance.low"):
     threshold: Decimal
     occurred_at: datetime
 
-    def __init__(
-        self,
-        *,
-        account_id: str,
-        current: Decimal,
-        threshold: Decimal,
-        occurred_at: datetime,
-    ) -> None:
-        super().__init__(account_id=account_id)
-        self.current = current
-        self.threshold = threshold
-        self.occurred_at = occurred_at
-
 
 class BonusReceived(BalanceEvent, event_name="balance.bonus_received"):
     """A bonus credit landed on the account (separate sub-balance)."""
 
     amount: Decimal
-    reason: str | None
     occurred_at: datetime
-
-    def __init__(
-        self,
-        *,
-        account_id: str,
-        amount: Decimal,
-        occurred_at: datetime,
-        reason: str | None = None,
-    ) -> None:
-        super().__init__(account_id=account_id)
-        self.amount = amount
-        self.reason = reason
-        self.occurred_at = occurred_at
+    reason: str | None = None
 
 
 __all__ = [

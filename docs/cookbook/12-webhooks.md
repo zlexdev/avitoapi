@@ -145,26 +145,11 @@ catch it in your adapter and return 401.
 
 ## Idempotent webhooks — dedup
 
-Avito retries delivery on 5xx / timeout. Dedup by message id so a
-retry doesn't double-process:
-
-```python
-from datetime import timedelta
-from avitoapi.web.middlewares import WebhookIdempotencyMiddleware
-from avitoapi.storage.redis import RedisStorage
-
-storage = RedisStorage.from_url("redis://localhost:6379")
-dedup = WebhookIdempotencyMiddleware(storage, ttl=timedelta(hours=24))
-
-async def deduped_handler(body: dict) -> tuple[int, dict]:
-    chat_id = body["payload"]["value"]["chat_id"]
-    message_id = body["payload"]["value"]["id"]
-    if await dedup.seen(chat_id, message_id):
-        return (200, {"ok": True, "duplicate": True})
-    return await webhook.handle(body)
-```
-
-TTL bounds the dedup set — 24 h is fine for Avito's retry window.
+Avito retries delivery on 5xx / timeout. There is no separate webhook
+dedup middleware to wire up — `AvitoWebhookHandler` feeds every parsed
+event into `Dispatcher.feed_event`, which reserves `event.dedup_key`
+once and drops replays before any handler runs. A retried delivery is
+a no-op automatically; nothing extra to configure per webhook.
 
 ---
 
