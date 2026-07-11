@@ -51,8 +51,6 @@ class MessengerFacade(FacadeBase):
     ) -> PostSendMessageResponse:
         """Отправка сообщения via ``POST /messenger/v1/accounts/{user_id}/chats/{chat_id}/messages``.
 
-        See: https://developers.avito.ru/api-catalog/messenger/documentation
-
         Args:
             user_id: Идентификатор пользователя (клиента)
             chat_id: Идентификатор чата (клиента)
@@ -72,8 +70,6 @@ class MessengerFacade(FacadeBase):
     ) -> PostSendImageMessageResponse:
         """Отправка сообщения с изображением via ``POST /messenger/v1/accounts/{user_id}/chats/{chat_id}/messages/image``.
 
-        See: https://developers.avito.ru/api-catalog/messenger/documentation
-
         Args:
             user_id: Идентификатор пользователя (клиента)
             chat_id: Идентификатор чата (клиента)
@@ -92,8 +88,6 @@ class MessengerFacade(FacadeBase):
     ) -> DeleteMessageResponse:
         """Удаление сообщения via ``POST /messenger/v1/accounts/{user_id}/chats/{chat_id}/messages/{message_id}``.
 
-        See: https://developers.avito.ru/api-catalog/messenger/documentation
-
         Args:
             user_id: Идентификатор пользователя (клиента)
             chat_id: Идентификатор чата (клиента)
@@ -110,8 +104,6 @@ class MessengerFacade(FacadeBase):
     async def chat_read(self, chat_id: str, user_id: int | None = None) -> ChatReadResponse:
         """Прочитать чат via ``POST /messenger/v1/accounts/{user_id}/chats/{chat_id}/read``.
 
-        See: https://developers.avito.ru/api-catalog/messenger/documentation
-
         Args:
             user_id: Идентификатор пользователя (клиента)
             chat_id: Идентификатор чата (клиента)
@@ -124,8 +116,6 @@ class MessengerFacade(FacadeBase):
 
     async def get_voice_files(self, voice_ids: list[str], user_id: int | None = None) -> VoiceFiles:
         """Получение голосовых сообщений via ``GET /messenger/v1/accounts/{user_id}/getVoiceFiles``.
-
-        See: https://developers.avito.ru/api-catalog/messenger/documentation
 
         Args:
             user_id: Идентификатор пользователя (клиента)
@@ -142,8 +132,6 @@ class MessengerFacade(FacadeBase):
     ) -> UploadImagesResponse:
         """Загрузка изображений via ``POST /messenger/v1/accounts/{user_id}/uploadImages``.
 
-        See: https://developers.avito.ru/api-catalog/messenger/documentation
-
         Args:
             user_id: Идентификатор пользователя (клиента)
         """
@@ -155,16 +143,11 @@ class MessengerFacade(FacadeBase):
         )
 
     async def get_subscriptions(self) -> GetSubscriptionsResponse:
-        """Получение подписок (webhooks) via ``POST /messenger/v1/subscriptions``.
-
-        See: https://developers.avito.ru/api-catalog/messenger/documentation
-        """
+        """Получение подписок (webhooks) via ``POST /messenger/v1/subscriptions``."""
         return await self(GetSubscriptions())
 
     async def post_webhook_unsubscribe(self, url: str) -> PostWebhookUnsubscribeResponse:
         """Отключение уведомлений (webhooks) via ``POST /messenger/v1/webhook/unsubscribe``.
-
-        See: https://developers.avito.ru/api-catalog/messenger/documentation
 
         Args:
             url: Url на который будут отправляться нотификации
@@ -175,8 +158,6 @@ class MessengerFacade(FacadeBase):
         self, user_id: int | None = None, users: list[PostBlacklistV2Users] | None = None
     ) -> None:
         """Добавление пользователя в blacklist via ``POST /messenger/v2/accounts/{user_id}/blacklist``.
-
-        See: https://developers.avito.ru/api-catalog/messenger/documentation
 
         Args:
             user_id: Идентификатор пользователя (клиента)
@@ -192,13 +173,11 @@ class MessengerFacade(FacadeBase):
         user_id: int | None = None,
         item_ids: list[int] | None = None,
         unread_only: bool = False,
-        chat_types: list[GetChatsV2ChatTypes] = "u2i",
+        chat_types: list[GetChatsV2ChatTypes] | None = None,
         limit: int = 100,
         offset: int = 0,
     ) -> Chats:
         """Получение информации по чатам via ``GET /messenger/v2/accounts/{user_id}/chats``.
-
-        See: https://developers.avito.ru/api-catalog/messenger/documentation
 
         Args:
             user_id: Идентификатор пользователя (клиента)
@@ -222,8 +201,6 @@ class MessengerFacade(FacadeBase):
     async def get_chat_by_id_v2(self, chat_id: str, user_id: int | None = None) -> Chat:
         """Получение информации по чату via ``GET /messenger/v2/accounts/{user_id}/chats/{chat_id}``.
 
-        See: https://developers.avito.ru/api-catalog/messenger/documentation
-
         Args:
             user_id: Идентификатор пользователя (клиента)
             chat_id: Идентификатор чата (клиента)
@@ -238,8 +215,6 @@ class MessengerFacade(FacadeBase):
         self, chat_id: str, user_id: int | None = None, limit: int = 100, offset: int = 0
     ) -> Messages:
         """Получение списка сообщений V3 via ``GET /messenger/v3/accounts/{user_id}/chats/{chat_id}/messages/``.
-
-        See: https://developers.avito.ru/api-catalog/messenger/documentation
 
         Args:
             user_id: Идентификатор пользователя (клиента)
@@ -258,8 +233,6 @@ class MessengerFacade(FacadeBase):
 
     async def post_webhook_v3(self, url: str) -> PostWebhookV3Response:
         """Включение уведомлений V3 (webhooks) via ``POST /messenger/v3/webhook``.
-
-        See: https://developers.avito.ru/api-catalog/messenger/documentation
 
         Args:
             url: Url на который будут отправляться нотификации

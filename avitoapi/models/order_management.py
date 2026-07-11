@@ -490,10 +490,10 @@ class OrdersLabelsRequest(AvitoObject):
     See: https://developers.avito.ru/api-catalog/order-management/documentation
 
     Attributes:
-        order_i_ds: ID заказов в сервисе сделок (marketplace)
+        order_ids: ID заказов в сервисе сделок (marketplace)
     """
 
-    order_i_ds: list[str] = Field(..., min_length=1, max_length=50, alias="orderIDs")
+    order_ids: list[str] = Field(..., min_length=1, max_length=50, alias="orderIDs")
 
 
 class OrdersLabelsResponse(AvitoObject):

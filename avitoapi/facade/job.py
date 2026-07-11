@@ -149,8 +149,6 @@ class JobFacade(FacadeBase):
     ) -> GetApplicationsIdsResult:
         """Батчевая смена статуса откликов via ``POST /job/v1/applications/apply_actions``.
 
-        See: https://developers.avito.ru/api-catalog/job/documentation
-
         Args:
             action: Новый статус отклика, который нужно применить
             ids: Список идентификаторов откликов, к которым нужно применить статус
@@ -160,10 +158,7 @@ class JobFacade(FacadeBase):
     async def applications_get_by_ids(
         self, ids: list[str] | None = None
     ) -> GetApplicationsByIdsResult:
-        """Получение списка откликов via ``POST /job/v1/applications/get_by_ids``.
-
-        See: https://developers.avito.ru/api-catalog/job/documentation
-        """
+        """Получение списка откликов via ``POST /job/v1/applications/get_by_ids``."""
         return await self(ApplicationsGetByIds(ids=ids))
 
     async def applications_get_ids(
@@ -176,8 +171,6 @@ class JobFacade(FacadeBase):
         state: str | None = None,
     ) -> GetApplicationsIdsResult:
         """Получение идентификаторов откликов via ``GET /job/v1/applications/get_ids``.
-
-        See: https://developers.avito.ru/api-catalog/job/documentation
 
         Args:
             updated_at_from: Фильтр по дате обновления (от). Обязателен, если не указан updatedAtFrom. Формат YYYY-MM-DD.
@@ -199,18 +192,13 @@ class JobFacade(FacadeBase):
         )
 
     async def applications_get_states(self) -> ApplicationsGetStatesResult:
-        """Получение списка возможных статусов откликов via ``GET /job/v1/applications/get_states``.
-
-        See: https://developers.avito.ru/api-catalog/job/documentation
-        """
+        """Получение списка возможных статусов откликов via ``GET /job/v1/applications/get_states``."""
         return await self(ApplicationsGetStates())
 
     async def applications_set_is_viewed(
         self, applies: list[ApplicationsSetIsViewedApplies] | None = None
     ) -> SetApplicationsIsViewedResult:
         """Изменение статуса отклика via ``POST /job/v1/applications/set_is_viewed``.
-
-        See: https://developers.avito.ru/api-catalog/job/documentation
 
         Args:
             applies: Список откликов
@@ -222,24 +210,17 @@ class JobFacade(FacadeBase):
     ) -> ApplicationsWebhookDeleteResponse:
         """Отключение уведомлений по откликам (webhook) via ``DELETE /job/v1/applications/webhook``.
 
-        See: https://developers.avito.ru/api-catalog/job/documentation
-
         Args:
             url: URL, на который отправляются уведомления
         """
         return await self(ApplicationsWebhookDelete(url=url))
 
     async def applications_webhook_get(self) -> WebhookSubscribeRequestBody:
-        """Получение информации о подписках (webhook) via ``GET /job/v1/applications/webhook``.
-
-        See: https://developers.avito.ru/api-catalog/job/documentation
-        """
+        """Получение информации о подписках (webhook) via ``GET /job/v1/applications/webhook``."""
         return await self(ApplicationsWebhookGet())
 
     async def applications_webhook_put(self, secret: str, url: str) -> WebhookSubscribeRequestBody:
         """Включение уведомлений по откликам (webhook) via ``PUT /job/v1/applications/webhook``.
-
-        See: https://developers.avito.ru/api-catalog/job/documentation
 
         Args:
             secret: сгенерированный ключ
@@ -248,10 +229,7 @@ class JobFacade(FacadeBase):
         return await self(ApplicationsWebhookPut(secret=secret, url=url))
 
     async def applications_webhooks_get(self) -> WebhooksSubscriptionResultList:
-        """Получение списка подписок (webhook) via ``GET /job/v1/applications/webhooks``.
-
-        See: https://developers.avito.ru/api-catalog/job/documentation
-        """
+        """Получение списка подписок (webhook) via ``GET /job/v1/applications/webhooks``."""
         return await self(ApplicationsWebhooksGet())
 
     async def resumes_get(
@@ -288,8 +266,6 @@ class JobFacade(FacadeBase):
         medical_book: ResumesGetMedicalBook | None = None,
     ) -> ResumesGetResponse:
         """Поиск резюме via ``GET /job/v1/resumes/``.
-
-        See: https://developers.avito.ru/api-catalog/job/documentation
 
         Args:
             per_page: Количество записей на странице (положительное число от 1 до 100)
@@ -363,8 +339,6 @@ class JobFacade(FacadeBase):
     ) -> ResumeContacts:
         """Доступ к контактным данным соискателя via ``GET /job/v1/resumes/{resume_id}/contacts/``.
 
-        See: https://developers.avito.ru/api-catalog/job/documentation
-
         Args:
             resume_id: Идентификатор резюме
             employee_id: Идентификатор сотрудника компании в рамках иерархии аккаунтов. Используется для возможности списать контакт с лимита на покупку резюме для указанного сотрудника.
@@ -428,8 +402,6 @@ class JobFacade(FacadeBase):
         worker_class: list[WorkerClassValue] | None = None,
     ) -> VacancyCreateResult:
         """Публикация вакансии via ``POST /job/v1/vacancies``.
-
-        See: https://developers.avito.ru/api-catalog/job/documentation
 
         Args:
             address: Полный адрес объекта (строка длиной от 1 до 256 символов). Обязательное, если не указаны координаты.
@@ -515,8 +487,6 @@ class JobFacade(FacadeBase):
     async def vacancy_archive2(self, vacancy_id: int, employee_id: int | None = None) -> None:
         """Остановка публикации вакансии via ``PUT /job/v1/vacancies/archived/{vacancy_id}``.
 
-        See: https://developers.avito.ru/api-catalog/job/documentation
-
         Args:
             vacancy_id: Идентификатор вакансии на сайте
             employee_id: employee_id - Идентификатор сотрудника на Авито. Сотрудник может останавливать только закрепленные за ним вакансии в Avito Pro. Сотрудник должен быть в активен.
@@ -578,8 +548,6 @@ class JobFacade(FacadeBase):
         worker_class: list[WorkerClassValue] | None = None,
     ) -> None:
         """Редактирование вакансии via ``PUT /job/v1/vacancies/{vacancy_id}``.
-
-        See: https://developers.avito.ru/api-catalog/job/documentation
 
         Args:
             vacancy_id: Идентификатор вакансии на сайте
@@ -666,8 +634,6 @@ class JobFacade(FacadeBase):
     ) -> None:
         """Реактивация вакансии via ``POST /job/v1/vacancies/{vacancy_id}/prolongate``.
 
-        See: https://developers.avito.ru/api-catalog/job/documentation
-
         Args:
             vacancy_id: Идентификатор вакансии на сайте
             billing_type: Вариант платного размещения Возможные значения: - \"package\" - размещение объявления осуществляется только при наличии подходящего пакета размещения - \"packageOrSingle\" - при наличии подходящего пакета оплата размещения объявления произойдет с него; если нет подходящего пакета, но достаточно денег на кошельке Авито, то произойдет разовое размещение - \"single\" - только разовое размещение, произойдет при наличии достаточной суммы на кошельке Авито; если есть подходящий пакет размещения, он будет проигнорирован
@@ -687,8 +653,6 @@ class JobFacade(FacadeBase):
         photos: bool = False,
     ) -> Resume20:
         """Просмотр данных резюме via ``GET /job/v2/resumes/{resume_id}``.
-
-        See: https://developers.avito.ru/api-catalog/job/documentation
 
         Args:
             resume_id: Идентификатор резюме
@@ -710,8 +674,6 @@ class JobFacade(FacadeBase):
         schedule: str | None = None,
     ) -> SearchVacancyResponse:
         """Поиск вакансий via ``GET /job/v2/vacancies``.
-
-        See: https://developers.avito.ru/api-catalog/job/documentation
 
         Args:
             per_page: Количество записей на странице (положительное число от 10 до 100)
@@ -784,8 +746,6 @@ class JobFacade(FacadeBase):
         worker_class: list[WorkerClassValue] | None = None,
     ) -> None:
         """Публикация вакансии v2 via ``POST /job/v2/vacancies``.
-
-        See: https://developers.avito.ru/api-catalog/job/documentation
 
         Args:
             age_preferences: Блок \"в том числе для кандидатов\" (массив строк) Возможные значения элементов массива: - \"olderThan45\" - старше 45 лет; - \"olderThan14\" - от 14 лет; - \"olderThan16\" - от 16 лет; - \"withHealthProblems\" - с нарушениями здоровья; - \"students\" - для студентов; - \"pensioners\" - для пенсионеров.
@@ -871,8 +831,6 @@ class JobFacade(FacadeBase):
     ) -> Vacancies20:
         """Просмотр данных вакансий via ``POST /job/v2/vacancies/batch``.
 
-        See: https://developers.avito.ru/api-catalog/job/documentation
-
         Args:
             fields: Поля для основного тела ответа
             ids: Идентификаторы вакансий на сайте
@@ -881,10 +839,7 @@ class JobFacade(FacadeBase):
         return await self(VacanciesGetByIds(fields=fields, ids=ids, params=params))
 
     async def vacancy_get_statuses(self, ids: list[str] | None = None) -> VacancyStatusesResult:
-        """Получение статуса публикации вакансий V2 via ``POST /job/v2/vacancies/statuses``.
-
-        See: https://developers.avito.ru/api-catalog/job/documentation
-        """
+        """Получение статуса публикации вакансий V2 via ``POST /job/v2/vacancies/statuses``."""
         return await self(VacancyGetStatuses(ids=ids))
 
     async def vacancy_update_v2(
@@ -940,8 +895,6 @@ class JobFacade(FacadeBase):
         worker_class: list[WorkerClassValue] | None = None,
     ) -> None:
         """Редактирование вакансии v2 via ``POST /job/v2/vacancies/update/{vacancy_uuid}``.
-
-        See: https://developers.avito.ru/api-catalog/job/documentation
 
         Args:
             vacancy_uuid: UUID Идентификатор вакансии для V2 ручек (возвращается ручкой [Публикация вакансии V2](https://developers.avito.ru/api-catalog/job/documentation#operation/vacancyCreateV2) )
@@ -1029,8 +982,6 @@ class JobFacade(FacadeBase):
     ) -> Vacancy20:
         """Просмотр данных вакансии via ``GET /job/v2/vacancies/{vacancy_id}``.
 
-        See: https://developers.avito.ru/api-catalog/job/documentation
-
         Args:
             vacancy_id: Идентификатор вакансии
             fields: Поля основного тела ответа (можно указать несколько значений через запятую). По умолчанию отображаются все поля.
@@ -1043,24 +994,17 @@ class JobFacade(FacadeBase):
     ) -> None:
         """Автопродление вакансии v2 via ``PUT /job/v2/vacancies/{vacancy_uuid}/auto_renewal``.
 
-        See: https://developers.avito.ru/api-catalog/job/documentation
-
         Args:
             vacancy_uuid: UUID Идентификатор вакансии для V2 ручек (возвращается ручкой [Публикация вакансии V2](https://developers.avito.ru/api-catalog/job/documentation#operation/vacancyCreateV2) )
         """
         return await self(VacancyAutoRenewal2(vacancy_uuid=vacancy_uuid, auto_renewal=auto_renewal))
 
     async def get_dicts(self) -> None:
-        """Получение списка доступных словарей via ``GET /job/v2/vacancy/dict``.
-
-        See: https://developers.avito.ru/api-catalog/job/documentation
-        """
+        """Получение списка доступных словарей via ``GET /job/v2/vacancy/dict``."""
         return await self(GetDicts())
 
     async def get_dict_by_id(self, dictionary_id: str) -> None:
         """Получение доступных значений списка по ID словаря via ``GET /job/v2/vacancy/dict/{dictionary_id}``.
-
-        See: https://developers.avito.ru/api-catalog/job/documentation
 
         Args:
             dictionary_id: Идентификатор словаря

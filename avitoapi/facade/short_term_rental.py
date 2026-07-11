@@ -41,8 +41,6 @@ class ShortTermRentalFacade(FacadeBase):
     ) -> PutBookingsInfoResponse:
         """Заполнение календаря занятости объекта недвижимости via ``POST /core/v1/accounts/{user_id}/items/{item_id}/bookings``.
 
-        See: https://developers.avito.ru/api-catalog/str/documentation
-
         Args:
             user_id: Номер пользователя в Личном кабинете Авито
             item_id: Идентификатор объявления на сайте
@@ -68,8 +66,6 @@ class ShortTermRentalFacade(FacadeBase):
         with_unpaid: bool | None = None,
     ) -> GetRealtyBookingsResponse:
         """Получение списка броней по объявлению via ``GET /realty/v1/accounts/{user_id}/items/{item_id}/bookings``.
-
-        See: https://developers.avito.ru/api-catalog/str/documentation
 
         Args:
             user_id: Номер пользователя в Личном кабинете Авито
@@ -99,8 +95,6 @@ class ShortTermRentalFacade(FacadeBase):
     ) -> PostRealtyPricesResponse:
         """Актуализация параметров для выбранных периодов via ``POST /realty/v1/accounts/{user_id}/items/{item_id}/prices``.
 
-        See: https://developers.avito.ru/api-catalog/str/documentation
-
         Args:
             user_id: Номер пользователя в Личном кабинете Авито
             item_id: Идентификатор объявления на сайте
@@ -123,8 +117,6 @@ class ShortTermRentalFacade(FacadeBase):
         source: str | None = None,
     ) -> PutIntervalsResponse:
         """Заполнение доступности объекта недвижимости с квотами и без via ``POST /realty/v1/items/intervals``.
-
-        See: https://developers.avito.ru/api-catalog/str/documentation
 
         Args:
             skip_error: Флаг, с которым вместо ошибок(если ошибка произошла с айтемом) возвращается 200 статус, без ошибки
@@ -149,8 +141,6 @@ class ShortTermRentalFacade(FacadeBase):
         refund: PostBaseParamsRefund | None = None,
     ) -> None:
         """Установка базовых параметров via ``POST /realty/v1/items/{item_id}/base``.
-
-        See: https://developers.avito.ru/api-catalog/str/documentation
 
         Args:
             item_id: Идентификатор объявления на сайте

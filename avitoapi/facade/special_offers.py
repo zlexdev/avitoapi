@@ -27,8 +27,6 @@ class SpecialOffersFacade(FacadeBase):
     async def open_api_available(self, item_ids: list[int]) -> OpenApiAvailableResponseBody:
         """Получение информации об объявлениях via ``POST /special-offers/v1/available``.
 
-        See: https://developers.avito.ru/api-catalog/sbc-gateway/documentation
-
         Args:
             item_ids: список id объявлений
         """
@@ -41,8 +39,6 @@ class SpecialOffersFacade(FacadeBase):
     ) -> OpenApiMultiConfirmResponseBody:
         """Отправка и оплата рассылки via ``POST /special-offers/v1/multiConfirm``.
 
-        See: https://developers.avito.ru/api-catalog/sbc-gateway/documentation
-
         Args:
             expires_at: Дата окончания предложения
         """
@@ -50,8 +46,6 @@ class SpecialOffersFacade(FacadeBase):
 
     async def open_api_multi_create(self, item_ids: list[int]) -> OpenApiMultiCreateResponseBody:
         """Создание рассылки via ``POST /special-offers/v1/multiCreate``.
-
-        See: https://developers.avito.ru/api-catalog/sbc-gateway/documentation
 
         Args:
             item_ids: Список id выбранных для рассылки объявлений
@@ -63,8 +57,6 @@ class SpecialOffersFacade(FacadeBase):
     ) -> OpenApiStatsResponseBody:
         """Получение статистики via ``POST /special-offers/v1/stats``.
 
-        See: https://developers.avito.ru/api-catalog/sbc-gateway/documentation
-
         Args:
             date_time_from: Время выборки От. RFC3339
             date_time_to: Время выборки До. RFC3339
@@ -72,8 +64,5 @@ class SpecialOffersFacade(FacadeBase):
         return await self(OpenApiStats(date_time_from=date_time_from, date_time_to=date_time_to))
 
     async def open_api_tariff_info(self) -> OpenApiTariffInfoResponseBody:
-        """Получение информации о тарифе via ``POST /special-offers/v1/tariffInfo``.
-
-        See: https://developers.avito.ru/api-catalog/sbc-gateway/documentation
-        """
+        """Получение информации о тарифе via ``POST /special-offers/v1/tariffInfo``."""
         return await self(OpenApiTariffInfo())

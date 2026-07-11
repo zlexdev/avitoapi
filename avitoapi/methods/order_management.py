@@ -216,13 +216,13 @@ class GenerateLabels(BaseMethod[OrdersLabelsResponse]):
     See: https://developers.avito.ru/api-catalog/order-management/documentation
 
     Args:
-        order_i_ds: ID заказов в сервисе сделок (marketplace)
+        order_ids: ID заказов в сервисе сделок (marketplace)
     """
 
     __http_method__: ClassVar[str] = "POST"
     __endpoint__: ClassVar[str] = "/order-management/1/orders/labels"
 
-    order_i_ds: list[str] = Field(..., min_length=1, max_length=50, alias="orderIDs")
+    order_ids: list[str] = Field(..., min_length=1, max_length=50, alias="orderIDs")
 
 
 class GenerateLabelsExtended(BaseMethod[OrdersLabelsResponse]):
@@ -231,13 +231,13 @@ class GenerateLabelsExtended(BaseMethod[OrdersLabelsResponse]):
     See: https://developers.avito.ru/api-catalog/order-management/documentation
 
     Args:
-        order_i_ds: ID заказов в сервисе сделок (marketplace)
+        order_ids: ID заказов в сервисе сделок (marketplace)
     """
 
     __http_method__: ClassVar[str] = "POST"
     __endpoint__: ClassVar[str] = "/order-management/1/orders/labels/extended"
 
-    order_i_ds: list[str] = Field(..., min_length=1, max_length=50, alias="orderIDs")
+    order_ids: list[str] = Field(..., min_length=1, max_length=50, alias="orderIDs")
 
 
 class DownloadLabel(BaseMethod[bytes]):

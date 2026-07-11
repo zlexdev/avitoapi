@@ -24,8 +24,6 @@ class ReviewsFacade(FacadeBase):
     async def create_review_answer_v1(self, message: str, review_id: int) -> CreateAnswerResponse:
         """Отправка ответа на отзыв via ``POST /ratings/v1/answers``.
 
-        See: https://developers.avito.ru/api-catalog/ratings/documentation
-
         Args:
             message: Текст ответа на отзыв
             review_id: ID отзыва
@@ -35,24 +33,17 @@ class ReviewsFacade(FacadeBase):
     async def remove_review_answer_v1(self, answer_id: int) -> RemoveAnswerResponse:
         """Запрос на удаление ответа на отзыв via ``DELETE /ratings/v1/answers/{answer_id}``.
 
-        See: https://developers.avito.ru/api-catalog/ratings/documentation
-
         Args:
             answer_id: Идентификатор ответа на отзыв
         """
         return await self(RemoveReviewAnswerV1(answer_id=answer_id))
 
     async def get_ratings_info_v1(self) -> GetRatingInfoResponse:
-        """Получение информации о рейтинге пользователя via ``GET /ratings/v1/info``.
-
-        See: https://developers.avito.ru/api-catalog/ratings/documentation
-        """
+        """Получение информации о рейтинге пользователя via ``GET /ratings/v1/info``."""
         return await self(GetRatingsInfoV1())
 
     async def get_reviews_v1(self, offset: int, limit: int) -> GetReviewsResponse:
         """Получение списка активных отзывов на пользователя с пагинацией via ``GET /ratings/v1/reviews``.
-
-        See: https://developers.avito.ru/api-catalog/ratings/documentation
 
         Args:
             offset: Смещение

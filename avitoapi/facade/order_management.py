@@ -47,8 +47,6 @@ class OrderManagementFacade(FacadeBase):
     async def markings(self, markings: list[Marking] | None = None) -> SetOrderMarkingResponse:
         """Передача честного знака via ``POST /order-management/1/markings``.
 
-        See: https://developers.avito.ru/api-catalog/order-management/documentation
-
         Args:
             markings: Массив маркировок, которые требуется передать
         """
@@ -61,8 +59,6 @@ class OrderManagementFacade(FacadeBase):
         terminal_number: str | None = None,
     ) -> OrderAcceptReturnOrderResponse:
         """Выбор отделения отделения Почты России для получения возврата via ``POST /order-management/1/order/acceptReturnOrder``.
-
-        See: https://developers.avito.ru/api-catalog/order-management/documentation
 
         Args:
             order_id: ID заказа в Авито
@@ -83,8 +79,6 @@ class OrderManagementFacade(FacadeBase):
     ) -> OrderApplyTransitionResponse:
         """Изменение статуса заказа via ``POST /order-management/1/order/applyTransition``.
 
-        See: https://developers.avito.ru/api-catalog/order-management/documentation
-
         Args:
             order_id: ID заказа в Авито
             params: Дополнительные параметры доставки
@@ -96,8 +90,6 @@ class OrderManagementFacade(FacadeBase):
         self, confirm_code: str | None = None, parcel_id: str | None = None
     ) -> OrderCheckConfirmationCodeResponse:
         """Метод для проверки кода подтверждения заказа. via ``POST /order-management/1/order/checkConfirmationCode``.
-
-        See: https://developers.avito.ru/api-catalog/order-management/documentation
 
         Args:
             confirm_code: Код, который показал пользователь
@@ -114,8 +106,6 @@ class OrderManagementFacade(FacadeBase):
         details: str | None = None,
     ) -> OrderCncSetDetailsResponse:
         """Метод для подготовки заказа с самовывозом via ``POST /order-management/1/order/cncSetDetails``.
-
-        See: https://developers.avito.ru/api-catalog/order-management/documentation
 
         Args:
             address: Адрес получения товара
@@ -139,8 +129,6 @@ class OrderManagementFacade(FacadeBase):
     ) -> GetDeliveryCourierConfirmationResponse:
         """Метод получения доступных временных промежутков приезда курьера via ``GET /order-management/1/order/getCourierDeliveryRange``.
 
-        See: https://developers.avito.ru/api-catalog/order-management/documentation
-
         Args:
             order_id: ID заказа
             address: Адрес продавца
@@ -159,8 +147,6 @@ class OrderManagementFacade(FacadeBase):
         address_details: str | None = None,
     ) -> SetCourierDeliveryRangeResponse:
         """Метод выбора определённого доступного временного промежутка для приезда курьера via ``POST /order-management/1/order/setCourierDeliveryRange``.
-
-        See: https://developers.avito.ru/api-catalog/order-management/documentation
 
         Args:
             address: Адрес продавца
@@ -190,8 +176,6 @@ class OrderManagementFacade(FacadeBase):
     ) -> OrderSetTrackingNumberResponse:
         """Передача трек-номера via ``POST /order-management/1/order/setTrackingNumber``.
 
-        See: https://developers.avito.ru/api-catalog/order-management/documentation
-
         Args:
             order_id: ID заказа в Авито
             tracking_number: Трек-номер посылки
@@ -210,8 +194,6 @@ class OrderManagementFacade(FacadeBase):
     ) -> OrdersInfo:
         """Получение информации о заказах via ``GET /order-management/1/orders``.
 
-        See: https://developers.avito.ru/api-catalog/order-management/documentation
-
         Args:
             ids: Идентификаторы заказов
             statuses: Статус, по которому нужно получить заказы. - on_confirmation - ожидает подтверждения - ready_to_ship - ждет отправки - in_transit - в пути - canceled - отменный заказ - delivered - доставлен покупателю - on_return - на возврате - in_dispute - по заказу открыт спор - closed - заказ закрыт
@@ -223,30 +205,24 @@ class OrderManagementFacade(FacadeBase):
             GetOrders(ids=ids, statuses=statuses, date_from=date_from, page=page, limit=limit)
         )
 
-    async def generate_labels(self, order_i_ds: list[str]) -> OrdersLabelsResponse:
+    async def generate_labels(self, order_ids: list[str]) -> OrdersLabelsResponse:
         """Создать задачу на генерацию этикеток (до 100). via ``POST /order-management/1/orders/labels``.
 
-        See: https://developers.avito.ru/api-catalog/order-management/documentation
-
         Args:
-            order_i_ds: ID заказов в сервисе сделок (marketplace)
+            order_ids: ID заказов в сервисе сделок (marketplace)
         """
-        return await self(GenerateLabels(order_i_ds=order_i_ds))
+        return await self(GenerateLabels(order_ids=order_ids))
 
-    async def generate_labels_extended(self, order_i_ds: list[str]) -> OrdersLabelsResponse:
+    async def generate_labels_extended(self, order_ids: list[str]) -> OrdersLabelsResponse:
         """Создать задачу на генерацию этикеток (до 1000). via ``POST /order-management/1/orders/labels/extended``.
 
-        See: https://developers.avito.ru/api-catalog/order-management/documentation
-
         Args:
-            order_i_ds: ID заказов в сервисе сделок (marketplace)
+            order_ids: ID заказов в сервисе сделок (marketplace)
         """
-        return await self(GenerateLabelsExtended(order_i_ds=order_i_ds))
+        return await self(GenerateLabelsExtended(order_ids=order_ids))
 
     async def download_label(self, task_id: str) -> bytes:
         """Скачать сгенерированный PDF-файл (этикетку). via ``GET /order-management/1/orders/labels/{task_id}/download``.
-
-        See: https://developers.avito.ru/api-catalog/order-management/documentation
 
         Args:
             task_id: ID задачи на генерацию

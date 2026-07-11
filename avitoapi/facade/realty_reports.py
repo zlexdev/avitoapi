@@ -19,8 +19,6 @@ class RealtyReportsFacade(FacadeBase):
     ) -> MarketPriceCorrespondenceV1Response:
         """Получение соответствия переданной цены рыночной цене via ``GET /realty/v1/marketPriceCorrespondence/{item_id}/{price}``.
 
-        See: https://developers.avito.ru/api-catalog/realty-reports/documentation
-
         Args:
             item_id: Идентифиактор объявления
             price: Цена
@@ -29,8 +27,6 @@ class RealtyReportsFacade(FacadeBase):
 
     async def create_report_for_classified(self, item_id: int) -> CreateReportForClassifiedResponse:
         """Получение аналитического отчета по недвижимости via ``POST /realty/v1/report/create/{item_id}``.
-
-        See: https://developers.avito.ru/api-catalog/realty-reports/documentation
 
         Args:
             item_id: Идентификатор объявления

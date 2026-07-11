@@ -16,8 +16,6 @@ class AuctionFacade(FacadeBase):
     ) -> GetUserBidsResponse:
         """Получение информации о действующих и доступных ставках via ``GET /auction/1/bids``.
 
-        See: https://developers.avito.ru/api-catalog/auction/documentation
-
         Args:
             from_item_id: Идентификатор последнего объявления в предыдущей пачке (по умолчанию 0)
             batch_size: Кол-во объявлений в пачке (максимум 200)
@@ -25,8 +23,5 @@ class AuctionFacade(FacadeBase):
         return await self(GetUserBids(from_item_id=from_item_id, batch_size=batch_size))
 
     async def save_item_bids(self, items: list[SaveItemBidsItems]) -> None:
-        """Сохранение новых ставок via ``POST /auction/1/bids``.
-
-        See: https://developers.avito.ru/api-catalog/auction/documentation
-        """
+        """Сохранение новых ставок via ``POST /auction/1/bids``."""
         return await self(SaveItemBids(items=items))

@@ -199,7 +199,7 @@ class GetChatsV2(BaseMethod[Chats]):
     user_id: int
     item_ids: list[int] | None = None
     unread_only: bool = False
-    chat_types: list[GetChatsV2ChatTypes] = "u2i"
+    chat_types: list[GetChatsV2ChatTypes] | None = None
     limit: int = Field(100, ge=1, le=100)
     offset: int = Field(0, ge=0, le=1000)
 

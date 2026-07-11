@@ -63,12 +63,12 @@ class AnalyticsRequestFilter(AvitoObject):
     See: https://developers.avito.ru/api-catalog/item/documentation
 
     Attributes:
-        category_i_ds: Идентификаторы категорий [ Справочник идентификаторов категорий ](https://www.avito.st/s/openapi/catalog-categories.xml)
-        employee_i_ds: Идентификаторы сотрудников [ Метод получения идентификаторов сотрудников ](https://developers.avito.ru/api-catalog/accounts-hierarchy/documentation#operation/getEmployeesV1)
+        category_ids: Идентификаторы категорий [ Справочник идентификаторов категорий ](https://www.avito.st/s/openapi/catalog-categories.xml)
+        employee_ids: Идентификаторы сотрудников [ Метод получения идентификаторов сотрудников ](https://developers.avito.ru/api-catalog/accounts-hierarchy/documentation#operation/getEmployeesV1)
     """
 
-    category_i_ds: list[int] | None = Field(None, alias="categoryIDs")
-    employee_i_ds: list[int] | None = Field(None, alias="employeeIDs")
+    category_ids: list[int] | None = Field(None, alias="categoryIDs")
+    employee_ids: list[int] | None = Field(None, alias="employeeIDs")
 
 
 class AnalyticsRequestSort(AvitoObject):
@@ -400,14 +400,14 @@ class SpendingsRequestFilter(AvitoObject):
     See: https://developers.avito.ru/api-catalog/item/documentation
 
     Attributes:
-        category_i_ds: Идентификаторы категорий [ Справочник идентификаторов категорий ](https://www.avito.st/s/openapi/catalog-categories.xml)
-        item_i_ds: Идентификаторы объявлений
-        location_i_ds: Идентификаторы населенных пунктов
+        category_ids: Идентификаторы категорий [ Справочник идентификаторов категорий ](https://www.avito.st/s/openapi/catalog-categories.xml)
+        item_ids: Идентификаторы объявлений
+        location_ids: Идентификаторы населенных пунктов
     """
 
-    category_i_ds: list[int] | None = Field(None, alias="categoryIDs")
-    item_i_ds: list[int] | None = Field(None, alias="itemIDs")
-    location_i_ds: list[int] | None = Field(None, alias="locationIDs")
+    category_ids: list[int] | None = Field(None, alias="categoryIDs")
+    item_ids: list[int] | None = Field(None, alias="itemIDs")
+    location_ids: list[int] | None = Field(None, alias="locationIDs")
 
 
 class SpendingsResponse(AvitoObject):
@@ -812,12 +812,12 @@ class ItemAnalyticsFilter(AvitoObject):
     See: https://developers.avito.ru/api-catalog/item/documentation
 
     Attributes:
-        category_i_ds: Идентификаторы категорий [ Справочник идентификаторов категорий ](https://www.avito.st/s/openapi/catalog-categories.xml)
-        employee_i_ds: Идентификаторы сотрудников [ Метод получения идентификаторов сотрудников ](https://developers.avito.ru/api-catalog/accounts-hierarchy/documentation#operation/getEmployeesV1)
+        category_ids: Идентификаторы категорий [ Справочник идентификаторов категорий ](https://www.avito.st/s/openapi/catalog-categories.xml)
+        employee_ids: Идентификаторы сотрудников [ Метод получения идентификаторов сотрудников ](https://developers.avito.ru/api-catalog/accounts-hierarchy/documentation#operation/getEmployeesV1)
     """
 
-    category_i_ds: list[int] | None = Field(None, alias="categoryIDs")
-    employee_i_ds: list[int] | None = Field(None, alias="employeeIDs")
+    category_ids: list[int] | None = Field(None, alias="categoryIDs")
+    employee_ids: list[int] | None = Field(None, alias="employeeIDs")
 
 
 class ItemAnalyticsSort(AvitoObject):
@@ -840,14 +840,14 @@ class AccountSpendingsFilter(AvitoObject):
     See: https://developers.avito.ru/api-catalog/item/documentation
 
     Attributes:
-        category_i_ds: Идентификаторы категорий [ Справочник идентификаторов категорий ](https://www.avito.st/s/openapi/catalog-categories.xml)
-        item_i_ds: Идентификаторы объявлений
-        location_i_ds: Идентификаторы населенных пунктов
+        category_ids: Идентификаторы категорий [ Справочник идентификаторов категорий ](https://www.avito.st/s/openapi/catalog-categories.xml)
+        item_ids: Идентификаторы объявлений
+        location_ids: Идентификаторы населенных пунктов
     """
 
-    category_i_ds: list[int] | None = Field(None, alias="categoryIDs")
-    item_i_ds: list[int] | None = Field(None, alias="itemIDs")
-    location_i_ds: list[int] | None = Field(None, alias="locationIDs")
+    category_ids: list[int] | None = Field(None, alias="categoryIDs")
+    item_ids: list[int] | None = Field(None, alias="itemIDs")
+    location_ids: list[int] | None = Field(None, alias="locationIDs")
 
 
 class ErrorItemsVas(RootModel[list[int]]):
@@ -870,7 +870,7 @@ class StatisticsFields(RootModel[list[StatisticsFieldsRoot]]):
     """Root wrapper for a top-level ``list[StatisticsFieldsRoot]`` response."""
 
 
-class StatisticsItemIDs(RootModel[list[int]]):
+class StatisticsItemIds(RootModel[list[int]]):
     """Root wrapper for a top-level ``list[int]`` response."""
 
 

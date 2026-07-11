@@ -204,7 +204,13 @@ class ModelBuilder:
         resolved = self.resolve(schema, owner, name)
         annotation = resolved.annotation
         constraints = _constraint_kwargs(schema)
-        has_default = "default" in schema
+        # Array defaults are unreliable: Avito specs put a *scalar* default on an array param
+        # (``chat_types: {type: array, default: "u2i"}``) — emitting it verbatim yields
+        # ``list[T] = "u2i"`` (wrong type), and a real list default is a mutable default in a
+        # call signature anyway. Treat every optional array as ``list[T] | None = None``; the
+        # server applies its own default when the field is omitted.
+        is_array = schema.get("type") == "array"
+        has_default = "default" in schema and not is_array
 
         if required:
             head = "..."

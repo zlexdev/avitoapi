@@ -75,10 +75,7 @@ class AdsFacade(FacadeBase):
     """``Client`` mixin — Авито Реклама endpoints."""
 
     async def v1_get_account_by_id(self, account_id: int) -> V1GetAccountByIdOut:
-        """Получить аккаунт по ID via ``GET /ads/v1/account/{account_id}``.
-
-        See: https://developers.avito.ru/api-catalog/ads/documentation
-        """
+        """Получить аккаунт по ID via ``GET /ads/v1/account/{account_id}``."""
         return await self(V1GetAccountById(account_id=account_id))
 
     async def v1_create_account(
@@ -95,8 +92,6 @@ class AdsFacade(FacadeBase):
         kpp: str | None = None,
     ) -> V1CreateAccountOut:
         """Создать аккаунт в песочнице via ``POST /ads/v1/account/{account_id}``.
-
-        See: https://developers.avito.ru/api-catalog/ads/documentation
 
         Args:
             actual_address: Фактический адрес. Если не передан, используется legalAddress.
@@ -126,8 +121,6 @@ class AdsFacade(FacadeBase):
     async def v1_add_user(self, account_id: int, role: UserRole, user_id: int) -> EmptyResponse:
         """Добавить пользователя в аккаунт via ``POST /ads/v1/account/{account_id}/add-user``.
 
-        See: https://developers.avito.ru/api-catalog/ads/documentation
-
         Args:
             user_id: ID пользователя авито
         """
@@ -138,8 +131,6 @@ class AdsFacade(FacadeBase):
     ) -> V1GetAdvertisersListOut:
         """Получить список рекламодателей по фильтрам via ``POST /ads/v1/account/{account_id}/advertisers``.
 
-        See: https://developers.avito.ru/api-catalog/ads/documentation
-
         Args:
             limit: Количество записей на странице
             page: Номер страницы
@@ -149,18 +140,13 @@ class AdsFacade(FacadeBase):
         )
 
     async def v1_get_account_balance_by_id(self, account_id: int) -> V1GetAccountBalanceByIdOut:
-        """Получить баланс аккаунта по ID via ``GET /ads/v1/account/{account_id}/balance``.
-
-        See: https://developers.avito.ru/api-catalog/ads/documentation
-        """
+        """Получить баланс аккаунта по ID via ``GET /ads/v1/account/{account_id}/balance``."""
         return await self(V1GetAccountBalanceById(account_id=account_id))
 
     async def v1_transfer_bonus(
         self, account_id: int, account_id_to: int, amount: int
     ) -> EmptyResponse:
         """Перевод бонусов между аккаунтом родителем и дочерними на одном договоре via ``POST /ads/v1/account/{account_id}/bonus-transfer``.
-
-        See: https://developers.avito.ru/api-catalog/ads/documentation
 
         Args:
             account_id_to: accountId на который перевести
@@ -175,8 +161,6 @@ class AdsFacade(FacadeBase):
     ) -> V1GetCampaignsListOut:
         """Получить список кампаний по фильтрам via ``POST /ads/v1/account/{account_id}/campaigns``.
 
-        See: https://developers.avito.ru/api-catalog/ads/documentation
-
         Args:
             limit: Количество записей на странице
             page: Номер страницы
@@ -189,18 +173,16 @@ class AdsFacade(FacadeBase):
         self,
         account_id: int,
         campaign_id: int,
-        creative_i_ds: list[int],
+        creative_ids: list[int],
         date_from: date,
         date_to: date,
     ) -> V1GetCreativesStatisticOut:
         """Получить статистику по креативам кампании via ``POST /ads/v1/account/{account_id}/campaigns/{campaign_id}/creatives/stats``.
 
-        See: https://developers.avito.ru/api-catalog/ads/documentation
-
         Args:
             account_id: ID аккаунта
             campaign_id: ID кампании
-            creative_i_ds: Список ID креативов для получения статистики
+            creative_ids: Список ID креативов для получения статистики
             date_from: Дата начала периода в формате YYYY-MM-DD
             date_to: Дата окончания периода в формате YYYY-MM-DD
         """
@@ -208,7 +190,7 @@ class AdsFacade(FacadeBase):
             V1GetCreativesStatistic(
                 account_id=account_id,
                 campaign_id=campaign_id,
-                creative_i_ds=creative_i_ds,
+                creative_ids=creative_ids,
                 date_from=date_from,
                 date_to=date_to,
             )
@@ -220,18 +202,16 @@ class AdsFacade(FacadeBase):
         campaign_id: int,
         date_from: date,
         date_to: date,
-        group_i_ds: list[int],
+        group_ids: list[int],
     ) -> V1GetGroupsStatisticOut:
         """Получить статистику по группам кампании via ``POST /ads/v1/account/{account_id}/campaigns/{campaign_id}/groups/stats``.
-
-        See: https://developers.avito.ru/api-catalog/ads/documentation
 
         Args:
             account_id: ID аккаунта
             campaign_id: ID кампании
             date_from: Дата начала периода в формате YYYY-MM-DD
             date_to: Дата окончания периода в формате YYYY-MM-DD
-            group_i_ds: Список ID групп для получения статистики
+            group_ids: Список ID групп для получения статистики
         """
         return await self(
             V1GetGroupsStatistic(
@@ -239,7 +219,7 @@ class AdsFacade(FacadeBase):
                 campaign_id=campaign_id,
                 date_from=date_from,
                 date_to=date_to,
-                group_i_ds=group_i_ds,
+                group_ids=group_ids,
             )
         )
 
@@ -247,8 +227,6 @@ class AdsFacade(FacadeBase):
         self, account_id: int, campaign_id: int, date_from: date, date_to: date
     ) -> V1GetCampaignStatisticOut:
         """Получить статистику по кампании via ``POST /ads/v1/account/{account_id}/campaigns/{campaign_id}/stats``.
-
-        See: https://developers.avito.ru/api-catalog/ads/documentation
 
         Args:
             account_id: ID аккаунта
@@ -263,27 +241,19 @@ class AdsFacade(FacadeBase):
         )
 
     async def v1_get_child_accounts_list(self, account_id: int) -> V1GetChildAccountsListOut:
-        """Получить список дочерних аккаунтов via ``GET /ads/v1/account/{account_id}/children``.
-
-        See: https://developers.avito.ru/api-catalog/ads/documentation
-        """
+        """Получить список дочерних аккаунтов via ``GET /ads/v1/account/{account_id}/children``."""
         return await self(V1GetChildAccountsList(account_id=account_id))
 
     async def v1_get_child_accounts_with_balances_list(
         self, account_id: int
     ) -> V1GetChildAccountsWithBalancesListOut:
-        """Получить список дочерних аккаунтов с балансами via ``GET /ads/v1/account/{account_id}/children-with-balances``.
-
-        See: https://developers.avito.ru/api-catalog/ads/documentation
-        """
+        """Получить список дочерних аккаунтов с балансами via ``GET /ads/v1/account/{account_id}/children-with-balances``."""
         return await self(V1GetChildAccountsWithBalancesList(account_id=account_id))
 
     async def v1_get_contracts_list(
         self, account_id: int, filter: ContractsFilter, limit: int, page: int
     ) -> V1GetContractsListOut:
         """Получить список договоров по фильтрам via ``POST /ads/v1/account/{account_id}/contracts``.
-
-        See: https://developers.avito.ru/api-catalog/ads/documentation
 
         Args:
             limit: Количество записей на странице
@@ -307,8 +277,6 @@ class AdsFacade(FacadeBase):
         kpp: str | None = None,
     ) -> V1CreateAdvertiserOut:
         """Создать рекламодателя via ``POST /ads/v1/account/{account_id}/create-advertiser``.
-
-        See: https://developers.avito.ru/api-catalog/ads/documentation
 
         Args:
             actual_address: Фактический адрес. Если не передан, используется legalAddress. Пример корректного адреса: 127015, г. Москва, ул. Лесная, д. 7
@@ -352,8 +320,6 @@ class AdsFacade(FacadeBase):
     ) -> V1CreateContractOut:
         """Создание изначального договора via ``POST /ads/v1/account/{account_id}/create-contract``.
 
-        See: https://developers.avito.ru/api-catalog/ads/documentation
-
         Args:
             advertiser_id: Id рекламодателя. Указываем только рекламодателей которые не являются аккаунтом. Если рекламодатель и аккаунт одно и тоже ЮЛ, договор создавать не надо
             cid: CID внешнего договора, заполняется только для type = external.
@@ -386,8 +352,6 @@ class AdsFacade(FacadeBase):
     ) -> V1CreateNonPayerAccountOut:
         """Создание дочернего аккаунта на договоре родителя via ``POST /ads/v1/account/{account_id}/create-nonpayer-child-account``.
 
-        See: https://developers.avito.ru/api-catalog/ads/documentation
-
         Args:
             is_self_advertising_enabled: Флаг разрешающий рекламировать родительский аккаунт. Если вам надо рекламировать нового рекламодателя без возможности рекламировать родителя, выставлять - false
             short_name: Краткое название дочернего аккаунта, меньше 64 символов
@@ -405,8 +369,6 @@ class AdsFacade(FacadeBase):
     ) -> V1GetCreativesListOut:
         """Получить список креативов по фильтрам via ``POST /ads/v1/account/{account_id}/creatives``.
 
-        See: https://developers.avito.ru/api-catalog/ads/documentation
-
         Args:
             limit: Количество записей на странице
             page: Номер страницы
@@ -416,10 +378,7 @@ class AdsFacade(FacadeBase):
         )
 
     async def v1_delete_user(self, account_id: int, user_id: int | None = None) -> EmptyResponse:
-        """Удалить пользователя из аккаунта via ``DELETE /ads/v1/account/{account_id}/delete-user/{user_id}``.
-
-        See: https://developers.avito.ru/api-catalog/ads/documentation
-        """
+        """Удалить пользователя из аккаунта via ``DELETE /ads/v1/account/{account_id}/delete-user/{user_id}``."""
         return await self(
             V1DeleteUser(
                 account_id=account_id,
@@ -432,8 +391,6 @@ class AdsFacade(FacadeBase):
     ) -> EmptyResponse:
         """Перевод денег между аккаунтом родителем и дочерними на одном договоре via ``POST /ads/v1/account/{account_id}/funds-transfer``.
 
-        See: https://developers.avito.ru/api-catalog/ads/documentation
-
         Args:
             account_id_to: accountId на который перевести
             amount: Сумма перевода в рублях, не меньше 1 рубля
@@ -445,8 +402,6 @@ class AdsFacade(FacadeBase):
     async def v1_change_budget(self, account_id: int, group_id: int, budget: int) -> EmptyResponse:
         """Изменить бюджет группы via ``POST /ads/v1/account/{account_id}/group/{group_id}/change-budget``.
 
-        See: https://developers.avito.ru/api-catalog/ads/documentation
-
         Args:
             budget: Новый бюджет группы в рублях с НДС
         """
@@ -454,8 +409,6 @@ class AdsFacade(FacadeBase):
 
     async def v1_change_price(self, account_id: int, group_id: int, price: int) -> EmptyResponse:
         """Изменить цену группы via ``POST /ads/v1/account/{account_id}/group/{group_id}/change-price``.
-
-        See: https://developers.avito.ru/api-catalog/ads/documentation
 
         Args:
             price: Новая ставка группы в рублях с НДС
@@ -466,8 +419,6 @@ class AdsFacade(FacadeBase):
         self, account_id: int, filter: GroupsFilter, limit: int, page: int
     ) -> V1GetGroupsListOut:
         """Получить список групп по фильтрам via ``POST /ads/v1/account/{account_id}/groups``.
-
-        See: https://developers.avito.ru/api-catalog/ads/documentation
 
         Args:
             limit: Количество записей на странице
@@ -482,16 +433,11 @@ class AdsFacade(FacadeBase):
     ) -> EmptyResponse:
         """Изменить роль пользователя в аккаунте via ``POST /ads/v1/account/{account_id}/set-user-role``.
 
-        See: https://developers.avito.ru/api-catalog/ads/documentation
-
         Args:
             user_id: ID пользователя авито
         """
         return await self(V1SetUserRole(account_id=account_id, role=role, user_id=user_id))
 
     async def v1_get_users_list_by_account(self, account_id: int) -> V1GetUsersListByAccountOut:
-        """Получить список пользователей аккаунта via ``GET /ads/v1/account/{account_id}/users``.
-
-        See: https://developers.avito.ru/api-catalog/ads/documentation
-        """
+        """Получить список пользователей аккаунта via ``GET /ads/v1/account/{account_id}/users``."""
         return await self(V1GetUsersListByAccount(account_id=account_id))

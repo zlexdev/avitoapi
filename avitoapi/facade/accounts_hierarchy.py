@@ -27,37 +27,23 @@ class AccountsHierarchyFacade(FacadeBase):
     """``Client`` mixin — Иерархия Аккаунтов endpoints."""
 
     async def check_ah_user_v1(self) -> CheckAhUserV1Response:
-        """Получение информации о статусе пользователя в ИА via ``GET /checkAhUserV1``.
-
-        See: https://developers.avito.ru/api-catalog/accounts-hierarchy/documentation
-        """
+        """Получение информации о статусе пользователя в ИА via ``GET /checkAhUserV1``."""
         return await self(CheckAhUserV1())
 
     async def check_ah_user_v2(self) -> CheckAhUserV2Response:
-        """Получение информации о статусе пользователя в ИА via ``GET /checkAhUserV2``.
-
-        See: https://developers.avito.ru/api-catalog/accounts-hierarchy/documentation
-        """
+        """Получение информации о статусе пользователя в ИА via ``GET /checkAhUserV2``."""
         return await self(CheckAhUserV2())
 
     async def get_ah_info_v1(self) -> GetAhInfoV1Response:
-        """Получение полной информации о статусе пользователя в ИА via ``GET /getAhInfoV1``.
-
-        See: https://developers.avito.ru/api-catalog/accounts-hierarchy/documentation
-        """
+        """Получение полной информации о статусе пользователя в ИА via ``GET /getAhInfoV1``."""
         return await self(GetAhInfoV1())
 
     async def get_employees_v1(self) -> GetEmployeesResult:
-        """Получение списка сотрудников иерархии via ``GET /getEmployeesV1``.
-
-        See: https://developers.avito.ru/api-catalog/accounts-hierarchy/documentation
-        """
+        """Получение списка сотрудников иерархии via ``GET /getEmployeesV1``."""
         return await self(GetEmployeesV1())
 
     async def link_items_v1(self, employee_id: int, item_ids: list[int]) -> None:
         """Прикрепление сотрудника иерархии к объявлениям, перезакрепление объявлений между сотрудниками иерархии via ``POST /linkItemsV1``.
-
-        See: https://developers.avito.ru/api-catalog/accounts-hierarchy/documentation
 
         Args:
             employee_id: Идентификатор сотрудника, к которому прилинкуются объявления
@@ -68,8 +54,6 @@ class AccountsHierarchyFacade(FacadeBase):
     async def list_company_phones_v1(self, cursor: str | None = None) -> CompanyPhonesResult:
         """Получение списка телефонов компании via ``GET /listCompanyPhonesV1``.
 
-        See: https://developers.avito.ru/api-catalog/accounts-hierarchy/documentation
-
         Args:
             cursor: Курсор для получения следующей страницы. Передается из предыдущего ответа.
         """
@@ -79,8 +63,6 @@ class AccountsHierarchyFacade(FacadeBase):
         self, category_id: int, employee_id: int, last_item_id: int | None = None
     ) -> ListItemsByEmployeeIdResult:
         """Получение списка объявлений по сотруднику via ``POST /listItemsByEmployeeIdV1``.
-
-        See: https://developers.avito.ru/api-catalog/accounts-hierarchy/documentation
 
         Args:
             category_id: Идентификатор категории объявления

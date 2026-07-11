@@ -37,8 +37,6 @@ class CpaFacade(FacadeBase):
     async def get_call(self, call_id: int) -> None:
         """Запись звонка (deprecated) via ``GET /cpa/v1/call/{call_id}``.
 
-        See: https://developers.avito.ru/api-catalog/cpa/documentation
-
         Args:
             call_id: Идентификатор звонка
         """
@@ -46,8 +44,6 @@ class CpaFacade(FacadeBase):
 
     async def chat_by_action_id(self, action_id: int) -> ChatByActionIdResponse:
         """Чат via ``GET /cpa/v1/chatByActionId/{action_id}``.
-
-        See: https://developers.avito.ru/api-catalog/cpa/documentation
 
         Args:
             action_id: Идентификатор целевого действия
@@ -58,8 +54,6 @@ class CpaFacade(FacadeBase):
         self, date_time_from: str, limit: int, offset: int
     ) -> ChatsByTimeResponse:
         """Чаты по времени (deprecated) via ``POST /cpa/v1/chatsByTime``.
-
-        See: https://developers.avito.ru/api-catalog/cpa/documentation
 
         Args:
             date_time_from: Время с которого нужно начинать поиск чатов по date (строка в формате RFC3339)
@@ -73,8 +67,6 @@ class CpaFacade(FacadeBase):
     ) -> PostCreateComplaintResponse:
         """Создание жалобы для звонков via ``POST /cpa/v1/createComplaint``.
 
-        See: https://developers.avito.ru/api-catalog/cpa/documentation
-
         Args:
             call_id: Идентификатор звонка
             message: Текст жалобы
@@ -85,8 +77,6 @@ class CpaFacade(FacadeBase):
         self, action_id: int, message: str
     ) -> CreateComplaintByActionIdResponse:
         """Создание жалобы для звонков/чатов via ``POST /cpa/v1/createComplaintByActionId``.
-
-        See: https://developers.avito.ru/api-catalog/cpa/documentation
 
         Args:
             action_id: ID действия (action), по которому подаётся жалоба
@@ -99,8 +89,6 @@ class CpaFacade(FacadeBase):
     ) -> PhonesInfoFromChatsResponse:
         """Информация по номерам телефонов из целевых чатов via ``POST /cpa/v1/phonesInfoFromChats``.
 
-        See: https://developers.avito.ru/api-catalog/cpa/documentation
-
         Args:
             date_time_from: Время с которого начинается поиск
         """
@@ -109,16 +97,11 @@ class CpaFacade(FacadeBase):
         )
 
     async def balance_info_v2(self) -> BalanceInfoV2Response:
-        """Баланс (deprecated) via ``POST /cpa/v2/balanceInfo``.
-
-        See: https://developers.avito.ru/api-catalog/cpa/documentation
-        """
+        """Баланс (deprecated) via ``POST /cpa/v2/balanceInfo``."""
         return await self(BalanceInfoV2())
 
     async def get_call_by_id_v2(self, call_id: int) -> GetCallByIdV2Response:
         """Звонок via ``POST /cpa/v2/callById``.
-
-        See: https://developers.avito.ru/api-catalog/cpa/documentation
 
         Args:
             call_id: Идентификатор звонка
@@ -129,8 +112,6 @@ class CpaFacade(FacadeBase):
         self, date_time_from: str, limit: int, offset: int | None = None
     ) -> GetCallsByTimeV2Response:
         """Звонки по времени via ``POST /cpa/v2/callsByTime``.
-
-        See: https://developers.avito.ru/api-catalog/cpa/documentation
 
         Args:
             date_time_from: Время с которого нужно начинать поиск звонков по startTime (строка в формате RFC3339)
@@ -146,8 +127,6 @@ class CpaFacade(FacadeBase):
     ) -> ChatsByTime2Response:
         """Чаты по времени via ``POST /cpa/v2/chatsByTime``.
 
-        See: https://developers.avito.ru/api-catalog/cpa/documentation
-
         Args:
             date_time_from: Время с которого нужно начинать поиск чатов по date (строка в формате RFC3339)
             limit: Размер выборки (значение в поле должно быть не более 100)
@@ -156,8 +135,5 @@ class CpaFacade(FacadeBase):
         return await self(ChatsByTime2(date_time_from=date_time_from, limit=limit, offset=offset))
 
     async def balance_info_v3(self) -> BalanceInfoV3Response:
-        """Баланс via ``POST /cpa/v3/balanceInfo``.
-
-        See: https://developers.avito.ru/api-catalog/cpa/documentation
-        """
+        """Баланс via ``POST /cpa/v3/balanceInfo``."""
         return await self(BalanceInfoV3())

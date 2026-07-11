@@ -69,8 +69,6 @@ class AutotekaFacade(FacadeBase):
     ) -> CatalogsResolveResponseBodyAutoteka:
         """Получение актуальных параметров Автокаталога via ``POST /autoteka/v1/catalogs/resolve``.
 
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
-
         Args:
             fields_value_ids: Выбранные значения параметров
         """
@@ -80,8 +78,6 @@ class AutotekaFacade(FacadeBase):
         self, subscription_id: int, last_id: int | None = None, limit: int | None = None
     ) -> ResponseGetLeads:
         """Получение событий сервиса Сигнал via ``POST /autoteka/v1/get-leads/``.
-
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
 
         Args:
             last_id: Последний успешно-прочитанный id, указывается для постраничной выдачи
@@ -95,26 +91,19 @@ class AutotekaFacade(FacadeBase):
     ) -> ResponseMonitoringAddVinBucket:
         """Добавить идентификаторы (vin/frame) на мониторинг via ``POST /autoteka/v1/monitoring/bucket/add``.
 
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
-
         Args:
             data: Набор VIN-номеров для дальнейшего заполнения реестра
         """
         return await self(MonitoringBucketAdd(data=data))
 
     async def monitoring_bucket_delete(self) -> ResponseMonitoringDeleteVinBucket:
-        """Полная очистка списка мониторинга via ``POST /autoteka/v1/monitoring/bucket/delete``.
-
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
-        """
+        """Полная очистка списка мониторинга via ``POST /autoteka/v1/monitoring/bucket/delete``."""
         return await self(MonitoringBucketDelete())
 
     async def monitoring_bucket_remove(
         self, data: list[str] | None = None
     ) -> ResponseMonitoringRemoveVinBucket:
         """Удаление идентификаторов из мониторинга (vin/frame) via ``POST /autoteka/v1/monitoring/bucket/remove``.
-
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
 
         Args:
             data: Набор VIN-номеров для дальнейшего заполнения реестра
@@ -129,8 +118,6 @@ class AutotekaFacade(FacadeBase):
     ) -> ResponseMonitoringGetRegActions:
         """Получение событий мониторинга via ``GET /autoteka/v1/monitoring/get-reg-actions/``.
 
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
-
         Args:
             cursor: Позиция курсора
             operation_date_from: Отбирать рег. действия не раньше указанной даты (включительно)
@@ -143,16 +130,11 @@ class AutotekaFacade(FacadeBase):
         )
 
     async def get_active_package(self) -> GetActivePackageResponseBodyAutoteka:
-        """Запрос остатка отчётов пользователя via ``GET /autoteka/v1/packages/active_package``.
-
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
-        """
+        """Запрос остатка отчётов пользователя via ``GET /autoteka/v1/packages/active_package``."""
         return await self(GetActivePackage())
 
     async def post_preview_by_vin(self, vin: str) -> RequestPreviewResponseBodyAutoteka:
         """Превью по VIN или номеру кузова via ``POST /autoteka/v1/previews``.
-
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
 
         Args:
             vin: VIN или номер кузова запрашиваемого авто.
@@ -162,8 +144,6 @@ class AutotekaFacade(FacadeBase):
     async def get_preview(self, preview_id: int) -> GetPreviewResponseBodyAutoteka:
         """Получение превью по его ID via ``GET /autoteka/v1/previews/{preview_id}``.
 
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
-
         Args:
             preview_id: Идентификатор превью
         """
@@ -172,8 +152,6 @@ class AutotekaFacade(FacadeBase):
     async def post_report(self, preview_id: int) -> CreateReportResponseBodyAutoteka:
         """Отчет по превью via ``POST /autoteka/v1/reports``.
 
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
-
         Args:
             preview_id: Идентификатор превью.
         """
@@ -181,8 +159,6 @@ class AutotekaFacade(FacadeBase):
 
     async def post_report_by_vehicle_id(self, vehicle_id: str) -> CreateReportResponseBodyAutoteka:
         """Отчет по идентификатору авто (vin/frame) via ``POST /autoteka/v1/reports-by-vehicle-id``.
-
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
 
         Args:
             vehicle_id: Идентификатор запрашиваемого авто (vin/frame).
@@ -194,8 +170,6 @@ class AutotekaFacade(FacadeBase):
     ) -> GetReportsListResponseDataAutoteka:
         """Получение списка отчётов via ``GET /autoteka/v1/reports/list/``.
 
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
-
         Args:
             last_report_id: Идентификатор отчета для получения данных постранично.
             limit: Количество отчетов в результате
@@ -206,8 +180,6 @@ class AutotekaFacade(FacadeBase):
     async def get_report2(self, report_id: int) -> GetReportAsync:
         """Получение отчета по его ID via ``GET /autoteka/v1/reports/{report_id}``.
 
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
-
         Args:
             report_id: Идентификатор отчета.
         """
@@ -216,16 +188,11 @@ class AutotekaFacade(FacadeBase):
     async def post_preview_by_external_item(
         self, item_id: str | None = None, site: str | None = None
     ) -> RequestPreviewResponseBodyAutoteka:
-        """Превью по ID объявления другой площадки via ``POST /autoteka/v1/request-preview-by-external-item``.
-
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
-        """
+        """Превью по ID объявления другой площадки via ``POST /autoteka/v1/request-preview-by-external-item``."""
         return await self(PostPreviewByExternalItem(item_id=item_id, site=site))
 
     async def post_preview_by_item_id(self, item_id: int) -> RequestPreviewResponseBodyAutoteka:
         """Превью по ID объявления Авито via ``POST /autoteka/v1/request-preview-by-item-id``.
-
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
 
         Args:
             item_id: Идентификатор объявления на сайте.
@@ -237,8 +204,6 @@ class AutotekaFacade(FacadeBase):
     ) -> RequestPreviewResponseBodyAutoteka:
         """Превью по государственному номеру via ``POST /autoteka/v1/request-preview-by-regnumber``.
 
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
-
         Args:
             reg_number: государственный номер запрашиваемого авто.
         """
@@ -247,8 +212,6 @@ class AutotekaFacade(FacadeBase):
     async def scoring_by_vehicle_id(self, vehicle_id: str) -> CreateScoringResponseBodyAutoteka:
         """Скоринг рисков по идентификатору авто (vin/frame) via ``POST /autoteka/v1/scoring/by-vehicle-id``.
 
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
-
         Args:
             vehicle_id: Идентификатор запрашиваемого авто (vin/frame).
         """
@@ -256,8 +219,6 @@ class AutotekaFacade(FacadeBase):
 
     async def scoring_get_by_id(self, scoring_id: int) -> GetScoring:
         """Получение скоринга рисков по его ID via ``GET /autoteka/v1/scoring/{scoring_id}``.
-
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
 
         Args:
             scoring_id: Идентификатор скоринга.
@@ -269,8 +230,6 @@ class AutotekaFacade(FacadeBase):
     ) -> CreateSpecificationResponseBodyAutoteka:
         """Запрос характеристик по регистрационному номеру via ``POST /autoteka/v1/specifications/by-plate-number``.
 
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
-
         Args:
             plate_number: Регистрационный номер запрашиваемого авто.
         """
@@ -280,8 +239,6 @@ class AutotekaFacade(FacadeBase):
         self, vehicle_id: str
     ) -> CreateSpecificationResponseBodyAutoteka:
         """Запрос характеристик по идентификатору авто (vin/frame) via ``POST /autoteka/v1/specifications/by-vehicle-id``.
-
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
 
         Args:
             vehicle_id: Идентификатор запрашиваемого авто (vin/frame).
@@ -293,8 +250,6 @@ class AutotekaFacade(FacadeBase):
     ) -> GetSpecificationResponseBodyAutoteka:
         """Получение характеристик по ID запроса via ``GET /autoteka/v1/specifications/specification/{specification_id}``.
 
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
-
         Args:
             specification_id: Идентификатор спецификации
         """
@@ -302,8 +257,6 @@ class AutotekaFacade(FacadeBase):
 
     async def post_sync_create_report_by_reg_number(self, reg_number: str) -> GetReport:
         """Синхронное создание отчета по ГРЗ via ``POST /autoteka/v1/sync/create-by-regnumber``.
-
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
 
         Args:
             reg_number: государственный номер запрашиваемого авто.
@@ -313,8 +266,6 @@ class AutotekaFacade(FacadeBase):
     async def post_sync_create_report_by_vin(self, vin: str) -> GetReport:
         """Синхронное создание отчёта по VIN или номеру кузова via ``POST /autoteka/v1/sync/create-by-vin``.
 
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
-
         Args:
             vin: VIN или номер кузова запрашиваемого авто.
         """
@@ -323,8 +274,6 @@ class AutotekaFacade(FacadeBase):
     async def post_teaser(self, vehicle_id: str) -> CreateTeaserResponseBodyAutoteka:
         """Тизер по идентификатору авто (vin/frame) via ``POST /autoteka/v1/teasers``.
 
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
-
         Args:
             vehicle_id: Идентификатор запрашиваемого авто (vin/frame).
         """
@@ -332,8 +281,6 @@ class AutotekaFacade(FacadeBase):
 
     async def get_teaser(self, teaser_id: int) -> TeaserResponse:
         """Получение тизера по ID тизера via ``GET /autoteka/v1/teasers/{teaser_id}``.
-
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
 
         Args:
             teaser_id: Идентификатор тизера.
@@ -348,8 +295,6 @@ class AutotekaFacade(FacadeBase):
         vehicle_id: str | None = None,
     ) -> ValuationBySpecificationResponseBodyAutoteka:
         """Получение оценки по параметрам via ``POST /autoteka/v1/valuation/by-specification``.
-
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
 
         Args:
             mileage: Пробег в км
@@ -368,8 +313,6 @@ class AutotekaFacade(FacadeBase):
         self, grant_type: str, client_id: str, client_secret: str
     ) -> GetAccessTokenResponse:
         """Получение access token via ``POST /token``.
-
-        See: https://developers.avito.ru/api-catalog/autoteka/documentation
 
         Args:
             grant_type: Тип OAuth flow – строка client_credentials

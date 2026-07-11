@@ -37,7 +37,7 @@ class ApiTrxPromoOpenApiCancel(BaseMethod[CancelResponse]):
     __http_method__: ClassVar[str] = "POST"
     __endpoint__: ClassVar[str] = "/trx-promo/1/cancel"
 
-    item_i_ds: list[int] = Field(..., alias="itemIDs")
+    item_ids: list[int] = Field(..., alias="itemIDs")
 
 
 class ApiTrxPromoOpenApiCommissions(BaseMethod[CommissionResponse]):
@@ -49,4 +49,4 @@ class ApiTrxPromoOpenApiCommissions(BaseMethod[CommissionResponse]):
     __http_method__: ClassVar[str] = "GET"
     __endpoint__: ClassVar[str] = "/trx-promo/1/commissions"
 
-    item_i_ds: list[int] = Field(..., alias="itemIDs")
+    item_ids: list[int] = Field(..., alias="itemIDs")

@@ -10,20 +10,21 @@ from __future__ import annotations
 import keyword
 import re
 
-_WORD_BOUNDARY = re.compile(r"[^0-9a-zA-Z]+")
-_CAMEL_SPLIT = re.compile(r"(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])")
 _PLACEHOLDER = re.compile(r"\{(\w+)\}")
+#: One word token, tried left-to-right:
+#: 1. acronym, optionally pluralised — ``IDs`` / ``URLs`` / ``APIs`` stay one token
+#:    (``targetingParentStatusIDs`` → ``...status_ids``, not ``...i_ds``);
+#: 2. ``[A-Z][a-z0-9]*`` — a capitalised word keeps trailing digits, so ``V1`` / ``V2`` stay
+#:    whole (``V1GetAccountById`` → ``v1_get_...``, ``getChatsV2`` → ``get_chats_v2``);
+#: 3. a lowercase/digit run.
+#: Still: ``UserID`` → ``user_id``, ``HTTPServer`` → ``http_server``.
+_TOKEN = re.compile(r"[A-Z]{2,}s?(?![a-z])|[A-Z][a-z0-9]*|[a-z0-9]+")
 
 
 def _words(raw: str) -> list[str]:
-    """Split ``raw`` into lowercase word tokens across camelCase and separators."""
+    """Split ``raw`` into lowercase word tokens across camelCase, acronyms, and separators."""
 
-    parts: list[str] = []
-    for chunk in _WORD_BOUNDARY.split(raw):
-        if not chunk:
-            continue
-        parts.extend(p for p in _CAMEL_SPLIT.split(chunk) if p)
-    return [p.lower() for p in parts]
+    return [t.lower() for t in _TOKEN.findall(raw)]
 
 
 #: field names that would shadow an imported type in the class namespace (Pydantic then

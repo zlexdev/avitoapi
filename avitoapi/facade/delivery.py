@@ -112,8 +112,6 @@ class DeliveryFacade(FacadeBase):
     ) -> AnnouncementsSuccessResponse:
         """Отмена анонса в СД via ``POST /cancelAnnouncement``.
 
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-
         Args:
             reason: Причина омены анонса
         """
@@ -130,8 +128,6 @@ class DeliveryFacade(FacadeBase):
         sender: Any,
     ) -> AnnouncementsSuccessResponse:
         """Создание анонса в СД via ``POST /createAnnouncement``.
-
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
 
         Args:
             announcement_type: Тип анонса
@@ -165,8 +161,6 @@ class DeliveryFacade(FacadeBase):
         package: CreateParcelPackage | None = None,
     ) -> CreateParcelResponse:
         """Создание посылки via ``POST /createParcel``.
-
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
 
         Args:
             barcodes: Штрихкоды посылки.
@@ -202,8 +196,6 @@ class DeliveryFacade(FacadeBase):
     ) -> AnnouncementsSuccessResponse:
         """Создание анонса в Avito via ``POST /delivery-sandbox/announcements/create``.
 
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-
         Args:
             announcement_type: Тип анонса
             barcode: Уникальный ШК анонса. Должен быть напечатан на бумажных сопроводительных документах (акте приема передачи). Данный ШК необходимо использовать для установки соответствия принимаемой партии грузомест/посылок с анонсом переданным в электронном виде через инфообмен
@@ -227,8 +219,6 @@ class DeliveryFacade(FacadeBase):
     ) -> AnnouncementsSuccessResponse:
         """Трекинг анонсов via ``POST /delivery-sandbox/announcements/track``.
 
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-
         Args:
             date_: Дата события
         """
@@ -237,16 +227,11 @@ class DeliveryFacade(FacadeBase):
         )
 
     async def custom_area_schedule(self) -> AddTaskReply:
-        """Установка графика работы на определённый день via ``POST /delivery-sandbox/areas/custom-schedule``.
-
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-        """
+        """Установка графика работы на определённый день via ``POST /delivery-sandbox/areas/custom-schedule``."""
         return await self(CustomAreaSchedule())
 
     async def cancel_parcel(self, actor: CancelParcelActor, parcel_id: str) -> CancelParcelReply:
         """Отмена посылки via ``POST /delivery-sandbox/cancelParcel``.
-
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
 
         Args:
             actor: Кто отменяет посылку
@@ -256,28 +241,19 @@ class DeliveryFacade(FacadeBase):
     async def check_confirmation_code(
         self, confirm_code: str, parcel_id: str
     ) -> CheckConfirmationCodeReply:
-        """Проверка кода подтверждения via ``POST /delivery-sandbox/order/checkConfirmationCode``.
-
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-        """
+        """Проверка кода подтверждения via ``POST /delivery-sandbox/order/checkConfirmationCode``."""
         return await self(CheckConfirmationCode(confirm_code=confirm_code, parcel_id=parcel_id))
 
     async def set_order_properties(
         self, order_id: str, properties: DeliveryParams
     ) -> DeliverySetOrderPropertiesReply:
-        """Добавление / изменение параметров доставки посылки via ``POST /delivery-sandbox/order/properties``.
-
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-        """
+        """Добавление / изменение параметров доставки посылки via ``POST /delivery-sandbox/order/properties``."""
         return await self(SetOrderProperties(order_id=order_id, properties=properties))
 
     async def set_order_real_address(
         self, address: SetOrderRealAddressAddress, order_id: str
     ) -> DeliverySetOrderPropertiesReply:
-        """Фактический адрес приёма / возврата посылки via ``POST /delivery-sandbox/order/realAddress``.
-
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-        """
+        """Фактический адрес приёма / возврата посылки via ``POST /delivery-sandbox/order/realAddress``."""
         return await self(SetOrderRealAddress(address=address, order_id=order_id))
 
     async def tracking(
@@ -292,8 +268,6 @@ class DeliveryFacade(FacadeBase):
         options: TrackingOptions | None = None,
     ) -> DeliverySetStatusReply:
         """Трекинг via ``POST /delivery-sandbox/order/tracking``.
-
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
 
         Args:
             avito_event_type: Описание статусов см. [здесь](https://developers.avito.ru/api-catalog/delivery-sandbox/documentation#info/mehanika_raboty_trekinga).
@@ -317,16 +291,11 @@ class DeliveryFacade(FacadeBase):
         )
 
     async def prohibit_order_acceptance(self, order_id: str) -> ProhibitOrderAcceptanceReply:
-        """Запрет приёма посылки от отправителя via ``POST /delivery-sandbox/prohibitOrderAcceptance``.
-
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-        """
+        """Запрет приёма посылки от отправителя via ``POST /delivery-sandbox/prohibitOrderAcceptance``."""
         return await self(ProhibitOrderAcceptance(order_id=order_id))
 
     async def get_sorting_center(self, delivery_providers: str) -> SortingCenterGet:
         """Получить список сортировочных центров via ``GET /delivery-sandbox/sorting-center``.
-
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
 
         Args:
             delivery_providers: Список кодов служб доставки, сортировочные центры которых необходимо вернуть
@@ -334,16 +303,11 @@ class DeliveryFacade(FacadeBase):
         return await self(GetSortingCenter(delivery_providers=delivery_providers))
 
     async def add_sorting_center(self) -> AddTaskReply:
-        """Загрузить сортировочные центры via ``POST /delivery-sandbox/tariffs/sorting-center``.
-
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-        """
+        """Загрузить сортировочные центры via ``POST /delivery-sandbox/tariffs/sorting-center``."""
         return await self(AddSortingCenter())
 
     async def add_areas_sandbox(self, tariff_id: int) -> AddTariffReply:
         """Загрузить области доставки via ``POST /delivery-sandbox/tariffs/{tariff_id}/areas``.
-
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
 
         Args:
             tariff_id: id тарифа, к которому должны быть прикреплены добавляемые области
@@ -353,8 +317,6 @@ class DeliveryFacade(FacadeBase):
     async def add_tags_to_sorting_center(self, tariff_id: int) -> AddTaskReply:
         """Установка тэгов своим и/или чужим сортировочным центрам via ``POST /delivery-sandbox/tariffs/{tariff_id}/tagged-sorting-centers``.
 
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-
         Args:
             tariff_id: id своего тарифа, теги которого будут установлены для сортировочных центров
         """
@@ -363,8 +325,6 @@ class DeliveryFacade(FacadeBase):
     async def add_terminals_sandbox(self, tariff_id: int) -> AddTerminalsReply:
         """Загрузить терминалы via ``POST /delivery-sandbox/tariffs/{tariff_id}/terminals``.
 
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-
         Args:
             tariff_id: id тарифа, к которому должны быть прикреплены добавляемые терминалы
         """
@@ -372,8 +332,6 @@ class DeliveryFacade(FacadeBase):
 
     async def update_terms(self, tariff_id: int) -> UpdateTermsReply:
         """Обновить сроки по тарифу via ``POST /delivery-sandbox/tariffs/{tariff_id}/terms``.
-
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
 
         Args:
             tariff_id: id тарифа, к которому должны быть прикреплены добавляемые области
@@ -390,8 +348,6 @@ class DeliveryFacade(FacadeBase):
         tariff_type: AddTariffSandboxV2TariffType | None = None,
     ) -> AddTaskReply:
         """Загрузить новый тариф v2 via ``POST /delivery-sandbox/tariffsV2``.
-
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
 
         Args:
             delivery_provider_tariff_id: Идентификатор тарифного плана на стороне службы доставки - должен быть уникален.
@@ -413,18 +369,13 @@ class DeliveryFacade(FacadeBase):
         )
 
     async def get_task(self, task_id: int) -> GetTaskReply:
-        """Получение информации по задаче via ``GET /delivery-sandbox/tasks/{task_id}``.
-
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-        """
+        """Получение информации по задаче via ``GET /delivery-sandbox/tasks/{task_id}``."""
         return await self(GetTask(task_id=task_id))
 
     async def v1cancel_announcement(
         self, announcement_id: str, date_: TZDatetime, options: SandboxCancelAnnouncementOptions
     ) -> SandboxCancelAnnouncementReply:
         """Отправка события об отмене тестового анонса via ``POST /delivery-sandbox/v1/cancelAnnouncement``.
-
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
 
         Args:
             announcement_id: Уникальный идентификатор анонса UUID V4.
@@ -437,10 +388,7 @@ class DeliveryFacade(FacadeBase):
     async def v1_cancel_parcel(
         self, parcel_id: str, options: CancelSandboxParcelOptions | None = None
     ) -> CancelSandboxParcelReply:
-        """Отмена тестовой посылки via ``POST /delivery-sandbox/v1/cancelParcel``.
-
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-        """
+        """Отмена тестовой посылки via ``POST /delivery-sandbox/v1/cancelParcel``."""
         return await self(V1CancelParcel(options=options, parcel_id=parcel_id))
 
     async def v1change_parcel(
@@ -451,8 +399,6 @@ class DeliveryFacade(FacadeBase):
         options: ChangeParcelRequestOptions | None = None,
     ) -> ChangeParcelReply:
         """Создание заявки на изменение данных тестовой посылки via ``POST /delivery-sandbox/v1/changeParcel``.
-
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
 
         Args:
             parcel_id: Идентификатор посылки.
@@ -476,8 +422,6 @@ class DeliveryFacade(FacadeBase):
         sender: SandboxCreateAnnouncementParticipant,
     ) -> SandboxCreateAnnouncementReply:
         """Создание тестового анонса via ``POST /delivery-sandbox/v1/createAnnouncement``.
-
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
 
         Args:
             announcement_id: Уникальный идентификатор анонса UUID V4.
@@ -504,8 +448,6 @@ class DeliveryFacade(FacadeBase):
     ) -> SandboxGetAnnouncementEventReply:
         """Получение последнего события тестового анонса via ``POST /delivery-sandbox/v1/getAnnouncementEvent``.
 
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-
         Args:
             announcement_id: Уникальный идентификатор анонса UUID V4.
         """
@@ -514,25 +456,17 @@ class DeliveryFacade(FacadeBase):
     async def v1get_change_parcel_info(self, application_id: str) -> GetChangeParcelInfoReply:
         """Получение информации об изменении тестовой посылки via ``POST /delivery-sandbox/v1/getChangeParcelInfo``.
 
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-
         Args:
             application_id: Идентификатор заявки на изменение данных посылки
         """
         return await self(V1getChangeParcelInfo(application_id=application_id))
 
     async def v1get_parcel_info(self, parcel_id: str) -> GetSandboxParcelInfoReply:
-        """Получение информации о тестовой посылке via ``POST /delivery-sandbox/v1/getParcelInfo``.
-
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-        """
+        """Получение информации о тестовой посылке via ``POST /delivery-sandbox/v1/getParcelInfo``."""
         return await self(V1getParcelInfo(parcel_id=parcel_id))
 
     async def v1get_registered_parcel_id(self, order_id: str) -> GetRegisteredParcelIdReply:
-        """Получение ID зарегистрированной тестовой посылки via ``POST /delivery-sandbox/v1/getRegisteredParcelID``.
-
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-        """
+        """Получение ID зарегистрированной тестовой посылки via ``POST /delivery-sandbox/v1/getRegisteredParcelID``."""
         return await self(V1getRegisteredParcelId(order_id=order_id))
 
     async def create_sandbox_parcel_v22(
@@ -543,10 +477,7 @@ class DeliveryFacade(FacadeBase):
         sender: CreateSandboxParcelV22Sender | None = None,
         tags: list[str] | None = None,
     ) -> CreateParcelReply:
-        """Создание тестовой посылки via ``POST /delivery-sandbox/v2/createParcel``.
-
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-        """
+        """Создание тестовой посылки via ``POST /delivery-sandbox/v2/createParcel``."""
         return await self(
             CreateSandboxParcelV22(
                 items=items, options=options, receiver=receiver, sender=sender, tags=tags
@@ -562,8 +493,6 @@ class DeliveryFacade(FacadeBase):
     ) -> ChangeParcelResultReply:
         """Отправка результата исполнения заявки via ``POST /delivery/order/changeParcelResult``.
 
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
-
         Args:
             id: Идентификатор заявки на изменение посылки
             reason: Причина отклонения заявки (заполняется в случае отклонения).
@@ -575,8 +504,6 @@ class DeliveryFacade(FacadeBase):
         self, applications: list[ChangeParcelsApplication], type_: ChangeParcelsType
     ) -> ChangeParcelsResponse:
         """Обновление свойств посылок via ``POST /sandbox/changeParcels``.
-
-        See: https://developers.avito.ru/api-catalog/delivery-sandbox/documentation
 
         Args:
             type_: Тип заявки. Заявки могут быть следующих типов: - `changeReceiver` - обновить данные о получателе посылки. - `extendParcelStorage` - продлить срок хранения посылки. - `prohibitParcelReceive` - запретить выдачу посылки на ПВЗ вручения. - `prohibitParcelAcceptance` - запретить прием посылки на ПВЗ отправки (в разработке). - `changeReceiverTerminalOnConfirmed` - обновить ПВЗ вручения.

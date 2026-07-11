@@ -57,24 +57,17 @@ class AvitoPromoFacade(FacadeBase):
     async def agency_balance(self, amount: int, user_id: int) -> AgencyBalanceResponse:
         """Перевод средств на счёт клиента via ``POST /agency/balance``.
 
-        See: https://developers.avito.ru/api-catalog/avito-promo/documentation
-
         Args:
             amount: Сумма в рублях
         """
         return await self(AgencyBalance(amount=amount, user_id=user_id))
 
     async def agency_transactions(self) -> AgencyTransactionsResponse:
-        """Получение списка незавершённых транзакций via ``GET /agency/transactions``.
-
-        See: https://developers.avito.ru/api-catalog/avito-promo/documentation
-        """
+        """Получение списка незавершённых транзакций via ``GET /agency/transactions``."""
         return await self(AgencyTransactions())
 
     async def agency_transaction(self, transaction_id: str) -> AgencyTransactionResponse:
         """Получение информации о транзакции via ``GET /agency/transactions/{transaction_id}``.
-
-        See: https://developers.avito.ru/api-catalog/avito-promo/documentation
 
         Args:
             transaction_id: Идентификатор транзакции
@@ -85,8 +78,6 @@ class AvitoPromoFacade(FacadeBase):
         self, limit: int, extra: AgencyClientsExtra | None = None, offset: int | None = None
     ) -> AgencyClientsResponse:
         """Получение списка клиентов via ``POST /api/1/agency/clients``.
-
-        See: https://developers.avito.ru/api-catalog/avito-promo/documentation
 
         Args:
             extra: Настройка дополнительной информации о клиентах
@@ -99,34 +90,23 @@ class AvitoPromoFacade(FacadeBase):
     ) -> AgencyClientsTargetCreateResponse:
         """Создание задачи на проверку ИНН клиентов via ``POST /api/1/agency/clients/target/create``.
 
-        See: https://developers.avito.ru/api-catalog/avito-promo/documentation
-
         Args:
             inn_list: Список ИНН
         """
         return await self(AgencyClientsTargetCreate(inn_list=inn_list))
 
     async def agency_clients_target_result(self, task_id: int) -> AgencyClientsTargetResultResponse:
-        """Получение результата проверки ИНН клиентов via ``POST /api/1/agency/clients/target/result``.
-
-        See: https://developers.avito.ru/api-catalog/avito-promo/documentation
-        """
+        """Получение результата проверки ИНН клиентов via ``POST /api/1/agency/clients/target/result``."""
         return await self(AgencyClientsTargetResult(task_id=task_id))
 
     async def agency_finances_balance(self) -> AgencyFinancesBalanceResponse:
-        """Получение баланса агентства via ``GET /api/1/agency/finances/balance``.
-
-        See: https://developers.avito.ru/api-catalog/avito-promo/documentation
-        """
+        """Получение баланса агентства via ``GET /api/1/agency/finances/balance``."""
         return await self(AgencyFinancesBalance())
 
     async def agency_finances_transactions_history(
         self, date_from: TZDatetime, date_to: TZDatetime, limit: int, offset: int
     ) -> AgencyFinancesTransactionsHistoryResponse:
-        """Получение всех операций с балансом агентства via ``POST /api/1/agency/finances/transactionsHistory``.
-
-        See: https://developers.avito.ru/api-catalog/avito-promo/documentation
-        """
+        """Получение всех операций с балансом агентства via ``POST /api/1/agency/finances/transactionsHistory``."""
         return await self(
             AgencyFinancesTransactionsHistory(
                 date_from=date_from, date_to=date_to, limit=limit, offset=offset
@@ -136,26 +116,17 @@ class AvitoPromoFacade(FacadeBase):
     async def agency_users_invite_send(
         self, type_: LinkType, user_id: int
     ) -> AgencyUsersInviteSendResponse:
-        """Отправка приглашения нового клиента via ``POST /api/1/agency/users/invite/send``.
-
-        See: https://developers.avito.ru/api-catalog/avito-promo/documentation
-        """
+        """Отправка приглашения нового клиента via ``POST /api/1/agency/users/invite/send``."""
         return await self(AgencyUsersInviteSend(type_=type_, user_id=user_id))
 
     async def agency_users_invite_status(self, invite_id: int) -> AgencyUsersInviteStatusResponse:
-        """Получение статуса приглашения нового клиента via ``POST /api/1/agency/users/invite/status``.
-
-        See: https://developers.avito.ru/api-catalog/avito-promo/documentation
-        """
+        """Получение статуса приглашения нового клиента via ``POST /api/1/agency/users/invite/status``."""
         return await self(AgencyUsersInviteStatus(invite_id=invite_id))
 
     async def agency_users_verification_status(
         self, invite_id: int
     ) -> AgencyUsersVerificationStatusResponse:
-        """Получение статуса верификации нового клиента via ``POST /api/1/agency/users/verificationStatus``.
-
-        See: https://developers.avito.ru/api-catalog/avito-promo/documentation
-        """
+        """Получение статуса верификации нового клиента via ``POST /api/1/agency/users/verificationStatus``."""
         return await self(AgencyUsersVerificationStatus(invite_id=invite_id))
 
     async def stats_accounts_items(
@@ -171,8 +142,6 @@ class AvitoPromoFacade(FacadeBase):
         sort: StatsAccountsItemsSort | None = None,
     ) -> StatsAccountsItemsResponse:
         """Получение статистических показателей клиента via ``POST /stats/v2/accounts/{user_id}/items``.
-
-        See: https://developers.avito.ru/api-catalog/avito-promo/documentation
 
         Args:
             user_id: Идентификатор пользователя клиента
@@ -204,8 +173,6 @@ class AvitoPromoFacade(FacadeBase):
         filter: StatsAccountsSpendingsFilter | None = None,
     ) -> StatsAccountsSpendingsResponse:
         """Получение статистики расходов клиента via ``POST /stats/v2/accounts/{user_id}/spendings``.
-
-        See: https://developers.avito.ru/api-catalog/avito-promo/documentation
 
         Args:
             user_id: Идентификатор пользователя клиента

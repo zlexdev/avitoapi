@@ -53,8 +53,6 @@ class ItemsFacade(FacadeBase):
     async def vas_prices(self, item_ids: list[int], user_id: int | None = None) -> None:
         """Получение информации о стоимости услуг продвижения и доступных значках via ``POST /core/v1/accounts/{user_id}/vas/prices``.
 
-        See: https://developers.avito.ru/api-catalog/item/documentation
-
         Args:
             user_id: Номер пользователя в Личном кабинете Авито
             item_ids: Набор идентификаторов объявлений на сайте
@@ -74,8 +72,6 @@ class ItemsFacade(FacadeBase):
     ) -> CallsStatsResponse:
         """Получение статистики по звонкам via ``POST /core/v1/accounts/{user_id}/calls/stats/``.
 
-        See: https://developers.avito.ru/api-catalog/item/documentation
-
         Args:
             user_id: Номер пользователя в Личном кабинете Авито
             date_from: Начальная дата периода (YYYY-MM-DD)
@@ -94,8 +90,6 @@ class ItemsFacade(FacadeBase):
     async def get_item_info(self, item_id: int, user_id: int | None = None) -> ItemInfoAvito:
         """Получение информации по объявлению via ``GET /core/v1/accounts/{user_id}/items/{item_id}/``.
 
-        See: https://developers.avito.ru/api-catalog/item/documentation
-
         Args:
             user_id: Номер пользователя в Личном кабинете Авито
             item_id: Идентификатор объявления на сайте
@@ -110,8 +104,6 @@ class ItemsFacade(FacadeBase):
         self, item_id: int, vas_id: PutItemVasVasId, user_id: int | None = None
     ) -> VasApplyAvito:
         """Применение дополнительных услуг via ``PUT /core/v1/accounts/{user_id}/items/{item_id}/vas``.
-
-        See: https://developers.avito.ru/api-catalog/item/documentation
 
         Args:
             user_id: Номер пользователя в Личном кабинете Авито
@@ -134,8 +126,6 @@ class ItemsFacade(FacadeBase):
     ) -> MethodPaginator[ItemsInfoWithCategoryAvito]:
         """Получение информации по объявлениям via ``GET /core/v1/items``.
 
-        See: https://developers.avito.ru/api-catalog/item/documentation
-
         Args:
             status: Статус объявления на сайте (можно указать несколько значений через запятую)
             updated_at_from: Фильтр больше либо равно по дате обновления/редактирования объявления в формате YYYY-MM-DD
@@ -145,8 +135,6 @@ class ItemsFacade(FacadeBase):
 
     async def update_price(self, item_id: int, price: int) -> UpdatePriceResponse:
         """Обновление цены объявления via ``POST /core/v1/items/{item_id}/update_price``.
-
-        See: https://developers.avito.ru/api-catalog/item/documentation
 
         Args:
             item_id: Идентификатор объявления на сайте
@@ -158,8 +146,6 @@ class ItemsFacade(FacadeBase):
         self, item_id: int, package_id: PutItemVasPackageV2PackageId, user_id: int | None = None
     ) -> VasAmountAvito:
         """Применение пакета дополнительных услуг via ``PUT /core/v2/accounts/{user_id}/items/{item_id}/vas_packages``.
-
-        See: https://developers.avito.ru/api-catalog/item/documentation
 
         Args:
             user_id: Номер пользователя в Личном кабинете Авито
@@ -179,8 +165,6 @@ class ItemsFacade(FacadeBase):
     ) -> ApplyVasResponse:
         """Применение услуг продвижения via ``PUT /core/v2/items/{item_id}/vas/``.
 
-        See: https://developers.avito.ru/api-catalog/item/documentation
-
         Args:
             item_id: Идентификатор объявления на сайте
             slugs: Список идентификаторов услуг
@@ -198,8 +182,6 @@ class ItemsFacade(FacadeBase):
         period_grouping: StatisticsPeriodGrouping | None = None,
     ) -> StatisticsResponse:
         """Получение статистики по списку объявлений via ``POST /stats/v1/accounts/{user_id}/items``.
-
-        See: https://developers.avito.ru/api-catalog/item/documentation
 
         Args:
             user_id: Идентификатор пользователя (клиента)
@@ -228,8 +210,6 @@ class ItemsFacade(FacadeBase):
         sort: ItemAnalyticsSort | None = None,
     ) -> AnalyticsResponse:
         """Получение статистических показателей по профилю via ``POST /stats/v2/accounts/{user_id}/items``.
-
-        See: https://developers.avito.ru/api-catalog/item/documentation
 
         Args:
             user_id: Идентификатор пользователя (клиента)
@@ -265,8 +245,6 @@ class ItemsFacade(FacadeBase):
         filter: AccountSpendingsFilter | None = None,
     ) -> SpendingsResponse:
         """Получение статистики расходов профиля via ``POST /stats/v2/accounts/{user_id}/spendings``.
-
-        See: https://developers.avito.ru/api-catalog/item/documentation
 
         Args:
             user_id: Идентификатор пользователя (клиента)

@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import TYPE_CHECKING
 
 from pydantic import Field, RootModel
 
@@ -39,31 +38,7 @@ from ..enums.ads import (
     V1GetHtmlOutStatus,
 )
 from ._base import AvitoObject
-from ._helpers import _resolve_user_id
 from .common import TZDatetime
-
-if TYPE_CHECKING:
-    from ..methods.ads import (
-        V1AddUser,
-        V1CreateAccount,
-        V1CreateAdvertiser,
-        V1CreateContract,
-        V1CreateNonPayerAccount,
-        V1DeleteUser,
-        V1GetAccountBalanceById,
-        V1GetAccountById,
-        V1GetAdvertisersList,
-        V1GetCampaignsList,
-        V1GetChildAccountsList,
-        V1GetChildAccountsWithBalancesList,
-        V1GetContractsList,
-        V1GetCreativesList,
-        V1GetGroupsList,
-        V1GetUsersListByAccount,
-        V1SetUserRole,
-        V1TransferBonus,
-        V1TransferFunds,
-    )
 
 
 class Account(AvitoObject):
@@ -212,20 +187,20 @@ class CampaignsFilter(AvitoObject):
     See: https://developers.avito.ru/api-catalog/ads/documentation
 
     Attributes:
-        additional_agreement_i_ds: Список ID дополнительных соглашений
+        additional_agreement_ids: Список ID дополнительных соглашений
         advertisers: Список ID рекламодателей
         campaign_types: Список типов кампаний
-        contract_i_ds: Список ID договоров
+        contract_ids: Список ID договоров
         ids: Список ID кампаний
         managers: Список ID менеджеров
         payment_models: Список моделей оплаты
         statuses: Список статусов кампаний
     """
 
-    additional_agreement_i_ds: list[int] | None = Field(None, alias="additionalAgreementIDs")
+    additional_agreement_ids: list[int] | None = Field(None, alias="additionalAgreementIDs")
     advertisers: list[int] | None = None
     campaign_types: list[CampaignType] | None = Field(None, alias="campaignTypes")
-    contract_i_ds: list[int] | None = Field(None, alias="contractIDs")
+    contract_ids: list[int] | None = Field(None, alias="contractIDs")
     created_at: DateRange | None = Field(None, alias="createdAt")
     ids: list[int] | None = None
     managers: list[int] | None = None
@@ -379,9 +354,9 @@ class CreativesFilter(AvitoObject):
 
     Attributes:
         advertisers: Список ID рекламодателей
-        campaign_i_ds: Список ID кампаний
+        campaign_ids: Список ID кампаний
         campaign_types: Список типов кампаний
-        group_i_ds: Список ID групп
+        group_ids: Список ID групп
         ids: Список ID креативов
         managers: Список ID менеджеров
         payment_models: Список моделей оплаты
@@ -389,9 +364,9 @@ class CreativesFilter(AvitoObject):
     """
 
     advertisers: list[int] | None = None
-    campaign_i_ds: list[int] | None = Field(None, alias="campaignIDs")
+    campaign_ids: list[int] | None = Field(None, alias="campaignIDs")
     campaign_types: list[CampaignType] | None = Field(None, alias="campaignTypes")
-    group_i_ds: list[int] | None = Field(None, alias="groupIDs")
+    group_ids: list[int] | None = Field(None, alias="groupIDs")
     ids: list[int] | None = None
     managers: list[int] | None = None
     payment_models: list[CampaignPaymentModel] | None = Field(None, alias="paymentModels")
@@ -542,14 +517,14 @@ class Group(AvitoObject):
         price: Цена в рублях с НДС
         price_kopeks: Цена в копейках с НДС
         start_asap: Запускать как можно скорее
-        targeting_age_i_ds: ID возрастных сегментов
-        targeting_audience_i_ds: ID аудиторий
-        targeting_family_status_i_ds: ID семейного статуса
-        targeting_gender_i_ds: ID пола
-        targeting_income_i_ds: ID доходных сегментов
-        targeting_interest_i_ds: ID интересов
-        targeting_location_i_ds: ID локаций
-        targeting_parent_status_i_ds: ID родительского статуса
+        targeting_age_ids: ID возрастных сегментов
+        targeting_audience_ids: ID аудиторий
+        targeting_family_status_ids: ID семейного статуса
+        targeting_gender_ids: ID пола
+        targeting_income_ids: ID доходных сегментов
+        targeting_interest_ids: ID интересов
+        targeting_location_ids: ID локаций
+        targeting_parent_status_ids: ID родительского статуса
         updated_at: Дата обновления группы
         user_id: ID пользователя, создавшего группу
     """
@@ -584,14 +559,14 @@ class Group(AvitoObject):
     schedule_type: ScheduleType | None = Field(None, alias="scheduleType")
     start_asap: bool = Field(..., alias="startASAP")
     status: GroupsStatus | None = None
-    targeting_age_i_ds: list[int] | None = Field(None, alias="targetingAgeIDs")
-    targeting_audience_i_ds: list[str] | None = Field(None, alias="targetingAudienceIDs")
-    targeting_family_status_i_ds: list[int] | None = Field(None, alias="targetingFamilyStatusIDs")
-    targeting_gender_i_ds: list[int] | None = Field(None, alias="targetingGenderIDs")
-    targeting_income_i_ds: list[int] | None = Field(None, alias="targetingIncomeIDs")
-    targeting_interest_i_ds: list[str] | None = Field(None, alias="targetingInterestIDs")
-    targeting_location_i_ds: list[int] | None = Field(None, alias="targetingLocationIDs")
-    targeting_parent_status_i_ds: list[int] | None = Field(None, alias="targetingParentStatusIDs")
+    targeting_age_ids: list[int] | None = Field(None, alias="targetingAgeIDs")
+    targeting_audience_ids: list[str] | None = Field(None, alias="targetingAudienceIDs")
+    targeting_family_status_ids: list[int] | None = Field(None, alias="targetingFamilyStatusIDs")
+    targeting_gender_ids: list[int] | None = Field(None, alias="targetingGenderIDs")
+    targeting_income_ids: list[int] | None = Field(None, alias="targetingIncomeIDs")
+    targeting_interest_ids: list[str] | None = Field(None, alias="targetingInterestIDs")
+    targeting_location_ids: list[int] | None = Field(None, alias="targetingLocationIDs")
+    targeting_parent_status_ids: list[int] | None = Field(None, alias="targetingParentStatusIDs")
     updated_at: TZDatetime | None = Field(None, alias="updatedAt")
     user_id: int | None = Field(None, alias="userID")
 
@@ -620,14 +595,14 @@ class GroupReferenceData(AvitoObject):
     banner_format: list[EnumObject] = Field(..., alias="bannerFormat")
     budget_thresholds: list[ThresholdItem] = Field(..., alias="budgetThresholds")
     price_thresholds: list[ThresholdItem] = Field(..., alias="priceThresholds")
-    targeting_age_i_ds: list[IdNameObject] = Field(..., alias="targetingAgeIDs")
-    targeting_audience_i_ds: list[StringIdNameObject] = Field(..., alias="targetingAudienceIDs")
-    targeting_family_status_i_ds: list[IdNameObject] = Field(..., alias="targetingFamilyStatusIDs")
-    targeting_gender_i_ds: list[IdNameObject] = Field(..., alias="targetingGenderIDs")
-    targeting_income_i_ds: list[IdNameObject] = Field(..., alias="targetingIncomeIDs")
-    targeting_interest_i_ds: list[EnumObject] = Field(..., alias="targetingInterestIDs")
-    targeting_location_i_ds: list[IdNameObject] = Field(..., alias="targetingLocationIDs")
-    targeting_parent_status_i_ds: list[IdNameObject] = Field(..., alias="targetingParentStatusIDs")
+    targeting_age_ids: list[IdNameObject] = Field(..., alias="targetingAgeIDs")
+    targeting_audience_ids: list[StringIdNameObject] = Field(..., alias="targetingAudienceIDs")
+    targeting_family_status_ids: list[IdNameObject] = Field(..., alias="targetingFamilyStatusIDs")
+    targeting_gender_ids: list[IdNameObject] = Field(..., alias="targetingGenderIDs")
+    targeting_income_ids: list[IdNameObject] = Field(..., alias="targetingIncomeIDs")
+    targeting_interest_ids: list[EnumObject] = Field(..., alias="targetingInterestIDs")
+    targeting_location_ids: list[IdNameObject] = Field(..., alias="targetingLocationIDs")
+    targeting_parent_status_ids: list[IdNameObject] = Field(..., alias="targetingParentStatusIDs")
 
 
 class GroupStatistic(AvitoObject):
@@ -654,7 +629,7 @@ class GroupsFilter(AvitoObject):
 
     Attributes:
         advertisers: Список ID рекламодателей
-        campaign_i_ds: Список ID кампаний
+        campaign_ids: Список ID кампаний
         ids: Список ID групп
         managers: Список ID менеджеров
         paces: Скорости показов
@@ -663,7 +638,7 @@ class GroupsFilter(AvitoObject):
     """
 
     advertisers: list[int] | None = None
-    campaign_i_ds: list[int] | None = Field(None, alias="campaignIDs")
+    campaign_ids: list[int] | None = Field(None, alias="campaignIDs")
     ids: list[int] | None = None
     managers: list[int] | None = None
     paces: list[Paces] | None = None
@@ -910,11 +885,11 @@ class V1CopyCampaignGroup(AvitoObject):
     See: https://developers.avito.ru/api-catalog/ads/documentation
 
     Attributes:
-        creative_i_ds: Список ID копируемых креативов. Если не передано или передано пустым списком, копируется только группа
+        creative_ids: Список ID копируемых креативов. Если не передано или передано пустым списком, копируется только группа
         group_id: ID копируемой группы
     """
 
-    creative_i_ds: list[int] | None = Field(None, alias="creativeIDs")
+    creative_ids: list[int] | None = Field(None, alias="creativeIDs")
     group_id: int = Field(..., ge=1, alias="groupID")
 
 
@@ -974,11 +949,11 @@ class V1CopyGroupIn(AvitoObject):
     See: https://developers.avito.ru/api-catalog/ads/documentation
 
     Attributes:
-        creative_i_ds: Список ID креативов, которые нужно скопировать вместе с группой. Если не передано или передано пустым списком, копируется только группа
+        creative_ids: Список ID креативов, которые нужно скопировать вместе с группой. Если не передано или передано пустым списком, копируется только группа
         group_id: ID копируемой группы
     """
 
-    creative_i_ds: list[int] | None = Field(None, alias="creativeIDs")
+    creative_ids: list[int] | None = Field(None, alias="creativeIDs")
     group_id: int = Field(..., ge=1, alias="groupID")
 
 
@@ -1175,13 +1150,13 @@ class V1CreateGroupIn(AvitoObject):
         period_start_at: Начало периода показов в формате RFC3339, например 2026-07-01T10:00:00+03:00
         price: Ставка в рублях с НДС
         start_asap: Запускать как можно скорее
-        targeting_age_i_ds: ID возрастных сегментов
-        targeting_family_status_i_ds: ID family status сегментов
-        targeting_gender_i_ds: ID пола
-        targeting_income_i_ds: ID доходных сегментов
-        targeting_interest_i_ds: ID интересов
-        targeting_location_i_ds: ID локаций
-        targeting_parent_status_i_ds: ID parent status сегментов
+        targeting_age_ids: ID возрастных сегментов
+        targeting_family_status_ids: ID family status сегментов
+        targeting_gender_ids: ID пола
+        targeting_income_ids: ID доходных сегментов
+        targeting_interest_ids: ID интересов
+        targeting_location_ids: ID локаций
+        targeting_parent_status_ids: ID parent status сегментов
     """
 
     activity_schedule: CreateGroupActivitySchedule | None = Field(None, alias="activitySchedule")
@@ -1201,13 +1176,13 @@ class V1CreateGroupIn(AvitoObject):
     price_control: GroupPriceControl = Field(..., alias="priceControl")
     schedule_type: ScheduleType = Field(..., alias="scheduleType")
     start_asap: bool = Field(..., alias="startASAP")
-    targeting_age_i_ds: list[int] = Field(..., alias="targetingAgeIDs")
-    targeting_family_status_i_ds: list[int] | None = Field(None, alias="targetingFamilyStatusIDs")
-    targeting_gender_i_ds: list[int] = Field(..., alias="targetingGenderIDs")
-    targeting_income_i_ds: list[int] = Field(..., alias="targetingIncomeIDs")
-    targeting_interest_i_ds: list[str] = Field(..., alias="targetingInterestIDs")
-    targeting_location_i_ds: list[int] = Field(..., alias="targetingLocationIDs")
-    targeting_parent_status_i_ds: list[int] | None = Field(None, alias="targetingParentStatusIDs")
+    targeting_age_ids: list[int] = Field(..., alias="targetingAgeIDs")
+    targeting_family_status_ids: list[int] | None = Field(None, alias="targetingFamilyStatusIDs")
+    targeting_gender_ids: list[int] = Field(..., alias="targetingGenderIDs")
+    targeting_income_ids: list[int] = Field(..., alias="targetingIncomeIDs")
+    targeting_interest_ids: list[str] = Field(..., alias="targetingInterestIDs")
+    targeting_location_ids: list[int] = Field(..., alias="targetingLocationIDs")
+    targeting_parent_status_ids: list[int] | None = Field(None, alias="targetingParentStatusIDs")
 
 
 class V1CreateGroupOut(AvitoObject):
@@ -1253,10 +1228,10 @@ class V1DeleteCampaignsIn(AvitoObject):
     See: https://developers.avito.ru/api-catalog/ads/documentation
 
     Attributes:
-        campaign_i_ds: Список ID кампаний
+        campaign_ids: Список ID кампаний
     """
 
-    campaign_i_ds: list[int] = Field(..., min_length=1, alias="campaignIDs")
+    campaign_ids: list[int] = Field(..., min_length=1, alias="campaignIDs")
 
 
 class V1DeleteCreativesIn(AvitoObject):
@@ -1265,10 +1240,10 @@ class V1DeleteCreativesIn(AvitoObject):
     See: https://developers.avito.ru/api-catalog/ads/documentation
 
     Attributes:
-        creative_i_ds: Список ID креативов
+        creative_ids: Список ID креативов
     """
 
-    creative_i_ds: list[int] = Field(..., min_length=1, alias="creativeIDs")
+    creative_ids: list[int] = Field(..., min_length=1, alias="creativeIDs")
 
 
 class V1DeleteGroupsIn(AvitoObject):
@@ -1277,10 +1252,10 @@ class V1DeleteGroupsIn(AvitoObject):
     See: https://developers.avito.ru/api-catalog/ads/documentation
 
     Attributes:
-        group_i_ds: Список ID групп
+        group_ids: Список ID групп
     """
 
-    group_i_ds: list[int] = Field(..., min_length=1, alias="groupIDs")
+    group_ids: list[int] = Field(..., min_length=1, alias="groupIDs")
 
 
 class V1GetAccountBalanceByIdOut(AvitoObject):
@@ -1308,222 +1283,6 @@ class V1GetAccountByIdOut(AvitoObject):
     """
 
     account: Account | None = None
-
-    def v1_get_account_by_id(self) -> V1GetAccountById:
-        """Build an awaitable :class:`V1GetAccountById` bound to this object (await to execute)."""
-        from ..methods.ads import V1GetAccountById
-
-        return V1GetAccountById(account_id=self.id).as_(self._client)
-
-    def v1_create_account(
-        self,
-        contact: V1CreateAccountContact,
-        inn: str,
-        legal_address: str,
-        legal_type: LegalType,
-        long_name: str,
-        ogrn: str,
-        short_name: str,
-        actual_address: str | None = None,
-        kpp: str | None = None,
-    ) -> V1CreateAccount:
-        """Build an awaitable :class:`V1CreateAccount` bound to this object (await to execute)."""
-        from ..methods.ads import V1CreateAccount
-
-        return V1CreateAccount(
-            account_id=self.id,
-            actual_address=actual_address,
-            contact=contact,
-            inn=inn,
-            kpp=kpp,
-            legal_address=legal_address,
-            legal_type=legal_type,
-            long_name=long_name,
-            ogrn=ogrn,
-            short_name=short_name,
-        ).as_(self._client)
-
-    def v1_add_user(self, role: UserRole, user_id: int) -> V1AddUser:
-        """Build an awaitable :class:`V1AddUser` bound to this object (await to execute)."""
-        from ..methods.ads import V1AddUser
-
-        return V1AddUser(account_id=self.id, role=role, user_id=user_id).as_(self._client)
-
-    def v1_get_advertisers_list(
-        self, filter: AdvertiserFilter, limit: int, page: int
-    ) -> V1GetAdvertisersList:
-        """Build an awaitable :class:`V1GetAdvertisersList` bound to this object (await to execute)."""
-        from ..methods.ads import V1GetAdvertisersList
-
-        return V1GetAdvertisersList(account_id=self.id, filter=filter, limit=limit, page=page).as_(
-            self._client
-        )
-
-    def v1_get_account_balance_by_id(self) -> V1GetAccountBalanceById:
-        """Build an awaitable :class:`V1GetAccountBalanceById` bound to this object (await to execute)."""
-        from ..methods.ads import V1GetAccountBalanceById
-
-        return V1GetAccountBalanceById(account_id=self.id).as_(self._client)
-
-    def v1_transfer_bonus(self, account_id_to: int, amount: int) -> V1TransferBonus:
-        """Build an awaitable :class:`V1TransferBonus` bound to this object (await to execute)."""
-        from ..methods.ads import V1TransferBonus
-
-        return V1TransferBonus(account_id=self.id, account_id_to=account_id_to, amount=amount).as_(
-            self._client
-        )
-
-    def v1_get_campaigns_list(
-        self, filter: CampaignsFilter, limit: int, page: int
-    ) -> V1GetCampaignsList:
-        """Build an awaitable :class:`V1GetCampaignsList` bound to this object (await to execute)."""
-        from ..methods.ads import V1GetCampaignsList
-
-        return V1GetCampaignsList(account_id=self.id, filter=filter, limit=limit, page=page).as_(
-            self._client
-        )
-
-    def v1_get_child_accounts_list(self) -> V1GetChildAccountsList:
-        """Build an awaitable :class:`V1GetChildAccountsList` bound to this object (await to execute)."""
-        from ..methods.ads import V1GetChildAccountsList
-
-        return V1GetChildAccountsList(account_id=self.id).as_(self._client)
-
-    def v1_get_child_accounts_with_balances_list(self) -> V1GetChildAccountsWithBalancesList:
-        """Build an awaitable :class:`V1GetChildAccountsWithBalancesList` bound to this object (await to execute)."""
-        from ..methods.ads import V1GetChildAccountsWithBalancesList
-
-        return V1GetChildAccountsWithBalancesList(account_id=self.id).as_(self._client)
-
-    def v1_get_contracts_list(
-        self, filter: ContractsFilter, limit: int, page: int
-    ) -> V1GetContractsList:
-        """Build an awaitable :class:`V1GetContractsList` bound to this object (await to execute)."""
-        from ..methods.ads import V1GetContractsList
-
-        return V1GetContractsList(account_id=self.id, filter=filter, limit=limit, page=page).as_(
-            self._client
-        )
-
-    def v1_create_advertiser(
-        self,
-        inn: str,
-        legal_address: str,
-        legal_role: LegalRole,
-        legal_type: LegalType,
-        long_name: str,
-        ogrn: str,
-        short_name: str,
-        actual_address: str | None = None,
-        kpp: str | None = None,
-    ) -> V1CreateAdvertiser:
-        """Build an awaitable :class:`V1CreateAdvertiser` bound to this object (await to execute)."""
-        from ..methods.ads import V1CreateAdvertiser
-
-        return V1CreateAdvertiser(
-            account_id=self.id,
-            actual_address=actual_address,
-            inn=inn,
-            kpp=kpp,
-            legal_address=legal_address,
-            legal_role=legal_role,
-            legal_type=legal_type,
-            long_name=long_name,
-            ogrn=ogrn,
-            short_name=short_name,
-        ).as_(self._client)
-
-    def v1_create_contract(
-        self,
-        advertiser_id: int,
-        description: ContractCounterpartyType,
-        type_: ContractType,
-        cid: str | None = None,
-        date_: date | None = None,
-        intermediary: CreteIntermediaryIn | None = None,
-        is_funds_allocation_to_principal: bool | None = None,
-        is_reporting_required: bool | None = None,
-        number: str | None = None,
-        object: ContractAction | None = None,
-        parent_id: int | None = None,
-        subject: ContractSubject | None = None,
-    ) -> V1CreateContract:
-        """Build an awaitable :class:`V1CreateContract` bound to this object (await to execute)."""
-        from ..methods.ads import V1CreateContract
-
-        return V1CreateContract(
-            account_id=self.id,
-            advertiser_id=advertiser_id,
-            cid=cid,
-            date_=date_,
-            description=description,
-            intermediary=intermediary,
-            is_funds_allocation_to_principal=is_funds_allocation_to_principal,
-            is_reporting_required=is_reporting_required,
-            number=number,
-            object=object,
-            parent_id=parent_id,
-            subject=subject,
-            type_=type_,
-        ).as_(self._client)
-
-    def v1_create_non_payer_account(
-        self, is_self_advertising_enabled: bool, short_name: str
-    ) -> V1CreateNonPayerAccount:
-        """Build an awaitable :class:`V1CreateNonPayerAccount` bound to this object (await to execute)."""
-        from ..methods.ads import V1CreateNonPayerAccount
-
-        return V1CreateNonPayerAccount(
-            account_id=self.id,
-            is_self_advertising_enabled=is_self_advertising_enabled,
-            short_name=short_name,
-        ).as_(self._client)
-
-    def v1_get_creatives_list(
-        self, filter: CreativesFilter, limit: int, page: int
-    ) -> V1GetCreativesList:
-        """Build an awaitable :class:`V1GetCreativesList` bound to this object (await to execute)."""
-        from ..methods.ads import V1GetCreativesList
-
-        return V1GetCreativesList(account_id=self.id, filter=filter, limit=limit, page=page).as_(
-            self._client
-        )
-
-    def v1_delete_user(self) -> V1DeleteUser:
-        """Build an awaitable :class:`V1DeleteUser` bound to this object (await to execute)."""
-        from ..methods.ads import V1DeleteUser
-
-        return V1DeleteUser(account_id=self.id, user_id=_resolve_user_id(self._client)).as_(
-            self._client
-        )
-
-    def v1_transfer_funds(self, account_id_to: int, amount: int) -> V1TransferFunds:
-        """Build an awaitable :class:`V1TransferFunds` bound to this object (await to execute)."""
-        from ..methods.ads import V1TransferFunds
-
-        return V1TransferFunds(account_id=self.id, account_id_to=account_id_to, amount=amount).as_(
-            self._client
-        )
-
-    def v1_get_groups_list(self, filter: GroupsFilter, limit: int, page: int) -> V1GetGroupsList:
-        """Build an awaitable :class:`V1GetGroupsList` bound to this object (await to execute)."""
-        from ..methods.ads import V1GetGroupsList
-
-        return V1GetGroupsList(account_id=self.id, filter=filter, limit=limit, page=page).as_(
-            self._client
-        )
-
-    def v1_set_user_role(self, role: UserRole, user_id: int) -> V1SetUserRole:
-        """Build an awaitable :class:`V1SetUserRole` bound to this object (await to execute)."""
-        from ..methods.ads import V1SetUserRole
-
-        return V1SetUserRole(account_id=self.id, role=role, user_id=user_id).as_(self._client)
-
-    def v1_get_users_list_by_account(self) -> V1GetUsersListByAccount:
-        """Build an awaitable :class:`V1GetUsersListByAccount` bound to this object (await to execute)."""
-        from ..methods.ads import V1GetUsersListByAccount
-
-        return V1GetUsersListByAccount(account_id=self.id).as_(self._client)
 
 
 class V1GetAdvertisersListIn(AvitoObject):
@@ -1690,12 +1449,12 @@ class V1GetCreativesStatisticIn(AvitoObject):
     See: https://developers.avito.ru/api-catalog/ads/documentation
 
     Attributes:
-        creative_i_ds: Список ID креативов для получения статистики
+        creative_ids: Список ID креативов для получения статистики
         date_from: Дата начала периода в формате YYYY-MM-DD
         date_to: Дата окончания периода в формате YYYY-MM-DD
     """
 
-    creative_i_ds: list[int] = Field(..., min_length=1, alias="creativeIDs")
+    creative_ids: list[int] = Field(..., min_length=1, alias="creativeIDs")
     date_from: date = Field(..., alias="dateFrom")
     date_to: date = Field(..., alias="dateTo")
 
@@ -1754,12 +1513,12 @@ class V1GetGroupsStatisticIn(AvitoObject):
     Attributes:
         date_from: Дата начала периода в формате YYYY-MM-DD
         date_to: Дата окончания периода в формате YYYY-MM-DD
-        group_i_ds: Список ID групп для получения статистики
+        group_ids: Список ID групп для получения статистики
     """
 
     date_from: date = Field(..., alias="dateFrom")
     date_to: date = Field(..., alias="dateTo")
-    group_i_ds: list[int] = Field(..., min_length=1, alias="groupIDs")
+    group_ids: list[int] = Field(..., min_length=1, alias="groupIDs")
 
 
 class V1GetGroupsStatisticOut(AvitoObject):
@@ -1859,10 +1618,10 @@ class V1LaunchCampaignsIn(AvitoObject):
     See: https://developers.avito.ru/api-catalog/ads/documentation
 
     Attributes:
-        campaign_i_ds: Список ID кампаний
+        campaign_ids: Список ID кампаний
     """
 
-    campaign_i_ds: list[int] = Field(..., min_length=1, alias="campaignIDs")
+    campaign_ids: list[int] = Field(..., min_length=1, alias="campaignIDs")
 
 
 class V1LaunchGroupIn(AvitoObject):
@@ -1883,10 +1642,10 @@ class V1PauseCampaignsIn(AvitoObject):
     See: https://developers.avito.ru/api-catalog/ads/documentation
 
     Attributes:
-        campaign_i_ds: Список ID кампаний для паузы
+        campaign_ids: Список ID кампаний для паузы
     """
 
-    campaign_i_ds: list[int] = Field(..., min_length=1, alias="campaignIDs")
+    campaign_ids: list[int] = Field(..., min_length=1, alias="campaignIDs")
 
 
 class V1PauseCreativesIn(AvitoObject):
@@ -1895,10 +1654,10 @@ class V1PauseCreativesIn(AvitoObject):
     See: https://developers.avito.ru/api-catalog/ads/documentation
 
     Attributes:
-        creative_i_ds: Список ID креативов
+        creative_ids: Список ID креативов
     """
 
-    creative_i_ds: list[int] = Field(..., min_length=1, alias="creativeIDs")
+    creative_ids: list[int] = Field(..., min_length=1, alias="creativeIDs")
 
 
 class V1PauseGroupsIn(AvitoObject):
@@ -1907,10 +1666,10 @@ class V1PauseGroupsIn(AvitoObject):
     See: https://developers.avito.ru/api-catalog/ads/documentation
 
     Attributes:
-        group_i_ds: Список ID групп
+        group_ids: Список ID групп
     """
 
-    group_i_ds: list[int] = Field(..., min_length=1, alias="groupIDs")
+    group_ids: list[int] = Field(..., min_length=1, alias="groupIDs")
 
 
 class V1ReferenceDataCreateCreativeOut(AvitoObject):
@@ -1943,10 +1702,10 @@ class V1StopCampaignsIn(AvitoObject):
     See: https://developers.avito.ru/api-catalog/ads/documentation
 
     Attributes:
-        campaign_i_ds: Список ID кампаний для остановки
+        campaign_ids: Список ID кампаний для остановки
     """
 
-    campaign_i_ds: list[int] = Field(..., min_length=1, alias="campaignIDs")
+    campaign_ids: list[int] = Field(..., min_length=1, alias="campaignIDs")
 
 
 class V1TransferBonusIn(AvitoObject):
@@ -1983,10 +1742,10 @@ class V1UnpauseCampaignsIn(AvitoObject):
     See: https://developers.avito.ru/api-catalog/ads/documentation
 
     Attributes:
-        campaign_i_ds: Список ID кампаний для снятия с паузы
+        campaign_ids: Список ID кампаний для снятия с паузы
     """
 
-    campaign_i_ds: list[int] = Field(..., min_length=1, alias="campaignIDs")
+    campaign_ids: list[int] = Field(..., min_length=1, alias="campaignIDs")
 
 
 class V1UnpauseCreativesIn(AvitoObject):
@@ -1995,10 +1754,10 @@ class V1UnpauseCreativesIn(AvitoObject):
     See: https://developers.avito.ru/api-catalog/ads/documentation
 
     Attributes:
-        creative_i_ds: Список ID креативов
+        creative_ids: Список ID креативов
     """
 
-    creative_i_ds: list[int] = Field(..., min_length=1, alias="creativeIDs")
+    creative_ids: list[int] = Field(..., min_length=1, alias="creativeIDs")
 
 
 class V1UnpauseGroupsIn(AvitoObject):
@@ -2007,10 +1766,10 @@ class V1UnpauseGroupsIn(AvitoObject):
     See: https://developers.avito.ru/api-catalog/ads/documentation
 
     Attributes:
-        group_i_ds: Список ID групп
+        group_ids: Список ID групп
     """
 
-    group_i_ds: list[int] = Field(..., min_length=1, alias="groupIDs")
+    group_ids: list[int] = Field(..., min_length=1, alias="groupIDs")
 
 
 class V1UploadHtmlOut(AvitoObject):

@@ -43,8 +43,6 @@ class AutostrategyFacade(FacadeBase):
     ) -> GetAutostrategyBudgetResponse:
         """Расчет бюджета кампании via ``POST /autostrategy/v1/budget``.
 
-        See: https://developers.avito.ru/api-catalog/autostrategy/documentation
-
         Args:
             campaign_type: Тип кампании. Возможные типы: `AS` - Автостратегия. Cтратегия расчитана на определенное количество автомобилей, которые находятся в продаже `AP` - Автопилот. Cтратегия расчитана на все автомобили, которые находятся в продаже
             finish_time: Время окончания кампании. **Обязательно только для типа кампании `AS`**
@@ -74,8 +72,6 @@ class AutostrategyFacade(FacadeBase):
         start_time: TZDatetime | None = None,
     ) -> CreateAutostrategyCampaignResponse:
         """Создание новой кампании via ``POST /autostrategy/v1/campaign/create``.
-
-        See: https://developers.avito.ru/api-catalog/autostrategy/documentation
 
         Args:
             budget: Выделенный бюджет на кампанию в рублях. **Обязательно только для типа кампании `AS`**
@@ -118,8 +114,6 @@ class AutostrategyFacade(FacadeBase):
     ) -> EditAutostrategyCampaignResponse:
         """Редактирование кампании via ``POST /autostrategy/v1/campaign/edit``.
 
-        See: https://developers.avito.ru/api-catalog/autostrategy/documentation
-
         Args:
             budget: Новый бюджет кампании в рублях
             calc_id: Идентификатор расчета бюджета из ответа ручки `/autostrategy/v1/budget`
@@ -150,8 +144,6 @@ class AutostrategyFacade(FacadeBase):
     ) -> GetAutostrategyCampaignInfoResponse:
         """Получение полной информации о кампании via ``POST /autostrategy/v1/campaign/info``.
 
-        See: https://developers.avito.ru/api-catalog/autostrategy/documentation
-
         Args:
             campaign_id: Идентификатор активной кампании
         """
@@ -161,8 +153,6 @@ class AutostrategyFacade(FacadeBase):
         self, campaign_id: int, version: int
     ) -> StopAutostrategyCampaignResponse:
         """Остановка кампании via ``POST /autostrategy/v1/campaign/stop``.
-
-        See: https://developers.avito.ru/api-catalog/autostrategy/documentation
 
         Args:
             campaign_id: Идентификатор активной кампании
@@ -180,8 +170,6 @@ class AutostrategyFacade(FacadeBase):
     ) -> Campaigns:
         """Получение списка кампаний via ``POST /autostrategy/v1/campaigns``.
 
-        See: https://developers.avito.ru/api-catalog/autostrategy/documentation
-
         Args:
             filter: Фильтр
             limit: Ограничение на выборку
@@ -197,8 +185,6 @@ class AutostrategyFacade(FacadeBase):
 
     async def get_autostrategy_stat(self, campaign_id: int) -> GetAutostrategyStatResponse:
         """Получение статистики по кампании via ``POST /autostrategy/v1/stat``.
-
-        See: https://developers.avito.ru/api-catalog/autostrategy/documentation
 
         Args:
             campaign_id: Идентификатор запущенной или уже прошедшей кампании

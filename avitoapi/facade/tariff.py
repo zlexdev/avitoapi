@@ -12,8 +12,5 @@ class TariffFacade(FacadeBase):
     """``Client`` mixin — Тарифы endpoints."""
 
     async def get_tariff_info(self) -> TariffInfo:
-        """Информация по тарифу via ``GET /tariff/info/1``.
-
-        See: https://developers.avito.ru/api-catalog/tariff/documentation
-        """
+        """Информация по тарифу via ``GET /tariff/info/1``."""
         return await self(GetTariffInfo())

@@ -12,18 +12,13 @@ class CalltrackingFacade(FacadeBase):
     """``Client`` mixin — CallTracking[КТ] endpoints."""
 
     async def get_call_by_id(self, call_id: int) -> GetCallByIdResponse:
-        """Звонок по идентификатору via ``POST /calltracking/v1/getCallById/``.
-
-        See: https://developers.avito.ru/api-catalog/calltracking/documentation
-        """
+        """Звонок по идентификатору via ``POST /calltracking/v1/getCallById/``."""
         return await self(GetCallById(call_id=call_id))
 
     async def get_calls(
         self, date_time_from: str, limit: int, offset: int, date_time_to: str | None = None
     ) -> GetCallsResponse:
         """Звонки по времени via ``POST /calltracking/v1/getCalls/``.
-
-        See: https://developers.avito.ru/api-catalog/calltracking/documentation
 
         Args:
             date_time_from: Время с которого нужно начинать поиск звонков по callTime (строка в формате RFC3339)
@@ -39,8 +34,6 @@ class CalltrackingFacade(FacadeBase):
 
     async def get_record_by_call_id(self, call_id: int) -> None:
         """Получение аудиозаписи звонка по идентификатору via ``GET /calltracking/v1/getRecordByCallId/``.
-
-        See: https://developers.avito.ru/api-catalog/calltracking/documentation
 
         Args:
             call_id: Идентификатор звонка

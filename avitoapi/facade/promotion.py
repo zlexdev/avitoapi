@@ -35,8 +35,6 @@ class PromotionFacade(FacadeBase):
     ) -> GetBbipForecastByItemsV1Resp:
         """BBIP. Прогноз продвижения via ``POST /promotion/v1/items/services/bbip/forecasts/get``.
 
-        See: https://developers.avito.ru/api-catalog/promotion/documentation
-
         Args:
             items: Данные по объявлениям для запроса прогноза
         """
@@ -46,8 +44,6 @@ class PromotionFacade(FacadeBase):
         self, items: list[BbipOrderByItemV1]
     ) -> OrderBbipForItemsV1Resp:
         """BBIP. Подключение услуги продвижения via ``PUT /promotion/v1/items/services/bbip/orders/create``.
-
-        See: https://developers.avito.ru/api-catalog/promotion/documentation
 
         Args:
             items: Заявки на подключение BBIP по отдельным объявлениям
@@ -59,26 +55,19 @@ class PromotionFacade(FacadeBase):
     ) -> GetBbipSuggestsV1Resp:
         """BBIP. Варианты бюджета продвижения via ``POST /promotion/v1/items/services/bbip/suggests/get``.
 
-        See: https://developers.avito.ru/api-catalog/promotion/documentation
-
         Args:
             item_ids: Идентификаторы объявлений
         """
         return await self(GetBbipSuggestsByItemsV1(item_ids=item_ids))
 
     async def get_dict_of_services_v1(self) -> GetDictOfServicesV1Resp:
-        """Словарь типов услуг продвижения via ``POST /promotion/v1/items/services/dict``.
-
-        See: https://developers.avito.ru/api-catalog/promotion/documentation
-        """
+        """Словарь типов услуг продвижения via ``POST /promotion/v1/items/services/dict``."""
         return await self(GetDictOfServicesV1())
 
     async def get_services_by_items_v1(
         self, item_ids: list[int] | None = None
     ) -> GetServicesByItemsV1Resp:
         """Список услуг продвижения via ``POST /promotion/v1/items/services/get``.
-
-        See: https://developers.avito.ru/api-catalog/promotion/documentation
 
         Args:
             item_ids: Идентификаторы объявлений
@@ -90,8 +79,6 @@ class PromotionFacade(FacadeBase):
     ) -> ListOrdersByUserV1Resp:
         """Список заявок via ``POST /promotion/v1/items/services/orders/get``.
 
-        See: https://developers.avito.ru/api-catalog/promotion/documentation
-
         Args:
             pagination: Данные для постраничного чтения
         """
@@ -99,8 +86,6 @@ class PromotionFacade(FacadeBase):
 
     async def get_order_status_v1(self, order_id: str | None = None) -> GetOrderStatusV1Resp:
         """Статус заявки via ``POST /promotion/v1/items/services/orders/status``.
-
-        See: https://developers.avito.ru/api-catalog/promotion/documentation
 
         Args:
             order_id: Идентификатор заявки на подключение услуг продвижения

@@ -18,23 +18,15 @@ class CpxpromoFacade(FacadeBase):
     """``Client`` mixin — Настройка цены целевого действия endpoints."""
 
     async def get_bids(self, item_id: int) -> GetBidsOut:
-        """Получение детализированной информации о действующих и доступных ценах за целевые действия и бюджетах via ``GET /cpxpromo/1/getBids/{item_id}``.
-
-        See: https://developers.avito.ru/api-catalog/cpxpromo/documentation
-        """
+        """Получение детализированной информации о действующих и доступных ценах за целевые действия и бюджетах via ``GET /cpxpromo/1/getBids/{item_id}``."""
         return await self(GetBids(item_id=item_id))
 
-    async def get_promotions_by_item_ids(self, item_i_ds: list[int]) -> GetPromotionsByItemIdsOut:
-        """Получение текущих цен за целевое действие и бюджетов по нескольким объявлениям via ``POST /cpxpromo/1/getPromotionsByItemIds``.
-
-        See: https://developers.avito.ru/api-catalog/cpxpromo/documentation
-        """
-        return await self(GetPromotionsByItemIds(item_i_ds=item_i_ds))
+    async def get_promotions_by_item_ids(self, item_ids: list[int]) -> GetPromotionsByItemIdsOut:
+        """Получение текущих цен за целевое действие и бюджетов по нескольким объявлениям via ``POST /cpxpromo/1/getPromotionsByItemIds``."""
+        return await self(GetPromotionsByItemIds(item_ids=item_ids))
 
     async def remove_promotion2(self, item_id: int) -> RemovePromotion2Response:
         """Остановка продвижения via ``POST /cpxpromo/1/remove``.
-
-        See: https://developers.avito.ru/api-catalog/cpxpromo/documentation
 
         Args:
             item_id: Идентификатор объявления
@@ -45,8 +37,6 @@ class CpxpromoFacade(FacadeBase):
         self, action_type_id: int, budget_penny: int, budget_type: str, item_id: int
     ) -> None:
         """Применение автоматической настройки via ``POST /cpxpromo/1/setAuto``.
-
-        See: https://developers.avito.ru/api-catalog/cpxpromo/documentation
 
         Args:
             action_type_id: Тип события (1 - звонок | 5 - пакет кликов | 7 - мессенджер, передача контакта в чате)
@@ -67,8 +57,6 @@ class CpxpromoFacade(FacadeBase):
         self, action_type_id: int, bid_penny: int, item_id: int, limit_penny: int | None = None
     ) -> None:
         """Применение ручной настройки via ``POST /cpxpromo/1/setManual``.
-
-        See: https://developers.avito.ru/api-catalog/cpxpromo/documentation
 
         Args:
             action_type_id: Тип события (1 - звонок | 5 - пакет кликов | 7 - мессенджер, передача контакта в чате)

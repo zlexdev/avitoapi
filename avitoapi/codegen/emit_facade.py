@@ -29,9 +29,8 @@ def emit(gen: GeneratedDomain) -> str:
         f"class {facade_class(gen.module)}(FacadeBase):\n",
         f'    """``Client`` mixin — {gen.title} endpoints."""\n\n',
     ]
-    note = f"See: {gen.docs_url}"
     for method in gen.methods:
-        out.append(_render_call(method, note))
+        out.append(_render_call(method))
         out.append("\n\n")
     return "".join(out)
 
@@ -87,7 +86,7 @@ def _return_annotation(m: MethodSpec) -> str:
     return m.generic_arg if m.generic_arg != "None" else "None"
 
 
-def _render_call(m: MethodSpec, note: str) -> str:
+def _render_call(m: MethodSpec) -> str:
     accounts = set(m.account_params)
     required = [f for f in m.fields if f.required and f.name not in accounts]
     optional = [f for f in m.fields if not f.required or f.name in accounts]
@@ -107,7 +106,7 @@ def _render_call(m: MethodSpec, note: str) -> str:
     call = f"{m.class_name}({', '.join(call_args)})"
 
     method_name = m.method_name
-    doc = render.class_docstring(m.doc, "Args", [(f.name, f.description) for f in m.fields], indent="        ", note=note)
+    doc = render.class_docstring(m.doc, "Args", [(f.name, f.description) for f in m.fields], indent="        ")
     kw, invoke = ("def", f"self({call})") if m.paginated else ("async def", f"await self({call})")
     return "\n".join(
         [

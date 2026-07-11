@@ -50,8 +50,13 @@ class BoundMethod:
     fills: tuple[tuple[str, str], ...]  # (field_name, python_expr)
 
 
-def _self_attr_for(token: str, model_fields: frozenset[str]) -> str:
-    """Pick the field on the entity model that holds its id."""
+def _self_attr_for(token: str, model_fields: frozenset[str]) -> str | None:
+    """Pick the field on the entity model that holds its id, or ``None`` if it has none.
+
+    Returning ``None`` means the model is a wrapper (e.g. ``{account: Account}``) with no
+    own id — binding an operation to it would emit ``self.id`` against a model without an
+    ``id`` field. Such operations stay top-level methods only.
+    """
 
     if "id" in model_fields:
         return "id"
@@ -60,7 +65,7 @@ def _self_attr_for(token: str, model_fields: frozenset[str]) -> str:
     for f in sorted(model_fields):
         if f.endswith("_id"):
             return f
-    return "id"
+    return None
 
 
 def detect_entities(domain: Domain, model_fields: dict[str, frozenset[str]]) -> dict[str, Entity]:
@@ -74,7 +79,9 @@ def detect_entities(domain: Domain, model_fields: dict[str, frozenset[str]]) -> 
         if last in ACCOUNT_CONTEXT_PARAMS or not last.endswith("_id"):
             continue
         if op.response_ref in model_fields and last not in entities:
-            entities[last] = Entity(token=last, model=op.response_ref, self_attr=_self_attr_for(last, model_fields[op.response_ref]))
+            attr = _self_attr_for(last, model_fields[op.response_ref])
+            if attr is not None:
+                entities[last] = Entity(token=last, model=op.response_ref, self_attr=attr)
 
     for token, (model, attr) in ENTITY_BINDINGS.items():
         if token not in entities and model in model_fields:

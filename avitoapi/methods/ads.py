@@ -183,7 +183,7 @@ class V1GetCreativesStatistic(BaseMethod[V1GetCreativesStatisticOut]):
     Args:
         account_id: ID аккаунта
         campaign_id: ID кампании
-        creative_i_ds: Список ID креативов для получения статистики
+        creative_ids: Список ID креативов для получения статистики
         date_from: Дата начала периода в формате YYYY-MM-DD
         date_to: Дата окончания периода в формате YYYY-MM-DD
     """
@@ -195,7 +195,7 @@ class V1GetCreativesStatistic(BaseMethod[V1GetCreativesStatisticOut]):
 
     account_id: int = Field(..., alias="accountID")
     campaign_id: int = Field(..., alias="campaignID")
-    creative_i_ds: list[int] = Field(..., min_length=1, alias="creativeIDs")
+    creative_ids: list[int] = Field(..., min_length=1, alias="creativeIDs")
     date_from: date = Field(..., alias="dateFrom")
     date_to: date = Field(..., alias="dateTo")
 
@@ -210,7 +210,7 @@ class V1GetGroupsStatistic(BaseMethod[V1GetGroupsStatisticOut]):
         campaign_id: ID кампании
         date_from: Дата начала периода в формате YYYY-MM-DD
         date_to: Дата окончания периода в формате YYYY-MM-DD
-        group_i_ds: Список ID групп для получения статистики
+        group_ids: Список ID групп для получения статистики
     """
 
     __http_method__: ClassVar[str] = "POST"
@@ -222,7 +222,7 @@ class V1GetGroupsStatistic(BaseMethod[V1GetGroupsStatisticOut]):
     campaign_id: int = Field(..., alias="campaignID")
     date_from: date = Field(..., alias="dateFrom")
     date_to: date = Field(..., alias="dateTo")
-    group_i_ds: list[int] = Field(..., min_length=1, alias="groupIDs")
+    group_ids: list[int] = Field(..., min_length=1, alias="groupIDs")
 
 
 class V1GetCampaignStatistic(BaseMethod[V1GetCampaignStatisticOut]):

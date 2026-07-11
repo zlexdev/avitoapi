@@ -55,10 +55,7 @@ class AutoloadFacade(FacadeBase):
     """``Client`` mixin — Автозагрузка endpoints."""
 
     async def get_profile(self) -> GetProfileResponse:
-        """Получение профиля пользователя автозагрузки (deprecated) via ``GET /autoload/v1/profile``.
-
-        See: https://developers.avito.ru/api-catalog/autoload/documentation
-        """
+        """Получение профиля пользователя автозагрузки (deprecated) via ``GET /autoload/v1/profile``."""
         return await self(GetProfile())
 
     async def create_or_update_profile(
@@ -70,8 +67,6 @@ class AutoloadFacade(FacadeBase):
         agreement: bool | None = None,
     ) -> None:
         """Создание/редактирование настроек профиля пользователя автозагрузки (deprecated) via ``POST /autoload/v1/profile``.
-
-        See: https://developers.avito.ru/api-catalog/autoload/documentation
 
         Args:
             agreement: Согласие с [правилами](https://support.avito.ru/articles/203867776) использования Авито Автозагрузки. Обязательно, если профиль еще не существует.
@@ -90,16 +85,11 @@ class AutoloadFacade(FacadeBase):
         )
 
     async def upload(self) -> None:
-        """Загрузка файла по ссылке via ``POST /autoload/v1/upload``.
-
-        See: https://developers.avito.ru/api-catalog/autoload/documentation
-        """
+        """Загрузка файла по ссылке via ``POST /autoload/v1/upload``."""
         return await self(Upload())
 
     async def user_docs_node_fields(self, node_slug: str) -> ApiFieldsOut:
         """Получения полей категории via ``GET /autoload/v1/user-docs/node/{node_slug}/fields``.
-
-        See: https://developers.avito.ru/api-catalog/autoload/documentation
 
         Args:
             node_slug: slug узла дерева категории
@@ -107,16 +97,11 @@ class AutoloadFacade(FacadeBase):
         return await self(UserDocsNodeFields(node_slug=node_slug))
 
     async def user_docs_tree(self) -> ApiCategoryTreeOut:
-        """Получение дерева категорий via ``GET /autoload/v1/user-docs/tree``.
-
-        See: https://developers.avito.ru/api-catalog/autoload/documentation
-        """
+        """Получение дерева категорий via ``GET /autoload/v1/user-docs/tree``."""
         return await self(UserDocsTree())
 
     async def get_ad_ids_by_avito_ids(self, query: str) -> GetAdIdsByAvitoIdsResponse:
         """ID объявлений из файла via ``GET /autoload/v2/items/ad_ids``.
-
-        See: https://developers.avito.ru/api-catalog/autoload/documentation
 
         Args:
             query: Список ID объявлений. Формат значения: строка с идентификаторами объявлений на Авито, перечисленными через «,» или «|».
@@ -126,18 +111,13 @@ class AutoloadFacade(FacadeBase):
     async def get_avito_ids_by_ad_ids(self, query: str) -> GetAvitoIdsByAdIdsResponse:
         """ID объявлений на Авито via ``GET /autoload/v2/items/avito_ids``.
 
-        See: https://developers.avito.ru/api-catalog/autoload/documentation
-
         Args:
             query: Список ID объявлений. Формат значения: строка с [идентификаторами объявлений из файла](https://autoload.avito.ru/format/realty/#Id), перечисленными через «,» или «|»
         """
         return await self(GetAvitoIdsByAdIds(query=query))
 
     async def get_profile_v2(self) -> GetProfileV2Response:
-        """Получение профиля пользователя автозагрузки via ``GET /autoload/v2/profile``.
-
-        See: https://developers.avito.ru/api-catalog/autoload/documentation
-        """
+        """Получение профиля пользователя автозагрузки via ``GET /autoload/v2/profile``."""
         return await self(GetProfileV2())
 
     async def create_or_update_profile_v2(
@@ -149,8 +129,6 @@ class AutoloadFacade(FacadeBase):
         agreement: bool | None = None,
     ) -> None:
         """Создание/редактирование настроек профиля пользователя автозагрузки via ``POST /autoload/v2/profile``.
-
-        See: https://developers.avito.ru/api-catalog/autoload/documentation
 
         Args:
             agreement: Согласие с [правилами](https://support.avito.ru/articles/203867776) использования Авито Автозагрузки. Обязательно, если профиль еще не существует.
@@ -176,8 +154,6 @@ class AutoloadFacade(FacadeBase):
     ) -> GetReportsV2Response:
         """Список отчётов автозагрузки (deprecated) via ``GET /autoload/v2/reports``.
 
-        See: https://developers.avito.ru/api-catalog/autoload/documentation
-
         Args:
             per_page: Количество отчётов на странице: целое число больше 0 и меньше или равно 200.
             page: Номер страницы: целое число больше или равно 0.
@@ -191,24 +167,17 @@ class AutoloadFacade(FacadeBase):
     async def get_autoload_items_info_v2(self, query: str) -> GetAutoloadItemsInfoV2Response:
         """Объявления по ID в автозагрузке (deprecated) via ``GET /autoload/v2/reports/items``.
 
-        See: https://developers.avito.ru/api-catalog/autoload/documentation
-
         Args:
             query: Идентификаторы объявлений из файла ([параметр Id](https://autoload.avito.ru/format/realty/#Id)). Формат значения: строка, содержащая от 1 до 100 идентификаторов, перечисленных через «,» или «|».
         """
         return await self(GetAutoloadItemsInfoV2(query=query))
 
     async def get_last_completed_report(self) -> ReportAutoloadV2:
-        """Статистика по последней выгрузке (deprecated) via ``GET /autoload/v2/reports/last_completed_report``.
-
-        See: https://developers.avito.ru/api-catalog/autoload/documentation
-        """
+        """Статистика по последней выгрузке (deprecated) via ``GET /autoload/v2/reports/last_completed_report``."""
         return await self(GetLastCompletedReport())
 
     async def get_report_by_id_v2(self, report_id: int) -> ReportAutoloadV2:
         """Статистика по конкретной выгрузке (deprecated) via ``GET /autoload/v2/reports/{report_id}``.
-
-        See: https://developers.avito.ru/api-catalog/autoload/documentation
 
         Args:
             report_id: Идентификатор отчёта (ID)
@@ -224,8 +193,6 @@ class AutoloadFacade(FacadeBase):
         sections: str | None = None,
     ) -> GetReportItemsByIdResponse:
         """Все объявления из конкретной выгрузки (deprecated) via ``GET /autoload/v2/reports/{report_id}/items``.
-
-        See: https://developers.avito.ru/api-catalog/autoload/documentation
 
         Args:
             report_id: Идентификатор отчёта (ID)
@@ -250,8 +217,6 @@ class AutoloadFacade(FacadeBase):
     ) -> GetReportItemsFeesByIdResponse:
         """Списания за объявления в конкретной выгрузке (deprecated) via ``GET /autoload/v2/reports/{report_id}/items/fees``.
 
-        See: https://developers.avito.ru/api-catalog/autoload/documentation
-
         Args:
             report_id: Идентификатор отчёта (ID)
             per_page: Количество объявлений на странице: целое число больше 0 и меньше или равно 200
@@ -270,16 +235,11 @@ class AutoloadFacade(FacadeBase):
         )
 
     async def get_last_completed_report_v3(self) -> ReportAutoloadV3:
-        """Статистика по последней выгрузке (deprecated) via ``GET /autoload/v3/reports/last_completed_report``.
-
-        See: https://developers.avito.ru/api-catalog/autoload/documentation
-        """
+        """Статистика по последней выгрузке (deprecated) via ``GET /autoload/v3/reports/last_completed_report``."""
         return await self(GetLastCompletedReportV3())
 
     async def get_report_by_id_v3(self, report_id: int) -> ReportAutoloadV3:
         """Статистика по конкретной выгрузке (deprecated) via ``GET /autoload/v3/reports/{report_id}``.
-
-        See: https://developers.avito.ru/api-catalog/autoload/documentation
 
         Args:
             report_id: Идентификатор отчёта (ID)
@@ -295,8 +255,6 @@ class AutoloadFacade(FacadeBase):
     ) -> GetUploadsResponse:
         """История загрузок via ``GET /autoload/v4/uploads``.
 
-        See: https://developers.avito.ru/api-catalog/autoload/documentation
-
         Args:
             per_page: Количество загрузок на странице
             page: Номер страницы
@@ -308,10 +266,7 @@ class AutoloadFacade(FacadeBase):
         )
 
     async def get_current_upload(self) -> UploadAutoloadV4:
-        """Текущая загрузка via ``GET /autoload/v4/uploads/current``.
-
-        See: https://developers.avito.ru/api-catalog/autoload/documentation
-        """
+        """Текущая загрузка via ``GET /autoload/v4/uploads/current``."""
         return await self(GetCurrentUpload())
 
     async def get_current_upload_items(
@@ -322,8 +277,6 @@ class AutoloadFacade(FacadeBase):
         page: int = 1,
     ) -> GetCurrentUploadItemsResponse:
         """Объявления текущей загрузки via ``GET /autoload/v4/uploads/current/items``.
-
-        See: https://developers.avito.ru/api-catalog/autoload/documentation
 
         Args:
             query: Поиск по одному или нескольким [идентификаторам объявлений из файла](https://www.avito.ru/autoload/documentation/templates/66940?fileFormat=xml#field-Id), перечисленным через «,» или «|». Без параметра — возвращаются все объявления с пагинацией.
@@ -336,10 +289,7 @@ class AutoloadFacade(FacadeBase):
         )
 
     async def get_last_successful_upload(self) -> UploadAutoloadV4:
-        """Последняя успешно завершённая загрузка via ``GET /autoload/v4/uploads/last_successful``.
-
-        See: https://developers.avito.ru/api-catalog/autoload/documentation
-        """
+        """Последняя успешно завершённая загрузка via ``GET /autoload/v4/uploads/last_successful``."""
         return await self(GetLastSuccessfulUpload())
 
     async def get_last_successful_upload_items(
@@ -350,8 +300,6 @@ class AutoloadFacade(FacadeBase):
         page: int = 1,
     ) -> GetLastSuccessfulUploadItemsResponse:
         """Объявления последней успешно завершённой загрузки via ``GET /autoload/v4/uploads/last_successful/items``.
-
-        See: https://developers.avito.ru/api-catalog/autoload/documentation
 
         Args:
             query: Поиск по одному или нескольким [идентификаторам объявлений из файла](https://www.avito.ru/autoload/documentation/templates/66940?fileFormat=xml#field-Id), перечисленным через «,» или «|». Без параметра — возвращаются все объявления с пагинацией.

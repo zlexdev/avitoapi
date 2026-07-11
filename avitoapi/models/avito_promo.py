@@ -493,8 +493,8 @@ class StatsAccountsItemsFilter(AvitoObject):
     See: https://developers.avito.ru/api-catalog/avito-promo/documentation
     """
 
-    category_i_ds: list[int] | None = Field(None, alias="categoryIDs")
-    employee_i_ds: list[int] | None = Field(None, alias="employeeIDs")
+    category_ids: list[int] | None = Field(None, alias="categoryIDs")
+    employee_ids: list[int] | None = Field(None, alias="employeeIDs")
 
 
 class StatsAccountsItemsSort(AvitoObject):
@@ -583,8 +583,8 @@ class StatsAccountsSpendingsFilter(AvitoObject):
     See: https://developers.avito.ru/api-catalog/avito-promo/documentation
     """
 
-    category_i_ds: list[int] | None = Field(None, alias="categoryIDs")
-    item_i_ds: list[int] | None = Field(None, alias="itemIDs")
+    category_ids: list[int] | None = Field(None, alias="categoryIDs")
+    item_ids: list[int] | None = Field(None, alias="itemIDs")
 
 
 class AmountDouble(RootModel[float]):

@@ -62,13 +62,7 @@ from ._shared import TooManyRequestsErrorError
 from .common import AvitoErrorBody
 
 if TYPE_CHECKING:
-    from ..methods.autoteka import (
-        GetPreview,
-        GetReport2,
-        GetTeaser,
-        ScoringGetById,
-        SpecificationGetById,
-    )
+    from ..methods.autoteka import GetTeaser
 
 
 class ArbitrationCases(AvitoObject):
@@ -1387,12 +1381,6 @@ class GetPreviewResponseBodyAutoteka(AvitoObject):
 
     result: GetPreviewResponseDataAutoteka | None = None
 
-    def get_preview(self) -> GetPreview:
-        """Build an awaitable :class:`GetPreview` bound to this object (await to execute)."""
-        from ..methods.autoteka import GetPreview
-
-        return GetPreview(preview_id=self.id).as_(self._client)
-
 
 class GetPreviewResponseDataAutoteka(AvitoObject):
     """GetPreviewResponseDataAutoteka response model.
@@ -1419,12 +1407,6 @@ class GetReportAsync(AvitoObject):
     """
 
     result: GetReportResultAsync | None = None
-
-    def get_report2(self) -> GetReport2:
-        """Build an awaitable :class:`GetReport2` bound to this object (await to execute)."""
-        from ..methods.autoteka import GetReport2
-
-        return GetReport2(report_id=self.id).as_(self._client)
 
 
 class GetReportResult(AvitoObject):
@@ -1462,12 +1444,6 @@ class GetScoring(AvitoObject):
 
     result: GetScoringResult | None = None
 
-    def scoring_get_by_id(self) -> ScoringGetById:
-        """Build an awaitable :class:`ScoringGetById` bound to this object (await to execute)."""
-        from ..methods.autoteka import ScoringGetById
-
-        return ScoringGetById(scoring_id=self.id).as_(self._client)
-
 
 class GetScoringResult(AvitoObject):
     """GetScoringResult response model.
@@ -1485,12 +1461,6 @@ class GetSpecificationResponseBodyAutoteka(AvitoObject):
     """
 
     result: GetSpecificationResponseDataAutoteka | None = None
-
-    def specification_get_by_id(self) -> SpecificationGetById:
-        """Build an awaitable :class:`SpecificationGetById` bound to this object (await to execute)."""
-        from ..methods.autoteka import SpecificationGetById
-
-        return SpecificationGetById(specification_id=self.id).as_(self._client)
 
 
 class GetSpecificationResponseDataAutoteka(AvitoObject):

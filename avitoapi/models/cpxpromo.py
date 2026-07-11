@@ -179,7 +179,7 @@ class GetPromotionsByItemIdsIn(AvitoObject):
     See: https://developers.avito.ru/api-catalog/cpxpromo/documentation
     """
 
-    item_i_ds: list[int] = Field(..., min_length=1, max_length=200, alias="itemIDs")
+    item_ids: list[int] = Field(..., min_length=1, max_length=200, alias="itemIDs")
 
 
 class GetPromotionsByItemIdsOut(AvitoObject):

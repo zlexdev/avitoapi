@@ -32,7 +32,7 @@ class GetPromotionsByItemIds(BaseMethod[GetPromotionsByItemIdsOut]):
     __http_method__: ClassVar[str] = "POST"
     __endpoint__: ClassVar[str] = "/cpxpromo/1/getPromotionsByItemIds"
 
-    item_i_ds: list[int] = Field(..., min_length=1, max_length=200, alias="itemIDs")
+    item_ids: list[int] = Field(..., min_length=1, max_length=200, alias="itemIDs")
 
 
 class RemovePromotion2(BaseMethod[RemovePromotion2Response]):

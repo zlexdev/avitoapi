@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from pydantic import Field, RootModel
 
@@ -73,8 +73,6 @@ from ..enums.job import (
     Resume20ParamsRazreshenieNaRabotuVRossii,
     Resume20ParamsSchedule,
     ResumeContactType,
-    ResumeGetItemFields,
-    ResumeGetItemParams,
     RetailEquipmentTypeRoot,
     RetailEquipmentTypeValue,
     RetailShopTypeRoot,
@@ -153,9 +151,6 @@ from ..enums.job import (
 from ._base import AvitoObject
 from ._shared import TooManyRequestsErrorError
 from .common import AvitoErrorBody, TZDatetime
-
-if TYPE_CHECKING:
-    from ..methods.job import ResumeGetContacts, ResumeGetItem
 
 
 class ActivationForbiddenError(AvitoObject):
@@ -1034,25 +1029,6 @@ class ResumeContacts(AvitoObject):
     contacts: list[ResumeContact] | None = None
     full_name: ResumeContactsFullName | None = None
     name: str | None = None
-
-    def resume_get_contacts(self, employee_id: int | None = None) -> ResumeGetContacts:
-        """Build an awaitable :class:`ResumeGetContacts` bound to this object (await to execute)."""
-        from ..methods.job import ResumeGetContacts
-
-        return ResumeGetContacts(resume_id=self.id, employee_id=employee_id).as_(self._client)
-
-    def resume_get_item(
-        self,
-        fields: ResumeGetItemFields | None = None,
-        params: ResumeGetItemParams | None = None,
-        photos: bool = False,
-    ) -> ResumeGetItem:
-        """Build an awaitable :class:`ResumeGetItem` bound to this object (await to execute)."""
-        from ..methods.job import ResumeGetItem
-
-        return ResumeGetItem(resume_id=self.id, fields=fields, params=params, photos=photos).as_(
-            self._client
-        )
 
 
 class ResumeContactsFullName(AvitoObject):

@@ -18,8 +18,6 @@ class UserFacade(FacadeBase):
     ) -> ResponseOperationsHistory:
         """Получение истории операций пользователя via ``POST /core/v1/accounts/operations_history/``.
 
-        See: https://developers.avito.ru/api-catalog/user/documentation
-
         Args:
             date_time_from: Время выборки от. Не далее одного года в прошлое от текущего момента.
             date_time_to: Время выборки до (диапазон между dateTimeFrom и dateTimeTo должен быть не более одной недели)
@@ -29,16 +27,11 @@ class UserFacade(FacadeBase):
         )
 
     async def get_user_info_self(self) -> UserInfoSelf:
-        """Получение информации об авторизованном пользователе via ``GET /core/v1/accounts/self``.
-
-        See: https://developers.avito.ru/api-catalog/user/documentation
-        """
+        """Получение информации об авторизованном пользователе via ``GET /core/v1/accounts/self``."""
         return await self(GetUserInfoSelf())
 
     async def get_user_balance(self, user_id: int | None = None) -> Balance:
         """Получение баланса кошелька пользователя via ``GET /core/v1/accounts/{user_id}/balance/``.
-
-        See: https://developers.avito.ru/api-catalog/user/documentation
 
         Args:
             user_id: Идентификатор пользователя (клиента)

@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from pydantic import Field, RootModel
 
@@ -88,9 +88,6 @@ from ..enums.delivery import (
 )
 from ._base import AvitoObject
 from .common import AvitoErrorBody, TZDatetime
-
-if TYPE_CHECKING:
-    from ..methods.delivery import GetTask
 
 
 class AddTariffReply(AvitoObject):
@@ -302,12 +299,12 @@ class AnnouncementPackage(AvitoObject):
 
     Attributes:
         id: Идентификатор грузоместа (ШК грузоместа)
-        parcel_i_ds: Список посылок
+        parcel_ids: Список посылок
         seal_id: Номер пломбы
     """
 
     id: str
-    parcel_i_ds: list[str] = Field(..., alias="parcelIDs")
+    parcel_ids: list[str] = Field(..., alias="parcelIDs")
     seal_id: str | None = Field(None, alias="sealID")
 
 
@@ -2232,12 +2229,6 @@ class GetTaskReply(AvitoObject):
     data: GetTaskData | None = None
     error: AvitoErrorBody | None = None
 
-    def get_task(self) -> GetTask:
-        """Build an awaitable :class:`GetTask` bound to this object (await to execute)."""
-        from ..methods.delivery import GetTask
-
-        return GetTask(task_id=self.id).as_(self._client)
-
 
 class GetTerminalsTaskReply(AvitoObject):
     """GetTerminalsTaskReply response model.
@@ -2385,12 +2376,12 @@ class SandboxCreateAnnouncementPackage(AvitoObject):
 
     Attributes:
         id: Штрихкод идентификатор грузоместа.
-        parcel_i_ds: Список идентификаторов посылок Авито.
+        parcel_ids: Список идентификаторов посылок Авито.
         seal_id: Номер пломбы грузоместа.
     """
 
     id: str
-    parcel_i_ds: list[str] = Field(..., alias="parcelIDs")
+    parcel_ids: list[str] = Field(..., alias="parcelIDs")
     seal_id: str | None = Field(None, alias="sealID")
 
 
