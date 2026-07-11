@@ -232,44 +232,6 @@ cls V1DeleteGroupsIn(AvitoObject)
 cls V1GetAccountBalanceByIdOut(AvitoObject)
 
 cls V1GetAccountByIdOut(AvitoObject)
-  v1_get_account_by_id() -> V1GetAccountById
-    # Build an awaitable :class:`V1GetAccountById` bound to this object (await to execute).
-  v1_create_account(contact: V1CreateAccountContact, inn: str, legal_address: str, legal_type: LegalType, long_name: str, ogrn: str, short_name: str, actual_address: str? = None, kpp: str? = None) -> V1CreateAccount
-    # Build an awaitable :class:`V1CreateAccount` bound to this object (await to execute).
-  v1_add_user(role: UserRole, user_id: int) -> V1AddUser
-    # Build an awaitable :class:`V1AddUser` bound to this object (await to execute).
-  v1_get_advertisers_list(filter: AdvertiserFilter, limit: int, page: int) -> V1GetAdvertisersList
-    # Build an awaitable :class:`V1GetAdvertisersList` bound to this object (await to execute).
-  v1_get_account_balance_by_id() -> V1GetAccountBalanceById
-    # Build an awaitable :class:`V1GetAccountBalanceById` bound to this object (await to execute).
-  v1_transfer_bonus(account_id_to: int, amount: int) -> V1TransferBonus
-    # Build an awaitable :class:`V1TransferBonus` bound to this object (await to execute).
-  v1_get_campaigns_list(filter: CampaignsFilter, limit: int, page: int) -> V1GetCampaignsList
-    # Build an awaitable :class:`V1GetCampaignsList` bound to this object (await to execute).
-  v1_get_child_accounts_list() -> V1GetChildAccountsList
-    # Build an awaitable :class:`V1GetChildAccountsList` bound to this object (await to execute).
-  v1_get_child_accounts_with_balances_list() -> V1GetChildAccountsWithBalancesList
-    # Build an awaitable :class:`V1GetChildAccountsWithBalancesList` bound to this object (await to execute).
-  v1_get_contracts_list(filter: ContractsFilter, limit: int, page: int) -> V1GetContractsList
-    # Build an awaitable :class:`V1GetContractsList` bound to this object (await to execute).
-  v1_create_advertiser(inn: str, legal_address: str, legal_role: LegalRole, legal_type: LegalType, long_name: str, ogrn: str, short_name: str, actual_address: str? = None, kpp: str? = None) -> V1CreateAdvertiser
-    # Build an awaitable :class:`V1CreateAdvertiser` bound to this object (await to execute).
-  v1_create_contract(advertiser_id: int, description: ContractCounterpartyType, type_: ContractType, cid: str? = None, date_: date? = None, intermediary: CreteIntermediaryIn? = None, is_funds_allocation_to_principal: bool? = None, is_reporting_required: bool? = None, number: str? = None, object: ContractAction? = None, parent_id: int? = None, subject: ContractSubject? = None) -> V1CreateContract
-    # Build an awaitable :class:`V1CreateContract` bound to this object (await to execute).
-  v1_create_non_payer_account(is_self_advertising_enabled: bool, short_name: str) -> V1CreateNonPayerAccount
-    # Build an awaitable :class:`V1CreateNonPayerAccount` bound to this object (await to execute).
-  v1_get_creatives_list(filter: CreativesFilter, limit: int, page: int) -> V1GetCreativesList
-    # Build an awaitable :class:`V1GetCreativesList` bound to this object (await to execute).
-  v1_delete_user() -> V1DeleteUser
-    # Build an awaitable :class:`V1DeleteUser` bound to this object (await to execute).
-  v1_transfer_funds(account_id_to: int, amount: int) -> V1TransferFunds
-    # Build an awaitable :class:`V1TransferFunds` bound to this object (await to execute).
-  v1_get_groups_list(filter: GroupsFilter, limit: int, page: int) -> V1GetGroupsList
-    # Build an awaitable :class:`V1GetGroupsList` bound to this object (await to execute).
-  v1_set_user_role(role: UserRole, user_id: int) -> V1SetUserRole
-    # Build an awaitable :class:`V1SetUserRole` bound to this object (await to execute).
-  v1_get_users_list_by_account() -> V1GetUsersListByAccount
-    # Build an awaitable :class:`V1GetUsersListByAccount` bound to this object (await to execute).
 
 cls V1GetAdvertisersListIn(AvitoObject)
 
@@ -936,16 +898,12 @@ cls GetActivePackageResponseDataAutoteka(AvitoObject)
 cls GetEptsResult(AvitoObject)
 
 cls GetPreviewResponseBodyAutoteka(AvitoObject)
-  get_preview() -> GetPreview
-    # Build an awaitable :class:`GetPreview` bound to this object (await to execute).
 
 cls GetPreviewResponseDataAutoteka(AvitoObject)
 
 cls GetReport(AvitoObject)
 
 cls GetReportAsync(AvitoObject)
-  get_report2() -> GetReport2
-    # Build an awaitable :class:`GetReport2` bound to this object (await to execute).
 
 cls GetReportResult(AvitoObject)
 
@@ -954,14 +912,10 @@ cls GetReportResultAsync(AvitoObject)
 cls GetReportsListResponseDataAutoteka(AvitoObject)
 
 cls GetScoring(AvitoObject)
-  scoring_get_by_id() -> ScoringGetById
-    # Build an awaitable :class:`ScoringGetById` bound to this object (await to execute).
 
 cls GetScoringResult(AvitoObject)
 
 cls GetSpecificationResponseBodyAutoteka(AvitoObject)
-  specification_get_by_id() -> SpecificationGetById
-    # Build an awaitable :class:`SpecificationGetById` bound to this object (await to execute).
 
 cls GetSpecificationResponseDataAutoteka(AvitoObject)
 
@@ -2009,8 +1963,6 @@ cls GetTariffTaskReplyData(AvitoObject)
 cls GetTaskData(AvitoObject)
 
 cls GetTaskReply(AvitoObject)
-  get_task() -> GetTask
-    # Build an awaitable :class:`GetTask` bound to this object (await to execute).
 
 cls GetTerminalsTaskReply(AvitoObject)
 
@@ -2374,7 +2326,7 @@ cls StatisticsDateTo(RootModel[str])
 cls StatisticsFields(RootModel[list[StatisticsFieldsRoot]])
   # Root wrapper for a top-level ``list[StatisticsFieldsRoot]`` response.
 
-cls StatisticsItemIDs(RootModel[list[int]])
+cls StatisticsItemIds(RootModel[list[int]])
   # Root wrapper for a top-level ``list[int]`` response.
 
 cls VasPricesResp(RootModel[list[ItemVasPricesResp]])
@@ -2504,10 +2456,6 @@ cls Resume20ParamsLanguageList(AvitoObject)
 cls ResumeContact(AvitoObject)
 
 cls ResumeContacts(AvitoObject)
-  resume_get_contacts(employee_id: int? = None) -> ResumeGetContacts
-    # Build an awaitable :class:`ResumeGetContacts` bound to this object (await to execute).
-  resume_get_item(fields: ResumeGetItemFields? = None, params: ResumeGetItemParams? = None, photos: bool = False) -> ResumeGetItem
-    # Build an awaitable :class:`ResumeGetItem` bound to this object (await to execute).
 
 cls ResumeContactsFullName(AvitoObject)
 
