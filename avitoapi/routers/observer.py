@@ -16,6 +16,7 @@ from dataclasses import dataclass, field
 from typing import Generic, TypeVar
 
 from ..events._base import Event
+from .errors import SkipHandler
 
 Filter = Callable[[Event], bool]
 Handler = Callable[..., Awaitable[object]]
@@ -76,14 +77,25 @@ class HandlerManager(Generic[EventT_contra]):
             return False
 
     async def trigger(self, event: EventT_contra, ctx: object) -> bool:
-        """Run every matching handler. Returns ``True`` if anything fired."""
+        """Run every matching handler. Returns ``True`` if anything fired.
+
+        A handler raising :class:`~avitoapi.routers.errors.SkipHandler` is
+        skipped without counting as fired; :class:`CancelPropagation` bubbles
+        up to :meth:`Router.propagate` to halt the whole walk. A handler that
+        calls ``ctx.stop_propagation()`` stops further handlers here too.
+        """
 
         fired = False
         for spec in self.handlers:
             if not spec.matches(event):
                 continue
-            await spec.handler(event, ctx)
+            try:
+                await spec.handler(event, ctx)
+            except SkipHandler:
+                continue
             fired = True
+            if getattr(ctx, "is_stopped", False):
+                break
         return fired
 
 

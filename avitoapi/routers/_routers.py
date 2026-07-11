@@ -81,8 +81,9 @@ from ..events.orders import (
 from ..events.reviews import ReviewAnswered, ReviewReceived
 from ..logging import get_logger
 from .context import EventContext
+from .errors import CancelPropagation
 from .middleware import MiddlewareChain
-from .observer import EventObserver, Filter, Handler, HandlerManager
+from .observer import EventObserver, Filter, Handler, HandlerManager, HandlerSpec
 
 log = get_logger(__name__)
 
@@ -281,11 +282,6 @@ class Router:
             )
         router.parent = self
         self.sub_routers.append(router)
-        # Merge child observer handler lists into parent for introspection.
-        for name, child_mgr in router._managers.items():
-            parent_mgr = self._managers.get(name)
-            if parent_mgr is not None:
-                parent_mgr.handlers.extend(child_mgr.handlers)
         return router
 
     def include_routers(self, *routers: Router) -> None:
@@ -299,6 +295,17 @@ class Router:
         for child in self.sub_routers:
             yield from child.iter_routers()
 
+    def iter_handlers(self) -> Iterable[tuple[str, HandlerSpec]]:
+        """Read-only walk of ``(route_name, handler_spec)`` across self + descendants.
+
+        Introspection only — replaces the old parent/child handler-list merge,
+        which double-executed sub-router handlers during propagation.
+        """
+
+        for router in self.iter_routers():
+            for name, manager in router._managers.items():
+                for spec in manager.handlers:
+                    yield name, spec
 
     def _manager(self, name: str, event_filter: Filter | None) -> HandlerManager[Event]:
         manager: HandlerManager[Event] = HandlerManager(name=name, event_filter=event_filter)
@@ -330,13 +337,22 @@ class Router:
                 inner = self.inner_middleware.wrap(self._call_one(manager))
                 if await inner(_event, _ctx):
                     fired = True
+                if _ctx.is_stopped:
+                    return fired
             for child in self.sub_routers:
                 if await child.propagate(_event, _ctx):
                     fired = True
+                if _ctx.is_stopped:
+                    return fired
             return fired
 
         wrapped = self.outer_middleware.wrap(_run)
-        result = await wrapped(event, ctx)
+        try:
+            result = await wrapped(event, ctx)
+        except CancelPropagation:
+            # A handler asked to halt the walk — a clean stop, not a failure.
+            ctx.stop_propagation()
+            result = True
         if result:
             ctx.handled = True
         return bool(result)
