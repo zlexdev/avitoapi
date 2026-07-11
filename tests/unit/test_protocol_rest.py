@@ -2,7 +2,7 @@
 
 Coverage:
 - Verb routing: GET fields land in ``query``, POST/PUT/PATCH fields in ``body``.
-- Path-templating: ``__path_fields__`` placeholders resolved in the URL.
+- Path-templating: ``{placeholder}`` tokens in ``__endpoint__`` resolved in the URL.
 - Idempotency-Key header is auto-injected for ``__idempotent_mutation__ = True``.
 - Idempotency-Key is deduplicated across retries via storage (same key reused).
 - Non-idempotent mutation (``__idempotent_mutation__`` unset) gets no header.
@@ -14,14 +14,12 @@ from typing import Any, ClassVar
 
 from avitoapi.config import ClientConfig
 from avitoapi.methods._base import BaseMethod
-from avitoapi.methods.accounts import GetSelf
-from avitoapi.models.accounts import Account
+from avitoapi.methods.user import GetUserInfoSelf
+from avitoapi.models.user import UserInfoSelf
 from avitoapi.protocol.rest import RestProtocol
 from avitoapi.sessions._models import RequestContext
 from avitoapi.storage.memory import MemoryStorage
 from pydantic import BaseModel
-
-# ---- helper method-classes used only for this test module -----------------
 
 
 class _EchoResponse(BaseModel):
@@ -46,7 +44,6 @@ class _GetThing(BaseMethod[_EchoResponse]):
     __http_method__: ClassVar[str] = "GET"
     __endpoint__: ClassVar[str] = "/core/v1/things/{thing_id}"
     __returning__: ClassVar[type[BaseModel]] = _EchoResponse
-    __path_fields__: ClassVar[frozenset[str]] = frozenset({"thing_id"})
 
     thing_id: str
     expand: str | None = None
@@ -60,9 +57,6 @@ class _UnsafePost(BaseMethod[_EchoResponse]):
     __returning__: ClassVar[type[BaseModel]] = _EchoResponse
 
     payload: str
-
-
-# ---- shared helpers --------------------------------------------------------
 
 
 class _StubClient:
@@ -80,9 +74,6 @@ def _ctx(
         client=_StubClient(config=client_config, storage=storage),
         method=method,
     )
-
-
-# ---- verb routing ----------------------------------------------------------
 
 
 async def test_build_request_routes_get_fields_into_query(
@@ -125,9 +116,6 @@ async def test_build_request_routes_post_fields_into_body(
     assert decoded.get("value") == 42
 
 
-# ---- path templating -------------------------------------------------------
-
-
 async def test_build_request_substitutes_path_placeholders(
     client_config: ClientConfig,
     storage: MemoryStorage,
@@ -155,18 +143,12 @@ async def test_build_request_leaves_path_field_out_of_query(
     assert "thing_id" not in prepared.query
 
 
-# ---- is_idempotent ---------------------------------------------------------
-
-
 def test_is_idempotent_true_for_get_methods() -> None:
-    assert RestProtocol().is_idempotent(GetSelf()) is True
+    assert RestProtocol().is_idempotent(GetUserInfoSelf()) is True
 
 
 def test_is_idempotent_false_for_non_retry_safe_post() -> None:
     assert RestProtocol().is_idempotent(_UnsafePost(payload="x")) is False
-
-
-# ---- Idempotency-Key injection ---------------------------------------------
 
 
 async def test_build_request_injects_idempotency_key_when_method_opts_in(
@@ -235,9 +217,6 @@ async def test_build_request_uses_different_idempotency_key_for_different_body(
     assert prepared_a.headers["Idempotency-Key"] != prepared_b.headers["Idempotency-Key"]
 
 
-# ---- decode_response -------------------------------------------------------
-
-
 def test_decode_response_validates_into_returning_model(
     accounts_self_payload: dict[str, Any],
 ) -> None:
@@ -252,7 +231,7 @@ def test_decode_response_validates_into_returning_model(
         body=json.dumps(accounts_self_payload).encode(),
     )
 
-    result = proto.decode_response(GetSelf(), raw)
+    result = proto.decode_response(GetUserInfoSelf(), raw)
 
-    assert isinstance(result, Account)
+    assert isinstance(result, UserInfoSelf)
     assert result.id == accounts_self_payload["id"]

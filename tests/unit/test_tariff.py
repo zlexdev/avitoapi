@@ -54,10 +54,11 @@ async def test_get_tariff_info_decodes_envelope(tr_client: tuple[Client, FakeSes
     info = await client(GetTariffInfo())
 
     assert isinstance(info, TariffInfo)
-    assert info.name == "Premium"
-    assert info.plan == "premium_v3"
-    assert info.limits.get("items") == 5000
-    assert info.expires_at is not None
+    assert info.current is not None
+    assert info.current.level == "premium_v3"
+    assert info.current.is_active is True
+    assert info.current.price is not None
+    assert info.current.price.price == 990.0
     sent = session.sent[-1]
     assert sent.http_method == "GET"
     assert sent.url.endswith("/tariff/info/1")

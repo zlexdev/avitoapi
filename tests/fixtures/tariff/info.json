@@ -1,9 +1,11 @@
 {
-  "name": "Premium",
-  "plan": "premium_v3",
-  "limits": {
-    "items": 5000,
-    "vas_per_day": 25
+  "current": {
+    "isActive": true,
+    "level": "premium_v3",
+    "bonus": 100,
+    "startTime": 1735689600,
+    "closeTime": 1767225599,
+    "price": {"price": 990.0, "originalPrice": 1490.0}
   },
-  "expiresAt": "2026-12-31T23:59:59+00:00"
+  "scheduled": null
 }
