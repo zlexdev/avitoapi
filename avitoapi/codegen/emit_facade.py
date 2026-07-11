@@ -104,7 +104,7 @@ def _render_call(m: MethodSpec, note: str) -> str:
     ]
     call = f"{m.class_name}({', '.join(call_args)})"
 
-    method_name = naming.snake(m.class_name)
+    method_name = m.method_name
     doc = render.class_docstring(m.doc, "Args", [(f.name, f.description) for f in m.fields], indent="        ", note=note)
     kw, invoke = ("def", f"self({call})") if m.paginated else ("async def", f"await self({call})")
     return "\n".join(

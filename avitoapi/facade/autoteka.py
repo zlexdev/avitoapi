@@ -364,7 +364,7 @@ class AutotekaFacade(FacadeBase):
             )
         )
 
-    async def get_access_token(
+    async def get_access_token_autoteka(
         self, grant_type: str, client_id: str, client_secret: str
     ) -> GetAccessTokenResponse:
         """Получение access token via ``POST /token``.

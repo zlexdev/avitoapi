@@ -33,6 +33,7 @@ class MethodSpec:
     binary: bool
     return_symbol: str | None  # model name to import from the models module
     paginated: bool
+    method_name: str  # snake(class_name); globally de-duplicated for the facade (see collisions.py)
 
 
 @dataclass(slots=True)
@@ -106,6 +107,7 @@ def build_domain(domain: Domain) -> GeneratedDomain:
         gen.methods.append(
             MethodSpec(
                 class_name=op.class_name,
+                method_name=naming.snake(op.class_name),
                 operation_id=op.operation_id,
                 base=base,
                 generic_arg=generic,

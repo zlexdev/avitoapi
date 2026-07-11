@@ -92,7 +92,7 @@ class OrderManagementFacade(FacadeBase):
         """
         return await self(ApplyTransition(order_id=order_id, params=params, transition=transition))
 
-    async def check_confirmation_code(
+    async def check_confirmation_code_order_management(
         self, confirm_code: str | None = None, parcel_id: str | None = None
     ) -> OrderCheckConfirmationCodeResponse:
         """Метод для проверки кода подтверждения заказа. via ``POST /order-management/1/order/checkConfirmationCode``.
