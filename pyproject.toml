@@ -81,6 +81,8 @@ ignore = [
     "B027",     # empty abstract default OK on ABC hook methods
     "RUF012",   # mutable class default — explicit override on Pydantic models
     "RUF100",   # let project decide on individual noqa lines
+    "RUF001", "RUF002", "RUF003",  # ambiguous Cyrillic — intentional (Russian API domain)
+    "PLC2401",  # non-ASCII identifiers — Avito enum values are Russian
 ]
 
 [tool.ruff.lint.per-file-ignores]

@@ -8,8 +8,44 @@ so handlers get full IDE completion + type narrowing on ``message.type``.
 
 from __future__ import annotations
 
-from ..models.messenger import Message
+from enum import StrEnum
+
+from ..models._base import AvitoObject
 from ._base import Event as BaseEvent
+
+
+class MessageType(StrEnum):
+    """All ``type`` values Avito has shipped on the messenger surface.
+
+    Minimal local enum: no generated enum matches 1:1 — ``WebhookMessageType``
+    lacks ``UNKNOWN`` and spells the app-call variant ``APPCALL``/``VIDEO``
+    instead of this SDK's ``APP_CALL`` naming used by :func:`avitoapi.routers.install_observers`.
+    """
+
+    TEXT = "text"
+    IMAGE = "image"
+    LINK = "link"
+    ITEM = "item"
+    LOCATION = "location"
+    VOICE = "voice"
+    CALL = "call"
+    FILE = "file"
+    SYSTEM = "system"
+    APP_CALL = "appCall"
+    DELETED = "deleted"
+    UNKNOWN = "_unknown"
+
+
+class Message(AvitoObject):
+    """Normalized messenger payload for :class:`NewMessage`.
+
+    Minimal local DTO: no generated model matches this shape —
+    ``MessagesRoot``/``WebhookMessage`` alias their discriminator field as
+    ``type_`` (Pydantic alias ``"type"``), while :func:`avitoapi.routers.install_observers`
+    narrows on a plain ``.type`` attribute for both the webhook and REST paths.
+    """
+
+    type: MessageType | None = None
 
 
 class MessengerEvent(BaseEvent, event_name="messenger"):

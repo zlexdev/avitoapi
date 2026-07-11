@@ -49,3 +49,7 @@ Thumbs.db
 
 # claude code session state
 .claude/
+
+# codegen: local pre-regen backup (originals live in git history)
+avitoapi/_backup_handwritten/
+avitoapi/codegen/_spec_cache/

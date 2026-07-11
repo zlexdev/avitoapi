@@ -24,6 +24,7 @@ from ..events.items import (
     ItemBlocked,
     ItemPublished,
     ItemSold,
+    ItemStatus,
     ItemStatusChanged,
     ItemUnblocked,
 )
@@ -36,6 +37,7 @@ from ..events.orders import (
     OrderDelivered,
     OrderRefunded,
     OrderShipped,
+    OrderStatus,
     OrderStatusChanged,
 )
 from ..routers.middleware import MiddlewareChain, NextHandler
@@ -223,8 +225,6 @@ class AvitoWebhookHandler:
                 refunded_at=ts,
             )
         if kind in ("order_status_changed", "order"):
-            from ..models.orders import OrderStatus  # noqa: PLC0415
-
             def _status(raw: object) -> OrderStatus:
                 try:
                     return OrderStatus(str(raw))
@@ -257,8 +257,6 @@ class AvitoWebhookHandler:
         if kind == "item_archived":
             return ItemArchived(account_id=account_id, item_id=item_id, archived_at=ts)
         if kind in ("item_status_changed", "item"):
-            from ..models.items import ItemStatus  # noqa: PLC0415
-
             def _istatus(raw: object) -> ItemStatus:
                 try:
                     return ItemStatus(str(raw))
