@@ -6,7 +6,6 @@ See: https://developers.avito.ru/api-catalog/str/documentation"""
 from __future__ import annotations
 
 from datetime import date
-from typing import Any
 
 from pydantic import Field
 
@@ -21,7 +20,7 @@ from ..enums.short_term_rental import (
     RealtyBookingStatus,
 )
 from ._base import AvitoObject
-from .common import AvitoErrorBody
+from ._shared import DaysResponse
 
 
 class AvitoBooking(AvitoObject):
@@ -59,7 +58,7 @@ class BaseParams(AvitoObject):
     instant: BaseParamsInstant | None = None
     minimal_duration: int | None = None
     night_price: int | None = None
-    refund: BaseParamsRefund | None = None
+    refund: DaysResponse | None = None
 
 
 class BaseParamsDiscount(AvitoObject):
@@ -124,16 +123,6 @@ class BaseParamsInstant(AvitoObject):
     min_days: int | None = None
 
 
-class BaseParamsRefund(AvitoObject):
-    """Параметры возврата
-
-    Attributes:
-        days: Количество дней до заезда, когда за отмену налагается штраф
-    """
-
-    days: int | None = None
-
-
 class ConflictedInterval(AvitoObject):
     """Период, конфликтующий с оплаченными бронями на Авито
 
@@ -176,12 +165,6 @@ class DatesOverlapBookingErrorError(AvitoObject):
     code: int
     conflicts: list[ConflictedInterval]
     message: str
-
-
-class Error(AvitoObject):
-    """Error response model."""
-
-    error: AvitoErrorBody | None = None
 
 
 class ParamPriceItemRealty(AvitoObject):
@@ -318,26 +301,6 @@ class RealtyBookingSafeDeposit(AvitoObject):
     total_amount: int | None = None
 
 
-class ValidatingError(AvitoObject):
-    """ValidatingError response model."""
-
-    error: ValidatingErrorError | None = None
-
-
-class ValidatingErrorError(AvitoObject):
-    """ValidatingErrorError response model.
-
-    Attributes:
-        code: Код ошибки
-        fields: Информация об ошибке валидации параметров в формате ключ-значение
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    fields: dict[str, Any] | None = None
-    message: str
-
-
 class PutBookingsInfoResponse(AvitoObject):
     """PutBookingsInfoResponse response model.
 
@@ -468,13 +431,3 @@ class PostBaseParamsInstant(AvitoObject):
     active: bool | None = None
     max_days: int | None = None
     min_days: int | None = None
-
-
-class PostBaseParamsRefund(AvitoObject):
-    """Параметры возврата
-
-    Attributes:
-        days: Количество дней до заезда, когда за отмену налагается штраф
-    """
-
-    days: int | None = None

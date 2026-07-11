@@ -52,13 +52,3 @@ class StocksInfoResultStocks(AvitoObject):
     is_unlimited: bool
     item_id: int
     quantity: int
-
-
-class UnauthError(AvitoObject):
-    """UnauthError response model.
-
-    Attributes:
-        message: Сообщение о том, что пользователь не авторизован. Если текст ошибки \"Unsupported flow for endpoint\", значит в авторизационном заголовке \"X-Oauth-Flow\" не передан \"authorization_code\"
-    """
-
-    message: str

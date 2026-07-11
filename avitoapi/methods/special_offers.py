@@ -7,10 +7,10 @@ from typing import ClassVar
 
 from pydantic import Field
 
+from ..models._shared import OkResponse
 from ..models.special_offers import (
     OpenApiAvailableResponseBody,
     OpenApiMultiConfirmDispatches,
-    OpenApiMultiConfirmResponseBody,
     OpenApiMultiCreateResponseBody,
     OpenApiStatsResponseBody,
     OpenApiTariffInfoResponseBody,
@@ -33,7 +33,7 @@ class OpenApiAvailable(BaseMethod[OpenApiAvailableResponseBody]):
     item_ids: list[int] = Field(..., alias="itemIds")
 
 
-class OpenApiMultiConfirm(BaseMethod[OpenApiMultiConfirmResponseBody]):
+class OpenApiMultiConfirm(BaseMethod[OkResponse]):
     """Отправка и оплата рассылки via ``POST /special-offers/v1/multiConfirm``.
 
     See: https://developers.avito.ru/api-catalog/sbc-gateway/documentation

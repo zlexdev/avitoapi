@@ -8,23 +8,13 @@ from __future__ import annotations
 from pydantic import Field
 
 from ._base import AvitoObject
-from ._shared import TooManyRequestsErrorError
-
-
-class Error(AvitoObject):
-    """Error response model.
-
-    Attributes:
-        message: Текст ошибки
-    """
-
-    message: str
+from ._shared import CodeResponse
 
 
 class TooManyRequestsError(AvitoObject):
     """TooManyRequestsError response model."""
 
-    error: TooManyRequestsErrorError | None = None
+    error: CodeResponse | None = None
 
 
 class GetUserBidsResponse(AvitoObject):

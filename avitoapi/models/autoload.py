@@ -42,7 +42,7 @@ from ..enums.autoload import (
     UploadItemAutoloadV4AvitoStatus,
 )
 from ._base import AvitoObject
-from .common import AvitoErrorBody, TZDatetime
+from .common import TZDatetime
 
 if TYPE_CHECKING:
     from ..methods.autoload import (
@@ -269,12 +269,6 @@ class FeedsDataRoot(AvitoObject):
 
     feed_name: str
     feed_url: str
-
-
-class FieldErrorV2(AvitoObject):
-    """FieldErrorV2 response model."""
-
-    error: AvitoErrorBody | None = None
 
 
 class FieldValue(AvitoObject):

@@ -73,12 +73,12 @@ from ..enums.job import (
     VacancyUpdateV2WorkFormat,
     WorkerClassValue,
 )
+from ..models._shared import EmployeeIdResponse, OkResponse
 from ..models.common import TZDatetime
 from ..models.job import (
     AgeCriteria,
     ApplicationsGetStatesResult,
     ApplicationsSetIsViewedApplies,
-    ApplicationsWebhookDeleteResponse,
     ApplyProcessing,
     Contacts,
     Coordinates,
@@ -100,7 +100,6 @@ from ..models.job import (
     VacancyCreate2Schedule,
     VacancyCreateResult,
     VacancyCreateV2Contacts,
-    VacancyCreateV2Hierarchy,
     VacancyCreateV2Location,
     VacancyCreateV2Salary,
     VacancyStatusesResult,
@@ -109,7 +108,6 @@ from ..models.job import (
     VacancyUpdate2PayoutFrequency,
     VacancyUpdate2SalaryRange,
     VacancyUpdateV2Contacts,
-    VacancyUpdateV2Hierarchy,
     VacancyUpdateV2Location,
     VacancyUpdateV2Salary,
     WebhooksSubscriptionResultList,
@@ -197,7 +195,7 @@ class ApplicationsSetIsViewed(BaseMethod[SetApplicationsIsViewedResult]):
     applies: list[ApplicationsSetIsViewedApplies] | None = None
 
 
-class ApplicationsWebhookDelete(BaseMethod[ApplicationsWebhookDeleteResponse]):
+class ApplicationsWebhookDelete(BaseMethod[OkResponse]):
     """Отключение уведомлений по откликам (webhook) via ``DELETE /job/v1/applications/webhook``.
 
     See: https://developers.avito.ru/api-catalog/job/documentation
@@ -649,7 +647,7 @@ class VacancyCreateV2(BaseMethod[None]):
     facility_type: list[FacilityTypeValue] | None = None
     food_production_shop_type: list[FoodProductionShopTypeValue] | None = None
     grade: Grade | None = None
-    hierarchy: VacancyCreateV2Hierarchy | None = None
+    hierarchy: EmployeeIdResponse | None = None
     image_url: str | None = None
     is_company_car: bool | None = None
     is_side_job: bool | None = None
@@ -764,7 +762,7 @@ class VacancyUpdateV2(BaseMethod[None]):
     facility_type: list[FacilityTypeValue] | None = None
     food_production_shop_type: list[FoodProductionShopTypeValue] | None = None
     grade: Grade | None = None
-    hierarchy: VacancyUpdateV2Hierarchy | None = None
+    hierarchy: EmployeeIdResponse | None = None
     image_url: str | None = None
     is_company_car: bool | None = None
     is_side_job: bool | None = None

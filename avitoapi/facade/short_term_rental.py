@@ -13,6 +13,7 @@ from ..methods.short_term_rental import (
     PutIntervals,
 )
 from ..models._helpers import _resolve_user_id
+from ..models._shared import DaysResponse
 from ..models.short_term_rental import (
     GetRealtyBookingsResponse,
     ParamPriceItemRealty,
@@ -21,7 +22,6 @@ from ..models.short_term_rental import (
     PostBaseParamsFeesCleaning,
     PostBaseParamsFeesPets,
     PostBaseParamsInstant,
-    PostBaseParamsRefund,
     PostRealtyPricesResponse,
     PutBookingsInfoBookings,
     PutBookingsInfoResponse,
@@ -143,7 +143,7 @@ class ShortTermRentalFacade(FacadeBase):
         min_days: int | None = None,
         minimal_duration: int | None = None,
         night_price: int | None = None,
-        days: int | None = None,
+        refund: DaysResponse | None = None,
     ) -> None:
         """Установка базовых параметров via ``POST /realty/v1/items/{item_id}/base``.
 
@@ -159,7 +159,7 @@ class ShortTermRentalFacade(FacadeBase):
             min_days: Минимальное количество дней до заселения для работы МБ (если нет, то без ограничений)
             minimal_duration: Минимальная продолжительность (ночи)
             night_price: Цена проживания за ночь (рубли)
-            days: Количество дней до заезда, когда за отмену налагается штраф
+            refund: Параметры возврата
         """
         return await self.execute(
             PostBaseParams(
@@ -171,6 +171,6 @@ class ShortTermRentalFacade(FacadeBase):
                 instant=PostBaseParamsInstant(active=active, max_days=max_days, min_days=min_days),
                 minimal_duration=minimal_duration,
                 night_price=night_price,
-                refund=PostBaseParamsRefund(days=days),
+                refund=refund,
             )
         )

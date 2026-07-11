@@ -5,14 +5,11 @@ See: https://developers.avito.ru/api-catalog/ratings/documentation"""
 
 from __future__ import annotations
 
-from typing import Any
-
 from pydantic import Field
 
 from ..enums.reviews import ReviewAnswerStatus, ReviewStage
 from ._base import AvitoObject
-from ._shared import TooManyRequestsErrorError
-from .common import AvitoErrorBody
+from ._shared import CodeResponse
 
 
 class CreateAnswerRequestBody(AvitoObject):
@@ -200,45 +197,7 @@ class ReviewSender(AvitoObject):
     name: str
 
 
-class ForbiddenError(AvitoObject):
-    """ForbiddenError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
-class InternalError(AvitoObject):
-    """InternalError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
-class NotFoundError(AvitoObject):
-    """NotFoundError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
 class TooManyRequestsError(AvitoObject):
     """TooManyRequestsError response model."""
 
-    error: TooManyRequestsErrorError | None = None
-
-
-class ValidatingError(AvitoObject):
-    """ValidatingError response model."""
-
-    error: ValidatingErrorError | None = None
-
-
-class ValidatingErrorError(AvitoObject):
-    """ValidatingErrorError response model.
-
-    Attributes:
-        code: Код ошибки
-        fields: Информация об ошибке валидации параметров в формате ключ-значение
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    fields: dict[str, Any] | None = None
-    message: str
+    error: CodeResponse | None = None

@@ -16,9 +16,9 @@ from ..methods.cpa import (
     PhonesInfoFromChats,
     PostCreateComplaint,
 )
+from ..models._shared import BalanceResponse
 from ..models.cpa import (
     BalanceInfoV2Response,
-    BalanceInfoV3Response,
     ChatByActionIdResponse,
     ChatsByTime2Response,
     ChatsByTimeResponse,
@@ -136,6 +136,6 @@ class CpaFacade(FacadeBase):
             ChatsByTime2(date_time_from=date_time_from, limit=limit, offset=offset)
         )
 
-    async def balance_info_v3(self) -> BalanceInfoV3Response:
+    async def balance_info_v3(self) -> BalanceResponse:
         """Баланс via ``POST /cpa/v3/balanceInfo``."""
         return await self.execute(BalanceInfoV3())

@@ -9,20 +9,7 @@ from pydantic import Field
 
 from ..enums.realty_reports import MarketPriceCorrespondenceV1ResponseCorrespondence
 from ._base import AvitoObject
-
-
-class Error(AvitoObject):
-    """Ошибка
-
-    Attributes:
-        code: Код ошибки
-        is_temporary: Признак того, что ошибка временная (можно попробовать повторить запрос через некоторое время)
-        message: Сообщение
-    """
-
-    code: int
-    is_temporary: bool | None = Field(None, alias="isTemporary")
-    message: str
+from ._shared import MessageResponse
 
 
 class MarketPriceCorrespondenceV1Response(AvitoObject):
@@ -33,7 +20,7 @@ class MarketPriceCorrespondenceV1Response(AvitoObject):
     """
 
     correspondence: MarketPriceCorrespondenceV1ResponseCorrespondence | None = None
-    error: Error | None = None
+    error: MessageResponse | None = None
 
 
 class CreateReportForClassifiedResponse(AvitoObject):

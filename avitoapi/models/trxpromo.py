@@ -8,6 +8,7 @@ from __future__ import annotations
 from pydantic import Field
 
 from ._base import AvitoObject
+from ._shared import MessageResponse
 from .common import AvitoErrorBody
 
 
@@ -132,49 +133,25 @@ class CommissionResponseSuccessResultSettings(AvitoObject):
 class ApiV3error400(AvitoObject):
     """ApiV3error400 response model."""
 
-    bad_request: ApiV3error400BadRequest = Field(..., alias="bad-request")
-
-
-class ApiV3error400BadRequest(AvitoObject):
-    """ApiV3error400BadRequest response model."""
-
-    message: str
+    bad_request: MessageResponse = Field(..., alias="bad-request")
 
 
 class ApiV3error401(AvitoObject):
     """ApiV3error401 response model."""
 
-    unauthenticated: ApiV3error401Unauthenticated
-
-
-class ApiV3error401Unauthenticated(AvitoObject):
-    """ApiV3error401Unauthenticated response model."""
-
-    message: str
+    unauthenticated: MessageResponse
 
 
 class ApiV3error403(AvitoObject):
     """ApiV3error403 response model."""
 
-    forbidden: ApiV3error403Forbidden
-
-
-class ApiV3error403Forbidden(AvitoObject):
-    """ApiV3error403Forbidden response model."""
-
-    message: str
+    forbidden: MessageResponse
 
 
 class ApiV3error500(AvitoObject):
     """ApiV3error500 response model."""
 
-    internal_error: ApiV3error500InternalError = Field(..., alias="internal-error")
-
-
-class ApiV3error500InternalError(AvitoObject):
-    """ApiV3error500InternalError response model."""
-
-    message: str
+    internal_error: MessageResponse = Field(..., alias="internal-error")
 
 
 class ApiTrxPromoOpenApiApplyItems(AvitoObject):

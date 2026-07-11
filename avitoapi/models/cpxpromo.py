@@ -8,7 +8,7 @@ from __future__ import annotations
 from pydantic import Field
 
 from ._base import AvitoObject
-from ._shared import TooManyRequestsErrorError
+from ._shared import CodeResponse
 
 
 class AutoBid(AvitoObject):
@@ -131,16 +131,6 @@ class BudgetValue(AvitoObject):
     value_penny: int = Field(..., alias="valuePenny")
 
 
-class Error(AvitoObject):
-    """Error response model.
-
-    Attributes:
-        message: Текст ошибки
-    """
-
-    message: str
-
-
 class GetBidsOut(AvitoObject):
     """GetBidsOut response model.
 
@@ -219,14 +209,4 @@ class ManualPromotion(AvitoObject):
 class TooManyRequestsError(AvitoObject):
     """TooManyRequestsError response model."""
 
-    error: TooManyRequestsErrorError | None = None
-
-
-class RemovePromotion2Response(AvitoObject):
-    """RemovePromotion2Response response model.
-
-    Attributes:
-        message: Текст сообщения
-    """
-
-    message: str
+    error: CodeResponse | None = None

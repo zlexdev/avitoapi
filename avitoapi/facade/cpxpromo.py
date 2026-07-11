@@ -10,7 +10,8 @@ from ..methods.cpxpromo import (
     SaveAutoBid,
     SaveManualBid,
 )
-from ..models.cpxpromo import GetBidsOut, GetPromotionsByItemIdsOut, RemovePromotion2Response
+from ..models._shared import MessageResponse
+from ..models.cpxpromo import GetBidsOut, GetPromotionsByItemIdsOut
 from ._base import FacadeBase
 
 
@@ -25,7 +26,7 @@ class CpxpromoFacade(FacadeBase):
         """Получение текущих цен за целевое действие и бюджетов по нескольким объявлениям via ``POST /cpxpromo/1/getPromotionsByItemIds``."""
         return await self.execute(GetPromotionsByItemIds(item_ids=item_ids))
 
-    async def remove_promotion2(self, item_id: int) -> RemovePromotion2Response:
+    async def remove_promotion2(self, item_id: int) -> MessageResponse:
         """Остановка продвижения via ``POST /cpxpromo/1/remove``.
 
         Args:

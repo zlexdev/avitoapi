@@ -12,7 +12,7 @@ from ..enums.user import (
     ResponseOperationsHistoryItemServiceType,
 )
 from ._base import AvitoObject
-from .common import AvitoErrorBody, TZDatetime
+from .common import TZDatetime
 
 
 class Balance(AvitoObject):
@@ -101,33 +101,3 @@ class UserInfoSelf(AvitoObject):
     phone: str | None = None
     phones: list[str] | None = None
     profile_url: str | None = None
-
-
-class AuthError(AvitoObject):
-    """AuthError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
-class ForbiddenError(AvitoObject):
-    """ForbiddenError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
-class NotFoundError(AvitoObject):
-    """NotFoundError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
-class ServiceError(AvitoObject):
-    """ServiceError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
-class ServiceUnavailableError(AvitoObject):
-    """ServiceUnavailableError response model."""
-
-    error: AvitoErrorBody | None = None

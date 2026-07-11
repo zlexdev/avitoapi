@@ -21,7 +21,8 @@ from ..enums.autostrategy import (
     GetCampaignsRequestBodyOrderByDirection,
 )
 from ._base import AvitoObject
-from .common import AvitoErrorBody, TZDatetime
+from ._shared import CampaignIdResponse, MessageResponse
+from .common import TZDatetime
 
 
 class Budget(AvitoObject):
@@ -176,12 +177,6 @@ class Campaigns(AvitoObject):
     total_count: int | None = Field(None, alias="totalCount")
 
 
-class ConflictError(AvitoObject):
-    """ConflictError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
 class CreateCampaignBadRequestError(AvitoObject):
     """CreateCampaignBadRequestError response model."""
 
@@ -226,12 +221,6 @@ class CreateCampaignBadRequestErrorErrorFieldErrors(AvitoObject):
     items: str | None = None
     start_time: str | None = Field(None, alias="startTime")
     title: str | None = None
-
-
-class CreateCampaignConflictError(AvitoObject):
-    """CreateCampaignConflictError response model."""
-
-    error: AvitoErrorBody | None = None
 
 
 class CreateCampaignRequestBody(AvitoObject):
@@ -306,12 +295,6 @@ class EditCampaignBadRequestErrorErrorFieldErrors(AvitoObject):
     version: str | None = None
 
 
-class EditCampaignConflictError(AvitoObject):
-    """EditCampaignConflictError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
 class EditCampaignRequestBody(AvitoObject):
     """EditCampaignRequestBody response model.
 
@@ -372,12 +355,6 @@ class GetBudgetBadRequestErrorErrorFieldErrors(AvitoObject):
     start_time: str | None = Field(None, alias="startTime")
 
 
-class GetBudgetConflictError(AvitoObject):
-    """GetBudgetConflictError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
 class GetBudgetRequestBody(AvitoObject):
     """GetBudgetRequestBody response model.
 
@@ -408,20 +385,8 @@ class GetCampaignInfoBadRequestErrorError(AvitoObject):
         message: Сообщение об ошибке
     """
 
-    field_errors: GetCampaignInfoBadRequestErrorErrorFieldErrors | None = Field(
-        None, alias="fieldErrors"
-    )
+    field_errors: CampaignIdResponse | None = Field(None, alias="fieldErrors")
     message: str
-
-
-class GetCampaignInfoBadRequestErrorErrorFieldErrors(AvitoObject):
-    """Описание ошибок валидации полей
-
-    Attributes:
-        campaign_id: Ошибка валидации поля **campaignId**
-    """
-
-    campaign_id: str | None = Field(None, alias="campaignId")
 
 
 class GetCampaignInfoForecastResult(AvitoObject):
@@ -608,18 +573,8 @@ class GetStatRequestErrorError(AvitoObject):
     """
 
     code: int | None = None
-    field_errors: GetStatRequestErrorErrorFieldErrors | None = Field(None, alias="fieldErrors")
+    field_errors: CampaignIdResponse | None = Field(None, alias="fieldErrors")
     message: str
-
-
-class GetStatRequestErrorErrorFieldErrors(AvitoObject):
-    """Описание ошибок валидации полей
-
-    Attributes:
-        campaign_id: Ошибка валидации поля **campaignId**
-    """
-
-    campaign_id: str | None = Field(None, alias="campaignId")
 
 
 class StatRoot(AvitoObject):
@@ -707,54 +662,16 @@ class StopCampaignRequestBody(AvitoObject):
     version: int
 
 
-class AuthError(AvitoObject):
-    """AuthError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
 class AutostrategyAuthError(AvitoObject):
     """AutostrategyAuthError response model."""
 
-    error: AutostrategyAuthErrorError | None = None
-
-
-class AutostrategyAuthErrorError(AvitoObject):
-    """AutostrategyAuthErrorError response model.
-
-    Attributes:
-        message: Сообщение об ошибке
-    """
-
-    message: str
+    error: MessageResponse | None = None
 
 
 class AutostrategyServiceError(AvitoObject):
     """AutostrategyServiceError response model."""
 
-    error: AutostrategyServiceErrorError | None = None
-
-
-class AutostrategyServiceErrorError(AvitoObject):
-    """AutostrategyServiceErrorError response model.
-
-    Attributes:
-        message: Описание ошибки
-    """
-
-    message: str
-
-
-class NotFoundError(AvitoObject):
-    """NotFoundError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
-class ServiceError(AvitoObject):
-    """ServiceError response model."""
-
-    error: AvitoErrorBody | None = None
+    error: MessageResponse | None = None
 
 
 class GetAutostrategyBudgetResponse(AvitoObject):

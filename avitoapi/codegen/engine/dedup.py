@@ -27,7 +27,7 @@ import re
 from collections import defaultdict
 from dataclasses import replace
 
-from . import render
+from . import naming, render
 from .build import GeneratedDomain
 from .types import ModelSpec
 
@@ -38,7 +38,8 @@ COMMON = "common"  # -> avitoapi/models/common.py
 SHARED = "_shared"  # -> avitoapi/models/_shared.py
 
 # PascalCase tokens a shared model may reference without pulling in a domain-local symbol.
-_SAFE_REFS = frozenset({_ERROR_BODY, "TZDatetime"})
+# ``None``/``Any`` are builtins the annotation regex catches but that need no import.
+_SAFE_REFS = frozenset({_ERROR_BODY, "TZDatetime", "None", "Any"})
 _PASCAL = re.compile(r"\b[A-Z][A-Za-z0-9]+\b")
 
 Signature = tuple[tuple[str, str, str, str], ...]  # ordered (name, wire, annotation, assignment)
@@ -53,7 +54,8 @@ def dedup_shared(domains: list[GeneratedDomain]) -> dict[str, str]:
     """
 
     _collapse_error_bodies(domains)
-    shared = _collapse_identical(domains)
+    shared = _collapse_by_shape(domains)
+    shared.update(_collapse_identical(domains))
     if not shared:
         return {}
     return {"models/_shared.py": _render_shared_module(shared)}
@@ -114,6 +116,48 @@ def _collapse_error_bodies(domains: list[GeneratedDomain]) -> None:
         gen.shared_imports[_ERROR_BODY] = COMMON
 
 
+def _collapse_by_shape(domains: list[GeneratedDomain]) -> dict[str, ModelSpec]:
+    """Pass C — collapse single-field models of identical shape into one canonical DTO.
+
+    Any single-field model appearing ≥2 times across the catalogue (e.g. the dozens of
+    per-operation ``{ok: bool | None}`` responses) is folded into one ``{Pascal(field)}Response``
+    (``OkResponse``) in ``models/_shared.py``, regardless of the per-operation name. Entity
+    models and models referencing a domain-local symbol are left alone. Multi-field cross-name
+    shapes are out of scope here (naming is ambiguous) — :func:`_collapse_identical` still
+    handles same-name multi-field dups.
+    """
+
+    bound_anywhere = {name for gen in domains for name in gen.bound}
+    groups: dict[Signature, list[tuple[GeneratedDomain, str, ModelSpec]]] = defaultdict(list)
+    for gen in domains:
+        for name, model in gen.models.items():
+            if name in gen.bound or name in bound_anywhere or len(model.fields) != 1:
+                continue
+            if not _shareable(model):
+                continue
+            groups[_signature(model)].append((gen, name, model))
+
+    shared: dict[str, ModelSpec] = {}
+    for members in groups.values():
+        if len(members) < 2:
+            continue  # appears once — nothing to dedup
+        canonical = naming.pascal(members[0][2].fields[0].name) + "Response"
+        if canonical in shared:
+            continue  # same canonical, divergent shape — keep the later group per-domain
+        shared[canonical] = replace(members[0][2], name=canonical)
+        names = {name for _, name, _ in members}
+        renames = {n: canonical for n in names if n != canonical}
+        for gen in domains:
+            had = any(n in gen.models for n in names)
+            if renames:
+                _apply_renames(gen, renames)
+            for n in [n for n in names if n != canonical and n in gen.models]:
+                del gen.models[n]
+            if had:
+                gen.shared_imports[canonical] = SHARED
+    return shared
+
+
 def _collapse_identical(domains: list[GeneratedDomain]) -> dict[str, ModelSpec]:
     """Pass B — move same-name, same-signature, cross-domain models to ``models/_shared.py``."""
 
@@ -147,6 +191,8 @@ def _collapse_identical(domains: list[GeneratedDomain]) -> dict[str, ModelSpec]:
 def _render_shared_module(shared: dict[str, ModelSpec]) -> str:
     text = " ".join(f.annotation + " " + (f.assignment or "") for model in shared.values() for f in model.fields)
     lines: list[str] = []
+    if re.search(r"\bAny\b", text):
+        lines.append("from typing import Any")
     lines.extend(render.datetime_imports(_needs(text), in_methods=False))
     lines.append("from pydantic import Field")
     lines.append("from ._base import AvitoObject")

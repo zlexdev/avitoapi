@@ -8,7 +8,6 @@ from __future__ import annotations
 from pydantic import Field
 
 from ._base import AvitoObject
-from .common import AvitoErrorBody
 
 
 class TariffContract(AvitoObject):
@@ -100,21 +99,3 @@ class TariffInfo(AvitoObject):
 
     current: TariffContract | None = None
     scheduled: TariffContract | None = None
-
-
-class AuthError(AvitoObject):
-    """AuthError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
-class NotFoundError(AvitoObject):
-    """NotFoundError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
-class ServiceError(AvitoObject):
-    """ServiceError response model."""
-
-    error: AvitoErrorBody | None = None

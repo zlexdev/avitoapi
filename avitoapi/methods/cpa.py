@@ -7,9 +7,9 @@ from typing import ClassVar
 
 from pydantic import Field
 
+from ..models._shared import BalanceResponse
 from ..models.cpa import (
     BalanceInfoV2Response,
-    BalanceInfoV3Response,
     ChatByActionIdResponse,
     ChatsByTime2Response,
     ChatsByTimeResponse,
@@ -185,7 +185,7 @@ class ChatsByTime2(BaseMethod[ChatsByTime2Response]):
     offset: int
 
 
-class BalanceInfoV3(BaseMethod[BalanceInfoV3Response]):
+class BalanceInfoV3(BaseMethod[BalanceResponse]):
     """Баланс via ``POST /cpa/v3/balanceInfo``.
 
     See: https://developers.avito.ru/api-catalog/cpa/documentation

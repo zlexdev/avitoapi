@@ -54,6 +54,7 @@ from ..methods.delivery import (
     V1getParcelInfo,
     V1getRegisteredParcelId,
 )
+from ..models._shared import StorageExtendedToResponse
 from ..models.common import TZDatetime
 from ..models.delivery import (
     AddTariffReply,
@@ -66,7 +67,6 @@ from ..models.delivery import (
     ChangeParcelReply,
     ChangeParcelRequestApplication,
     ChangeParcelRequestOptions,
-    ChangeParcelResultOptions,
     ChangeParcelResultReply,
     ChangeParcelsApplication,
     ChangeParcelsResponse,
@@ -638,24 +638,18 @@ class DeliveryFacade(FacadeBase):
         self,
         id: str,
         status: ChangeParcelResultStatus,
-        storage_extended_to: Any | None = None,
+        options: StorageExtendedToResponse | None = None,
         reason: str | None = None,
     ) -> ChangeParcelResultReply:
         """Отправка результата исполнения заявки via ``POST /delivery/order/changeParcelResult``.
 
         Args:
             id: Идентификатор заявки на изменение посылки
-            storage_extended_to: Дата и время до которого продлено хранение (RFC3339). В случае отсутствия в системе информации о времени до которого возможно продления можно использовать константу `23:59:59 в московском часовом поясе`.
             reason: Причина отклонения заявки (заполняется в случае отклонения).
             status: Статус обработки заявки
         """
         return await self.execute(
-            ChangeParcelResult(
-                id=id,
-                options=ChangeParcelResultOptions(storage_extended_to=storage_extended_to),
-                reason=reason,
-                status=status,
-            )
+            ChangeParcelResult(id=id, options=options, reason=reason, status=status)
         )
 
     async def change_parcels(

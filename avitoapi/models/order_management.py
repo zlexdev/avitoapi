@@ -17,6 +17,7 @@ from ..enums.order_management import (
     SetCourierDeliveryRangeRequestIntervalType,
 )
 from ._base import AvitoObject
+from ._shared import SuccessResponse
 from .common import AvitoErrorBody, TZDatetime
 
 
@@ -258,16 +259,6 @@ class OrderAcceptReturnOrderRequestRecipient(AvitoObject):
     phone: str | None = None
 
 
-class OrderAcceptReturnOrderResponse(AvitoObject):
-    """Ответ выбора указанного ПВЗ для возврата
-
-    Attributes:
-        success: Флаг успеха указанного ПВЗ для возврата
-    """
-
-    success: bool | None = None
-
-
 class OrderApplyTransitionRequest(AvitoObject):
     """Запрос перевода заказа в другой статус
 
@@ -304,16 +295,6 @@ class OrderApplyTransitionRequestParamsCnc(AvitoObject):
     marketplace_id: str | None = Field(None, alias="marketplaceId")
 
 
-class OrderApplyTransitionResponse(AvitoObject):
-    """Ответ перевода заказа в другой статус
-
-    Attributes:
-        success: Флаг успеха перевода в новый статус
-    """
-
-    success: bool | None = None
-
-
 class OrderCncSetDetailsRequest(AvitoObject):
     """Запрос на подготовку заказа и уточнение деталей
 
@@ -335,14 +316,8 @@ class OrderCncSetDetailsRequest(AvitoObject):
 class OrderCncSetDetailsResponse(AvitoObject):
     """Ответ ручки подготовки заказа с самовывозом"""
 
-    result: OrderCncSetDetailsResponseResult | None = None
+    result: SuccessResponse | None = None
     status: str | None = None
-
-
-class OrderCncSetDetailsResponseResult(AvitoObject):
-    """OrderCncSetDetailsResponseResult response model."""
-
-    success: bool | None = None
 
 
 class OrderCheckConfirmationCodeRequest(AvitoObject):
@@ -496,16 +471,6 @@ class SetCourierDeliveryRangeRequest(AvitoObject):
     order_id: str = Field(..., min_length=1, alias="orderId")
     phone: str = Field(..., min_length=1)
     start_date: TZDatetime = Field(..., alias="startDate")
-
-
-class SetCourierDeliveryRangeResponse(AvitoObject):
-    """Ответ для ручки установки параметров курьерской доставки
-
-    Attributes:
-        success: Флаг успеха выбора времени приезда курьера
-    """
-
-    success: bool | None = None
 
 
 class SetOrderMarkingRequest(AvitoObject):

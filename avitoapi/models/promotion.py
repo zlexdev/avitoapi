@@ -283,16 +283,6 @@ class ListOrdersByUserV1RespPagination(AvitoObject):
     has_next_page: bool = Field(..., alias="hasNextPage")
 
 
-class NotEnoughMoneyError(AvitoObject):
-    """NotEnoughMoneyError response model.
-
-    Attributes:
-        message: Сообщение об ошибке
-    """
-
-    message: str
-
-
 class OrderBbipForItemsV1Req(AvitoObject):
     """OrderBbipForItemsV1Req response model.
 

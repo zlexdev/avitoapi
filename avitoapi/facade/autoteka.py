@@ -32,6 +32,7 @@ from ..methods.autoteka import (
     SpecificationGetById,
     ValuationBySpecification,
 )
+from ..models._shared import GetAccessTokenResponse
 from ..models.autoteka import (
     CatalogsResolveFieldsValueIds,
     CatalogsResolveResponseBodyAutoteka,
@@ -39,7 +40,6 @@ from ..models.autoteka import (
     CreateScoringResponseBodyAutoteka,
     CreateSpecificationResponseBodyAutoteka,
     CreateTeaserResponseBodyAutoteka,
-    GetAccessTokenResponse,
     GetActivePackageResponseBodyAutoteka,
     GetPreviewResponseBodyAutoteka,
     GetReport,

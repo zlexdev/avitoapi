@@ -22,7 +22,7 @@ from ..enums.messenger import (
 )
 from ._base import AvitoObject
 from ._helpers import _resolve_user_id
-from .common import AvitoErrorBody
+from ._shared import SizesResponse, TextResponse
 
 if TYPE_CHECKING:
     from ..methods.messenger import (
@@ -52,9 +52,7 @@ class Chat(AvitoObject):
     users: list[ChatUsers] | None = None
 
     def send_message(
-        self,
-        message: PostSendMessageMessage | None = None,
-        type_: PostSendMessageType | None = None,
+        self, message: TextResponse | None = None, type_: PostSendMessageType | None = None
     ) -> PostSendMessage:
         """Build an awaitable :class:`PostSendMessage` bound to this object (await to execute)."""
         from ..methods.messenger import PostSendMessage
@@ -254,7 +252,7 @@ class MessageContent(AvitoObject):
 
     call: MessageContentCall | None = None
     flow_id: str | None = None
-    image: MessageContentImage | None = None
+    image: SizesResponse | None = None
     item: MessageContentItem | None = None
     link: MessageContentLink | None = None
     location: MessageContentLocation | None = None
@@ -267,16 +265,6 @@ class MessageContentCall(AvitoObject):
 
     status: MessageContentCallStatus | None = None
     target_user_id: int | None = None
-
-
-class MessageContentImage(AvitoObject):
-    """Объект, описывающий изображение, для сообщения типа image
-
-    Attributes:
-        sizes: объект ключ-значение, где ключи - строки в формате \"ШxВ\" (ширина, высота), а значения - ссылки на изображения
-    """
-
-    sizes: dict[str, Any] | None = None
 
 
 class MessageContentItem(AvitoObject):
@@ -429,36 +417,6 @@ class AddBlacklistRequestBodyUsersContext(AvitoObject):
     reason_id: int | None = None
 
 
-class AuthError(AvitoObject):
-    """AuthError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
-class BadRequestError(AvitoObject):
-    """BadRequestError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
-class ForbiddenError(AvitoObject):
-    """ForbiddenError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
-class NotFoundError(AvitoObject):
-    """NotFoundError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
-class PurchasingError(AvitoObject):
-    """PurchasingError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
 class SendImageMessageRequestBody(AvitoObject):
     """SendImageMessageRequestBody response model.
 
@@ -476,50 +434,8 @@ class SendMessageRequestBody(AvitoObject):
         type_: Тип сообщения
     """
 
-    message: SendMessageRequestBodyMessage | None = None
+    message: TextResponse | None = None
     type_: SendMessageRequestBodyType | None = Field(None, alias="type")
-
-
-class SendMessageRequestBodyMessage(AvitoObject):
-    """SendMessageRequestBodyMessage response model.
-
-    Attributes:
-        text: Текст сообщения (максимум 1000 символов)
-    """
-
-    text: str | None = Field(None, max_length=1000)
-
-
-class ServiceError(AvitoObject):
-    """ServiceError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
-class ServiceUnavailableError(AvitoObject):
-    """ServiceUnavailableError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
-class ValidatingError(AvitoObject):
-    """ValidatingError response model."""
-
-    error: ValidatingErrorError | None = None
-
-
-class ValidatingErrorError(AvitoObject):
-    """ValidatingErrorError response model.
-
-    Attributes:
-        code: Код ошибки
-        fields: Информация об ошибке валидации параметров в формате ключ-значение
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    fields: dict[str, Any] | None = None
-    message: str
 
 
 class WebhookSubscribeRequestBody(AvitoObject):
@@ -548,16 +464,6 @@ class PostSendMessageResponseContent(AvitoObject):
     text: str | None = None
 
 
-class PostSendMessageMessage(AvitoObject):
-    """PostSendMessageMessage response model.
-
-    Attributes:
-        text: Текст сообщения (максимум 1000 символов)
-    """
-
-    text: str | None = Field(None, max_length=1000)
-
-
 class PostSendImageMessageResponse(AvitoObject):
     """PostSendImageMessageResponse response model."""
 
@@ -572,23 +478,11 @@ class PostSendImageMessageResponse(AvitoObject):
 class PostSendImageMessageResponseContent(AvitoObject):
     """PostSendImageMessageResponseContent response model."""
 
-    image: PostSendImageMessageResponseContentImage | None = None
-
-
-class PostSendImageMessageResponseContentImage(AvitoObject):
-    """PostSendImageMessageResponseContentImage response model."""
-
-    sizes: dict[str, Any] | None = None
+    image: SizesResponse | None = None
 
 
 class DeleteMessageResponse(AvitoObject):
     """DeleteMessageResponse response model."""
-
-
-class ChatReadResponse(AvitoObject):
-    """ChatReadResponse response model."""
-
-    ok: bool | None = None
 
 
 class UploadImagesResponse(AvitoObject):
@@ -612,12 +506,6 @@ class GetSubscriptionsResponseSubscriptions(AvitoObject):
     version: str
 
 
-class PostWebhookUnsubscribeResponse(AvitoObject):
-    """PostWebhookUnsubscribeResponse response model."""
-
-    ok: bool | None = None
-
-
 class PostBlacklistV2Users(AvitoObject):
     """PostBlacklistV2Users response model.
 
@@ -638,12 +526,6 @@ class PostBlacklistV2UsersContext(AvitoObject):
 
     item_id: int | None = None
     reason_id: int | None = None
-
-
-class PostWebhookV3Response(AvitoObject):
-    """PostWebhookV3Response response model."""
-
-    ok: bool | None = None
 
 
 class Messages(RootModel[list[MessagesRoot]]):

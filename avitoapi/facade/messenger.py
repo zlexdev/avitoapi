@@ -20,19 +20,16 @@ from ..methods.messenger import (
     UploadImages,
 )
 from ..models._helpers import _resolve_user_id
+from ..models._shared import OkResponse, TextResponse
 from ..models.messenger import (
     Chat,
-    ChatReadResponse,
     Chats,
     DeleteMessageResponse,
     GetSubscriptionsResponse,
     Messages,
     PostBlacklistV2Users,
     PostSendImageMessageResponse,
-    PostSendMessageMessage,
     PostSendMessageResponse,
-    PostWebhookUnsubscribeResponse,
-    PostWebhookV3Response,
     UploadImagesResponse,
     VoiceFiles,
 )
@@ -46,7 +43,7 @@ class MessengerFacade(FacadeBase):
         self,
         chat_id: str,
         user_id: int | None = None,
-        text: str | None = None,
+        message: TextResponse | None = None,
         type_: PostSendMessageType | None = None,
     ) -> PostSendMessageResponse:
         """Отправка сообщения via ``POST /messenger/v1/accounts/{user_id}/chats/{chat_id}/messages``.
@@ -54,14 +51,13 @@ class MessengerFacade(FacadeBase):
         Args:
             user_id: Идентификатор пользователя (клиента)
             chat_id: Идентификатор чата (клиента)
-            text: Текст сообщения (максимум 1000 символов)
             type_: Тип сообщения
         """
         return await self.execute(
             PostSendMessage(
                 user_id=_resolve_user_id(self) if user_id is None else user_id,
                 chat_id=chat_id,
-                message=PostSendMessageMessage(text=text),
+                message=message,
                 type_=type_,
             )
         )
@@ -102,7 +98,7 @@ class MessengerFacade(FacadeBase):
             )
         )
 
-    async def chat_read(self, chat_id: str, user_id: int | None = None) -> ChatReadResponse:
+    async def chat_read(self, chat_id: str, user_id: int | None = None) -> OkResponse:
         """Прочитать чат via ``POST /messenger/v1/accounts/{user_id}/chats/{chat_id}/read``.
 
         Args:
@@ -147,7 +143,7 @@ class MessengerFacade(FacadeBase):
         """Получение подписок (webhooks) via ``POST /messenger/v1/subscriptions``."""
         return await self.execute(GetSubscriptions())
 
-    async def webhook_unsubscribe(self, url: str) -> PostWebhookUnsubscribeResponse:
+    async def webhook_unsubscribe(self, url: str) -> OkResponse:
         """Отключение уведомлений (webhooks) via ``POST /messenger/v1/webhook/unsubscribe``.
 
         Args:
@@ -232,7 +228,7 @@ class MessengerFacade(FacadeBase):
             )
         )
 
-    async def webhook_v3(self, url: str) -> PostWebhookV3Response:
+    async def webhook_v3(self, url: str) -> OkResponse:
         """Включение уведомлений V3 (webhooks) via ``POST /messenger/v3/webhook``.
 
         Args:

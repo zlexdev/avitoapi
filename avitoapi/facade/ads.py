@@ -47,6 +47,7 @@ from ..methods.ads import (
     V1TransferFunds,
 )
 from ..models._helpers import _resolve_user_id
+from ..models._shared import IdResponse
 from ..models.ads import (
     AdvertiserFilter,
     CampaignsFilter,
@@ -58,8 +59,6 @@ from ..models.ads import (
     GroupsFilter,
     V1CreateAccountContact,
     V1CreateAccountOut,
-    V1CreateAdvertiserOut,
-    V1CreateContractOut,
     V1CreateNonPayerAccountOut,
     V1GetAccountBalanceByIdOut,
     V1GetAccountByIdOut,
@@ -351,7 +350,7 @@ class AdsFacade(FacadeBase):
         short_name: str,
         actual_address: str | None = None,
         kpp: str | None = None,
-    ) -> V1CreateAdvertiserOut:
+    ) -> IdResponse:
         """Создать рекламодателя via ``POST /ads/v1/account/{account_id}/create-advertiser``.
 
         Args:
@@ -400,7 +399,7 @@ class AdsFacade(FacadeBase):
         object: ContractAction | None = None,
         parent_id: int | None = None,
         subject: ContractSubject | None = None,
-    ) -> V1CreateContractOut:
+    ) -> IdResponse:
         """Создание изначального договора via ``POST /ads/v1/account/{account_id}/create-contract``.
 
         Args:

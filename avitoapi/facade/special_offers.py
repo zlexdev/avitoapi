@@ -10,10 +10,10 @@ from ..methods.special_offers import (
     OpenApiStats,
     OpenApiTariffInfo,
 )
+from ..models._shared import OkResponse
 from ..models.special_offers import (
     OpenApiAvailableResponseBody,
     OpenApiMultiConfirmDispatches,
-    OpenApiMultiConfirmResponseBody,
     OpenApiMultiCreateResponseBody,
     OpenApiStatsResponseBody,
     OpenApiTariffInfoResponseBody,
@@ -36,7 +36,7 @@ class SpecialOffersFacade(FacadeBase):
         self,
         dispatches: list[OpenApiMultiConfirmDispatches] | None = None,
         expires_at: int | None = None,
-    ) -> OpenApiMultiConfirmResponseBody:
+    ) -> OkResponse:
         """Отправка и оплата рассылки via ``POST /special-offers/v1/multiConfirm``.
 
         Args:

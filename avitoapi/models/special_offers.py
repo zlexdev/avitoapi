@@ -15,16 +15,6 @@ from ._base import AvitoObject
 from .common import AvitoErrorBody
 
 
-class OpenApiAvailableRequestBody(AvitoObject):
-    """OpenApiAvailableRequestBody response model.
-
-    Attributes:
-        item_ids: список id объявлений
-    """
-
-    item_ids: list[int] = Field(..., alias="itemIds")
-
-
 class OpenApiAvailableResponseBody(AvitoObject):
     """OpenApiAvailableResponseBody response model.
 
@@ -91,22 +81,6 @@ class OpenApiMultiConfirmRequestBodyDispatches(AvitoObject):
     dispatch_id: int = Field(..., ge=1, alias="dispatchId")
     offer_slug: str = Field(..., min_length=1, alias="offerSlug")
     recipients_count: int = Field(..., ge=1, alias="recipientsCount")
-
-
-class OpenApiMultiConfirmResponseBody(AvitoObject):
-    """OpenApiMultiConfirmResponseBody response model."""
-
-    ok: bool | None = None
-
-
-class OpenApiMultiCreateRequestBody(AvitoObject):
-    """OpenApiMultiCreateRequestBody response model.
-
-    Attributes:
-        item_ids: Список id выбранных для рассылки объявлений
-    """
-
-    item_ids: list[int] = Field(..., alias="itemIds")
 
 
 class OpenApiMultiCreateResponseBody(AvitoObject):

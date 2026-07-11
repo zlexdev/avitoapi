@@ -8,9 +8,9 @@ from ..methods.auth import (
     GetAccessTokenAuthorizationCode,
     RefreshAccessTokenAuthorizationCode,
 )
+from ..models._shared import GetAccessTokenResponse
 from ..models.auth import (
     GetAccessTokenAuthorizationCodeResponse,
-    GetAccessTokenResponse,
     RefreshAccessTokenAuthorizationCodeResponse,
 )
 from ._base import FacadeBase

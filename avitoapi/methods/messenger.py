@@ -8,19 +8,16 @@ from typing import ClassVar
 from pydantic import Field
 
 from ..enums.messenger import GetChatsV2ChatTypes, PostSendMessageType
+from ..models._shared import OkResponse, TextResponse
 from ..models.messenger import (
     Chat,
-    ChatReadResponse,
     Chats,
     DeleteMessageResponse,
     GetSubscriptionsResponse,
     Messages,
     PostBlacklistV2Users,
     PostSendImageMessageResponse,
-    PostSendMessageMessage,
     PostSendMessageResponse,
-    PostWebhookUnsubscribeResponse,
-    PostWebhookV3Response,
     UploadImagesResponse,
     VoiceFiles,
 )
@@ -43,7 +40,7 @@ class PostSendMessage(BaseMethod[PostSendMessageResponse]):
 
     user_id: int
     chat_id: str
-    message: PostSendMessageMessage | None = None
+    message: TextResponse | None = None
     type_: PostSendMessageType | None = Field(None, alias="type")
 
 
@@ -87,7 +84,7 @@ class DeleteMessage(BaseMethod[DeleteMessageResponse]):
     message_id: str
 
 
-class ChatRead(BaseMethod[ChatReadResponse]):
+class ChatRead(BaseMethod[OkResponse]):
     """Прочитать чат via ``POST /messenger/v1/accounts/{user_id}/chats/{chat_id}/read``.
 
     See: https://developers.avito.ru/api-catalog/messenger/documentation
@@ -148,7 +145,7 @@ class GetSubscriptions(BaseMethod[GetSubscriptionsResponse]):
     __endpoint__: ClassVar[str] = "/messenger/v1/subscriptions"
 
 
-class PostWebhookUnsubscribe(BaseMethod[PostWebhookUnsubscribeResponse]):
+class PostWebhookUnsubscribe(BaseMethod[OkResponse]):
     """Отключение уведомлений (webhooks) via ``POST /messenger/v1/webhook/unsubscribe``.
 
     See: https://developers.avito.ru/api-catalog/messenger/documentation
@@ -242,7 +239,7 @@ class GetMessagesV3(BaseMethod[Messages]):
     offset: int = Field(0, ge=0, le=1000)
 
 
-class PostWebhookV3(BaseMethod[PostWebhookV3Response]):
+class PostWebhookV3(BaseMethod[OkResponse]):
     """Включение уведомлений V3 (webhooks) via ``POST /messenger/v3/webhook``.
 
     See: https://developers.avito.ru/api-catalog/messenger/documentation

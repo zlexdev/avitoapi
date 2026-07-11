@@ -22,6 +22,7 @@ from ..methods.order_management import (
     SetCourierDeliveryRange,
     SetOrderTrackingNumber,
 )
+from ..models._shared import SuccessResponse
 from ..models.common import TZDatetime
 from ..models.order_management import (
     AcceptReturnOrderRecipient,
@@ -29,14 +30,11 @@ from ..models.order_management import (
     ApplyTransitionParamsCnc,
     GetDeliveryCourierConfirmationResponse,
     Marking,
-    OrderAcceptReturnOrderResponse,
-    OrderApplyTransitionResponse,
     OrderCheckConfirmationCodeResponse,
     OrderCncSetDetailsResponse,
     OrderSetTrackingNumberResponse,
     OrdersInfo,
     OrdersLabelsResponse,
-    SetCourierDeliveryRangeResponse,
     SetOrderMarkingResponse,
 )
 from ._base import FacadeBase
@@ -59,7 +57,7 @@ class OrderManagementFacade(FacadeBase):
         name: str | None = None,
         phone: str | None = None,
         terminal_number: str | None = None,
-    ) -> OrderAcceptReturnOrderResponse:
+    ) -> SuccessResponse:
         """Выбор отделения отделения Почты России для получения возврата via ``POST /order-management/1/order/acceptReturnOrder``.
 
         Args:
@@ -81,7 +79,7 @@ class OrderManagementFacade(FacadeBase):
         order_id: str | None = None,
         cnc: ApplyTransitionParamsCnc | None = None,
         transition: ApplyTransitionTransition | None = None,
-    ) -> OrderApplyTransitionResponse:
+    ) -> SuccessResponse:
         """Изменение статуса заказа via ``POST /order-management/1/order/applyTransition``.
 
         Args:
@@ -156,7 +154,7 @@ class OrderManagementFacade(FacadeBase):
         phone: str,
         start_date: TZDatetime,
         address_details: str | None = None,
-    ) -> SetCourierDeliveryRangeResponse:
+    ) -> SuccessResponse:
         """Метод выбора определённого доступного временного промежутка для приезда курьера via ``POST /order-management/1/order/setCourierDeliveryRange``.
 
         Args:

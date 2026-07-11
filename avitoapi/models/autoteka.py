@@ -60,8 +60,7 @@ from ..enums.autoteka import (
     VehicleSpecificationsParamValue,
 )
 from ._base import AvitoObject
-from ._shared import TooManyRequestsErrorError
-from .common import AvitoErrorBody
+from ._shared import CodeResponse, GibddValueResponse, PreviewIdResponse
 
 if TYPE_CHECKING:
     from ..methods.autoteka import GetTeaser
@@ -1637,16 +1636,6 @@ class PreviewDataAutoteka(AvitoObject):
     year: int | None = None
 
 
-class PreviewIdOnlyAutoteka(AvitoObject):
-    """PreviewIdOnlyAutoteka response model.
-
-    Attributes:
-        preview_id: preview Id
-    """
-
-    preview_id: int = Field(..., ge=1, alias="previewId")
-
-
 class PriceStatAutoteka(AvitoObject):
     """Поле не поддерживается, актуальная структура AvitoPriceValuation
 
@@ -2064,26 +2053,6 @@ class RequestGetLeadsFeed(AvitoObject):
     platform_id: int = Field(..., ge=1, alias="platformId")
 
 
-class RequestMonitoringAddVinBucket(AvitoObject):
-    """RequestMonitoringAddVinBucket response model.
-
-    Attributes:
-        data: Набор VIN-номеров для дальнейшего заполнения реестра
-    """
-
-    data: list[str] | None = Field(None, min_length=1, max_length=10000)
-
-
-class RequestMonitoringRemoveVinBucket(AvitoObject):
-    """RequestMonitoringRemoveVinBucket response model.
-
-    Attributes:
-        data: Набор VIN-номеров для дальнейшего заполнения реестра
-    """
-
-    data: list[str] | None = Field(None, min_length=1, max_length=10000)
-
-
 class RequestPreviewByItemIdAutoteka(AvitoObject):
     """RequestPreviewByItemIdAutoteka response model.
 
@@ -2103,7 +2072,7 @@ class RequestPreviewResponseBodyAutoteka(AvitoObject):
 class RequestPreviewResponseDataAutoteka(AvitoObject):
     """RequestPreviewResponseDataAutoteka response model."""
 
-    preview: PreviewIdOnlyAutoteka | None = None
+    preview: PreviewIdResponse | None = None
 
 
 class RequestReportByPlateNumberAutoteka(AvitoObject):
@@ -2114,16 +2083,6 @@ class RequestReportByPlateNumberAutoteka(AvitoObject):
     """
 
     plate_number: str = Field(..., min_length=1, alias="plateNumber")
-
-
-class RequestReportByPreviewIdAutoteka(AvitoObject):
-    """RequestReportByPreviewIdAutoteka response model.
-
-    Attributes:
-        preview_id: Идентификатор превью.
-    """
-
-    preview_id: int = Field(..., ge=1, alias="previewId")
 
 
 class RequestReportByVehicleIdAutoteka(AvitoObject):
@@ -3016,11 +2975,11 @@ class ScoringTechSpecification(AvitoObject):
         year: Год выпуска
     """
 
-    body_number: ScoringTechSpecificationBodyNumber | None = Field(None, alias="bodyNumber")
+    body_number: GibddValueResponse | None = Field(None, alias="bodyNumber")
     brand: ScoringTechSpecificationBrand | None = None
-    chasis_number: ScoringTechSpecificationChasisNumber | None = Field(None, alias="chasisNumber")
+    chasis_number: GibddValueResponse | None = Field(None, alias="chasisNumber")
     color: ScoringTechSpecificationColor | None = None
-    engine_number: ScoringTechSpecificationEngineNumber | None = Field(None, alias="engineNumber")
+    engine_number: GibddValueResponse | None = Field(None, alias="engineNumber")
     engine_type: ScoringTechSpecificationEngineType | None = Field(None, alias="engineType")
     horsepower: ScoringTechSpecificationHorsepower | None = None
     max_weight: ScoringTechSpecificationMaxWeight | None = Field(None, alias="maxWeight")
@@ -3034,16 +2993,6 @@ class ScoringTechSpecification(AvitoObject):
     year: ScoringTechSpecificationYear | None = None
 
 
-class ScoringTechSpecificationBodyNumber(AvitoObject):
-    """ScoringTechSpecificationBodyNumber response model.
-
-    Attributes:
-        gibdd_value: Строковое значение
-    """
-
-    gibdd_value: str = Field(..., alias="gibddValue")
-
-
 class ScoringTechSpecificationBrand(AvitoObject):
     """Бренд
 
@@ -3055,16 +3004,6 @@ class ScoringTechSpecificationBrand(AvitoObject):
     normalized_value: ScoringNormalizedValue | None = Field(None, alias="normalizedValue")
 
 
-class ScoringTechSpecificationChasisNumber(AvitoObject):
-    """ScoringTechSpecificationChasisNumber response model.
-
-    Attributes:
-        gibdd_value: Строковое значение
-    """
-
-    gibdd_value: str = Field(..., alias="gibddValue")
-
-
 class ScoringTechSpecificationColor(AvitoObject):
     """Цвет кузова
 
@@ -3073,16 +3012,6 @@ class ScoringTechSpecificationColor(AvitoObject):
     """
 
     gibdd_value: str | None = Field(None, alias="gibddValue")
-
-
-class ScoringTechSpecificationEngineNumber(AvitoObject):
-    """ScoringTechSpecificationEngineNumber response model.
-
-    Attributes:
-        gibdd_value: Строковое значение
-    """
-
-    gibdd_value: str = Field(..., alias="gibddValue")
 
 
 class ScoringTechSpecificationEngineType(AvitoObject):
@@ -3903,34 +3832,10 @@ class VehicleSpecificationsParam(AvitoObject):
     value: VehicleSpecificationsParamValue
 
 
-class ForbiddenError(AvitoObject):
-    """ForbiddenError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
-class InternalError(AvitoObject):
-    """InternalError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
-class NotFoundError(AvitoObject):
-    """NotFoundError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
 class TooManyRequestsError(AvitoObject):
     """TooManyRequestsError response model."""
 
-    error: TooManyRequestsErrorError | None = None
-
-
-class ValidatingError(AvitoObject):
-    """ValidatingError response model."""
-
-    error: AvitoErrorBody | None = None
+    error: CodeResponse | None = None
 
 
 class CatalogsResolveFieldsValueIds(AvitoObject):
@@ -4100,20 +4005,6 @@ class ValuationBySpecificationSpecificationYear(AvitoObject):
 
     label: str
     value_id: int = Field(..., ge=1, alias="valueId")
-
-
-class GetAccessTokenResponse(AvitoObject):
-    """GetAccessTokenResponse response model.
-
-    Attributes:
-        access_token: Ключ для временной авторизации в системе
-        expires_in: Время жизни ключа в секундах
-        token_type: Тип ключа авторизации
-    """
-
-    access_token: str | None = None
-    expires_in: float | None = None
-    token_type: str | None = None
 
 
 class InsurancePayments(RootModel[list[InsurancePaymentsItem]]):

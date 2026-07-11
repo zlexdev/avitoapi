@@ -15,9 +15,6 @@ from ..enums.job import (
     ActivationForbiddenErrorErrorValue,
     ApplyProcessingAdditionalQuestions,
     ApplyProcessingApplyType,
-    BadRequestErrorReason,
-    BadRequestErrorType,
-    BadRequestErrorValue,
     BadRequestShortErrorReason,
     BadRequestShortErrorType,
     BonusesRoot,
@@ -151,7 +148,7 @@ from ..enums.job import (
     WorkerClassValue,
 )
 from ._base import AvitoObject
-from ._shared import TooManyRequestsErrorError
+from ._shared import CodeResponse, EmployeeIdResponse, ErrorResponse
 from .common import AvitoErrorBody, TZDatetime
 
 
@@ -246,21 +243,7 @@ class ApplyProcessing(AvitoObject):
 class BadRequest(AvitoObject):
     """BadRequest response model."""
 
-    error: BadRequestError | None = None
-
-
-class BadRequestError(AvitoObject):
-    """BadRequestError response model.
-
-    Attributes:
-        reason: Причина возникновения ошибки (может не присутствовать)
-        type_: Тип ошибки
-        value: Ключ поля
-    """
-
-    reason: BadRequestErrorReason | None = None
-    type_: BadRequestErrorType | None = Field(None, alias="type")
-    value: BadRequestErrorValue | None = None
+    error: ErrorResponse | None = None
 
 
 class BadRequestOnVacancy(AvitoObject):
@@ -299,12 +282,6 @@ class Citizenship(AvitoObject):
 
     id: int | None = None
     title: str | None = None
-
-
-class ConflictError(AvitoObject):
-    """ConflictError response model."""
-
-    error: ConflictErrorError | None = None
 
 
 class ConflictErrorError(AvitoObject):
@@ -689,12 +666,6 @@ class LocationAddress(AvitoObject):
     province: str | None = None
     region: str | None = None
     street: str | None = None
-
-
-class NotFoundError(AvitoObject):
-    """NotFoundError response model."""
-
-    error: NotFoundErrorError | None = None
 
 
 class NotFoundErrorError(AvitoObject):
@@ -1106,7 +1077,7 @@ class Vacancy20(AvitoObject):
     auto_renewal: bool | None = None
     contacts: Vacancy20Contacts | None = None
     description: str | None = None
-    hierarchy: Vacancy20Hierarchy | None = None
+    hierarchy: EmployeeIdResponse | None = None
     id: int | None = None
     is_active: bool | None = None
     params: Vacancy20Params | None = None
@@ -1162,16 +1133,6 @@ class Vacancy20Contacts(AvitoObject):
     allow_messages: bool | None = None
     email: str | None = None
     name: str | None = None
-
-
-class Vacancy20Hierarchy(AvitoObject):
-    """Информация об иерархии аккаунтов
-
-    Attributes:
-        employee_id: Идентификатор сотрудника назначенного на Вакансию
-    """
-
-    employee_id: int | None = None
 
 
 class Vacancy20Params(AvitoObject):
@@ -1303,16 +1264,6 @@ class Vacancy20ParamsSalaryBaseRange(AvitoObject):
 
     from_: int | None = Field(None, alias="from")
     to: int | None = None
-
-
-class VacancyArchive(AvitoObject):
-    """VacancyArchive response model.
-
-    Attributes:
-        employee_id: employee_id - Идентификатор сотрудника на Авито. Сотрудник может останавливать только закрепленные за ним вакансии в Avito Pro. Сотрудник должен быть в активен.
-    """
-
-    employee_id: int | None = None
 
 
 class VacancyAutoRenewal(AvitoObject):
@@ -1684,7 +1635,7 @@ class VacancyV2Create(AvitoObject):
     facility_type: list[FacilityTypeValue] | None = None
     food_production_shop_type: list[FoodProductionShopTypeValue] | None = None
     grade: Grade | None = None
-    hierarchy: VacancyV2CreateHierarchy | None = None
+    hierarchy: EmployeeIdResponse | None = None
     image_url: str | None = None
     is_company_car: bool | None = None
     is_side_job: bool | None = None
@@ -1727,16 +1678,6 @@ class VacancyV2CreateContacts(AvitoObject):
     email: str | None = Field(None, min_length=1, max_length=255)
     name: str | None = Field(None, min_length=1, max_length=30)
     phone: str | None = None
-
-
-class VacancyV2CreateHierarchy(AvitoObject):
-    """employee_id - Идентификатор сотрудника на Авито. Если этот параметр указан, то с баланса сотрудника в Avito Pro будет списано размещение. Использовать параметр можно только с billing_type равным package. Сотрудник должен быть в активен.
-
-    Attributes:
-        employee_id: Идентификатор сотрудника на Авито
-    """
-
-    employee_id: int | None = None
 
 
 class VacancyV2CreateLocation(AvitoObject):
@@ -1790,66 +1731,10 @@ class WebhooksSubscriptionResultList(AvitoObject):
     webhooks: list[WebhookSubscribeRequestBody]
 
 
-class AuthError(AvitoObject):
-    """AuthError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
-class ForbiddenError(AvitoObject):
-    """ForbiddenError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
-class PurchasingError(AvitoObject):
-    """PurchasingError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
-class ServiceError(AvitoObject):
-    """ServiceError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
-class ServiceUnavailableError(AvitoObject):
-    """ServiceUnavailableError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
 class TooManyRequestsError(AvitoObject):
     """TooManyRequestsError response model."""
 
-    error: TooManyRequestsErrorError | None = None
-
-
-class ValidatingError(AvitoObject):
-    """ValidatingError response model."""
-
-    error: ValidatingErrorError | None = None
-
-
-class ValidatingErrorError(AvitoObject):
-    """ValidatingErrorError response model.
-
-    Attributes:
-        code: Код ошибки
-        fields: Информация об ошибке валидации параметров в формате ключ-значение
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    fields: dict[str, Any] | None = None
-    message: str
-
-
-class VerificationNeededError(AvitoObject):
-    """VerificationNeededError response model."""
-
-    error: AvitoErrorBody | None = None
+    error: CodeResponse | None = None
 
 
 class ApplicationsSetIsViewedApplies(AvitoObject):
@@ -1862,12 +1747,6 @@ class ApplicationsSetIsViewedApplies(AvitoObject):
 
     id: str
     is_viewed: bool
-
-
-class ApplicationsWebhookDeleteResponse(AvitoObject):
-    """ApplicationsWebhookDeleteResponse response model."""
-
-    ok: bool | None = None
 
 
 class ResumesGetResponse(AvitoObject):
@@ -2001,16 +1880,6 @@ class VacancyCreateV2Contacts(AvitoObject):
     phone: str | None = None
 
 
-class VacancyCreateV2Hierarchy(AvitoObject):
-    """employee_id - Идентификатор сотрудника на Авито. Если этот параметр указан, то с баланса сотрудника в Avito Pro будет списано размещение. Использовать параметр можно только с billing_type равным package. Сотрудник должен быть в активен.
-
-    Attributes:
-        employee_id: Идентификатор сотрудника на Авито
-    """
-
-    employee_id: int | None = None
-
-
 class VacancyCreateV2Location(AvitoObject):
     """Геолокация вакансии (как минимум одно из значений)"""
 
@@ -2045,16 +1914,6 @@ class VacancyUpdateV2Contacts(AvitoObject):
     email: str | None = Field(None, min_length=1, max_length=255)
     name: str | None = Field(None, min_length=1, max_length=30)
     phone: str | None = None
-
-
-class VacancyUpdateV2Hierarchy(AvitoObject):
-    """employee_id - Идентификатор сотрудника на Авито. Если этот параметр указан, то с баланса сотрудника в Avito Pro будет списано размещение. Использовать параметр можно только с billing_type равным package. Сотрудник должен быть в активен.
-
-    Attributes:
-        employee_id: Идентификатор сотрудника на Авито
-    """
-
-    employee_id: int | None = None
 
 
 class VacancyUpdateV2Location(AvitoObject):

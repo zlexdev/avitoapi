@@ -31,6 +31,7 @@ from ..enums.avito_promo import (
     TransactionStatus,
 )
 from ._base import AvitoObject
+from ._shared import AmountResponse, MessageResponse, TaskIdResponse
 from .common import AvitoErrorBody, TZDatetime
 
 
@@ -54,25 +55,13 @@ class ErrorFieldsRoot(AvitoObject):
 class ErrorResponse(AvitoObject):
     """ErrorResponse response model."""
 
-    result: ErrorResult
-
-
-class ErrorResult(AvitoObject):
-    """Результат с ошибкой"""
-
-    message: str
+    result: MessageResponse
 
 
 class InviteId(AvitoObject):
     """Идентификатор приглашения нового клиента"""
 
     invite_id: int = Field(..., alias="inviteId")
-
-
-class TargetTaskId(AvitoObject):
-    """Идентификатор задачи проверки ИНН клиентов"""
-
-    task_id: int = Field(..., alias="taskId")
 
 
 class AgencyBalanceResponse(AvitoObject):
@@ -167,8 +156,8 @@ class AgencyClientsResponseResultClients(AvitoObject):
         subscription: Информация о подписке клиента
     """
 
-    advance: AgencyClientsResponseResultClientsAdvance | None = None
-    balance: AgencyClientsResponseResultClientsBalance | None = None
+    advance: AmountResponse | None = None
+    balance: AmountResponse | None = None
     client_id: int = Field(..., alias="clientId")
     link_time: TZDatetime = Field(..., alias="linkTime")
     link_type: LinkType = Field(..., alias="linkType")
@@ -177,18 +166,6 @@ class AgencyClientsResponseResultClients(AvitoObject):
     statistics: AgencyClientsResponseResultClientsStatistics | None = None
     status: AgencyClientsResponseResultClientsStatus
     subscription: AgencyClientsResponseResultClientsSubscription | None = None
-
-
-class AgencyClientsResponseResultClientsAdvance(AvitoObject):
-    """Информация о балансе аванса тарифа клиента"""
-
-    amount: int
-
-
-class AgencyClientsResponseResultClientsBalance(AvitoObject):
-    """Информация о балансе Кошелька клиента"""
-
-    amount: int
 
 
 class AgencyClientsResponseResultClientsStatistics(AvitoObject):
@@ -226,7 +203,7 @@ class AgencyClientsExtra(AvitoObject):
 class AgencyClientsTargetCreateResponse(AvitoObject):
     """AgencyClientsTargetCreateResponse response model."""
 
-    result: TargetTaskId
+    result: TaskIdResponse
     status: OkResponseStatus
 
 

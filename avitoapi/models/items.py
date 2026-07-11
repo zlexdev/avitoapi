@@ -28,6 +28,7 @@ from ..enums.items import (
 )
 from ._base import AvitoObject
 from ._helpers import _resolve_user_id
+from ._shared import SuccessResponse
 from .common import AvitoErrorBody, TZDatetime
 
 if TYPE_CHECKING:
@@ -536,13 +537,7 @@ class UpdatePriceRequest(AvitoObject):
 class UpdatePriceResponse(AvitoObject):
     """UpdatePriceResponse response model."""
 
-    result: UpdatePriceResponseResult
-
-
-class UpdatePriceResponseResult(AvitoObject):
-    """UpdatePriceResponseResult response model."""
-
-    success: bool | None = None
+    result: SuccessResponse
 
 
 class VasAmountAvito(AvitoObject):
@@ -580,18 +575,6 @@ class VasResp(AvitoObject):
     slug: str
 
 
-class AuthError(AvitoObject):
-    """AuthError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
-class BadRequestError(AvitoObject):
-    """BadRequestError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
 class ItemIdsRequestBody(AvitoObject):
     """ItemIdsRequestBody response model.
 
@@ -600,12 +583,6 @@ class ItemIdsRequestBody(AvitoObject):
     """
 
     item_ids: list[int]
-
-
-class NotFoundError(AvitoObject):
-    """NotFoundError response model."""
-
-    error: AvitoErrorBody | None = None
 
 
 class PackageIdRequestBodyV2(AvitoObject):
@@ -618,50 +595,8 @@ class PackageIdRequestBodyV2(AvitoObject):
     package_id: PackageIdRequestBodyV2PackageId
 
 
-class PricesItemIdsRequestBody(AvitoObject):
-    """PricesItemIdsRequestBody response model.
-
-    Attributes:
-        item_ids: Набор идентификаторов объявлений на сайте
-    """
-
-    item_ids: list[int] = Field(..., alias="itemIds")
-
-
-class ServiceError(AvitoObject):
-    """ServiceError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
-class ServiceUnavailableError(AvitoObject):
-    """ServiceUnavailableError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
 class TooManyRequests(AvitoObject):
     """TooManyRequests response model."""
-
-
-class ValidatingError(AvitoObject):
-    """ValidatingError response model."""
-
-    error: ValidatingErrorError | None = None
-
-
-class ValidatingErrorError(AvitoObject):
-    """ValidatingErrorError response model.
-
-    Attributes:
-        code: Код ошибки
-        fields: Информация об ошибке валидации параметров в формате ключ-значение
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    fields: dict[str, Any] | None = None
-    message: str
 
 
 class VasIdRequestBody(AvitoObject):

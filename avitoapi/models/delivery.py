@@ -89,6 +89,7 @@ from ..enums.delivery import (
     ZoneType,
 )
 from ._base import AvitoObject
+from ._shared import NameResponse, StatusResponse, StorageExtendedToResponse, TaskIdResponse
 from .common import AvitoErrorBody, TZDatetime
 
 
@@ -425,12 +426,6 @@ class AreasTaskResult(AvitoObject):
     incoming: str
 
 
-class Breadcrumb(AvitoObject):
-    """Breadcrumb response model."""
-
-    name: str = Field(..., max_length=255)
-
-
 class CancelSandboxParcelOptions(AvitoObject):
     """CancelSandboxParcelOptions response model."""
 
@@ -529,19 +524,9 @@ class ChangeParcelResultRequest(AvitoObject):
     """
 
     id: str
-    options: ChangeParcelResultRequestOptions | None = None
+    options: StorageExtendedToResponse | None = None
     reason: str | None = None
     status: ChangeParcelResultRequestStatus
-
-
-class ChangeParcelResultRequestOptions(AvitoObject):
-    """ChangeParcelResultRequestOptions response model.
-
-    Attributes:
-        storage_extended_to: Дата и время до которого продлено хранение (RFC3339). В случае отсутствия в системе информации о времени до которого возможно продления можно использовать константу `23:59:59 в московском часовом поясе`.
-    """
-
-    storage_extended_to: Any | None = Field(None, alias="storageExtendedTo")
 
 
 class ChangeParcelsApplication(AvitoObject):
@@ -907,7 +892,7 @@ class CreateParcelItem(AvitoObject):
         title: Название.
     """
 
-    breadcrumbs: list[CreateParcelItemBreadcrumb] | None = None
+    breadcrumbs: list[NameResponse] | None = None
     cost: int
     description: str | None = Field(None, max_length=1000)
     dimensions: CreateParcelItemDimensions | None = None
@@ -917,16 +902,6 @@ class CreateParcelItem(AvitoObject):
     tags: list[Any] | None = None
     title: str = Field(..., max_length=100)
     weight: CreateParcelItemWeight | None = None
-
-
-class CreateParcelItemBreadcrumb(AvitoObject):
-    """CreateParcelItemBreadcrumb response model.
-
-    Attributes:
-        name: Название категории
-    """
-
-    name: str = Field(..., max_length=255)
 
 
 class CreateParcelItemDimensions(AvitoObject):
@@ -1109,7 +1084,7 @@ class CreateSandboxParcelItem(AvitoObject):
         tags: Дополнительные признаки товара. Признаки товара могут определять дополнительные услуги, оказываемые при приеме или выдаче посылки. На текущий момент поддерживается только один признак - `TRY_ON`, который означает,что возможна примерка в ПВЗ. На определенные значения в тегах можно завязывать логику. Список может постоянно пополняться.
     """
 
-    breadcrumbs: list[CreateParcelItemBreadcrumb] | None = None
+    breadcrumbs: list[NameResponse] | None = None
     cost: int | None = None
     description: str | None = None
     dimensions: CreateSandboxParcelItemDimensions | None = None
@@ -1278,18 +1253,8 @@ class DeliveryIntervalInDate(AvitoObject):
 class DeliverySetOrderPropertiesReply(AvitoObject):
     """DeliverySetOrderPropertiesReply response model."""
 
-    data: DeliverySetOrderPropertiesReplyData | None = None
+    data: StatusResponse | None = None
     error: AvitoErrorBody | None = None
-
-
-class DeliverySetOrderPropertiesReplyData(AvitoObject):
-    """DeliverySetOrderPropertiesReplyData response model.
-
-    Attributes:
-        status: `success` - свойства успешно сохранены `duplicate` - свойства заказа были переданы ранее и текущий запрос был проигнорирован
-    """
-
-    status: Any | None = None
 
 
 class DeliverySetOrderPropertiesRequest(AvitoObject):
@@ -1302,18 +1267,8 @@ class DeliverySetOrderPropertiesRequest(AvitoObject):
 class DeliverySetOrderRealAddresseReply(AvitoObject):
     """DeliverySetOrderRealAddresseReply response model."""
 
-    data: DeliverySetOrderRealAddresseReplyData | None = None
+    data: StatusResponse | None = None
     error: AvitoErrorBody | None = None
-
-
-class DeliverySetOrderRealAddresseReplyData(AvitoObject):
-    """DeliverySetOrderRealAddresseReplyData response model.
-
-    Attributes:
-        status: `success` - адрес успешно сохранен `duplicate` - адрес заказа был переданы ранее и текущий запрос был проигнорирован
-    """
-
-    status: Any | None = None
 
 
 class DeliverySetRealAddressRequest(AvitoObject):
@@ -2225,26 +2180,6 @@ class SortingCenterPost(AvitoObject):
     schedule: Schedule
 
 
-class SortingCentersTagsTaskResult(AvitoObject):
-    """SortingCentersTagsTaskResult response model.
-
-    Attributes:
-        count: Количество успешно привязанных тегов к сортировочным центрам
-    """
-
-    count: str
-
-
-class SortingCentersTaskResult(AvitoObject):
-    """SortingCentersTaskResult response model.
-
-    Attributes:
-        count: Количество успешно загруженных сортировочных центров
-    """
-
-    count: str
-
-
 class TaggedSortingCenter(AvitoObject):
     """TaggedSortingCenter response model."""
 
@@ -2352,14 +2287,8 @@ class TermsZone(AvitoObject):
 class UpdateTermsReply(AvitoObject):
     """UpdateTermsReply response model."""
 
-    data: UpdateTermsReplyData | None = None
+    data: TaskIdResponse | None = None
     error: AvitoErrorBody | None = None
-
-
-class UpdateTermsReplyData(AvitoObject):
-    """UpdateTermsReplyData response model."""
-
-    task_id: int = Field(..., alias="taskId")
 
 
 class ValuesByDimension(AvitoObject):
@@ -2535,35 +2464,15 @@ class ProhibitOrderAcceptanceRequest(AvitoObject):
 class UpdateReceiverInfoReply(AvitoObject):
     """UpdateReceiverInfoReply response model."""
 
-    data: UpdateReceiverInfoReplyData | None = None
+    data: StatusResponse | None = None
     error: AvitoErrorBody | None = None
-
-
-class UpdateReceiverInfoReplyData(AvitoObject):
-    """UpdateReceiverInfoReplyData response model.
-
-    Attributes:
-        status: `success` - информация по доставке успешно обновлена `forbidden` - информацию по доставке для текущего заказа обновить невозможно
-    """
-
-    status: Any | None = None
 
 
 class UpdateReturnInfoReply(AvitoObject):
     """UpdateReturnInfoReply response model."""
 
-    data: UpdateReturnInfoReplyData | None = None
+    data: StatusResponse | None = None
     error: AvitoErrorBody | None = None
-
-
-class UpdateReturnInfoReplyData(AvitoObject):
-    """UpdateReturnInfoReplyData response model.
-
-    Attributes:
-        status: `success` - информация по возврату успешно обновлена `forbidden` - информацию по возврату для текущего заказа обновить невозможно
-    """
-
-    status: Any | None = None
 
 
 class SetOrderRealAddressAddress(AvitoObject):
@@ -2609,16 +2518,6 @@ class CreateSandboxParcelV22Sender(AvitoObject):
 
     delivery: CreateSandboxParcelUserDelivery | None = None
     inn: str | None = None
-
-
-class ChangeParcelResultOptions(AvitoObject):
-    """ChangeParcelResultOptions response model.
-
-    Attributes:
-        storage_extended_to: Дата и время до которого продлено хранение (RFC3339). В случае отсутствия в системе информации о времени до которого возможно продления можно использовать константу `23:59:59 в московском часовом поясе`.
-    """
-
-    storage_extended_to: Any | None = Field(None, alias="storageExtendedTo")
 
 
 class AddAreasRequest(RootModel[list[Area]]):

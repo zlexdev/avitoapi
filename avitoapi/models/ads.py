@@ -803,26 +803,6 @@ class V1CopyCampaignOut(AvitoObject):
     campaign_id: int = Field(..., ge=1, alias="campaignID")
 
 
-class V1CopyCreativeIn(AvitoObject):
-    """Payload копирования креатива аккаунта
-
-    Attributes:
-        creative_id: ID копируемого креатива
-    """
-
-    creative_id: int = Field(..., ge=1, alias="creativeID")
-
-
-class V1CopyCreativeOut(AvitoObject):
-    """V1CopyCreativeOut response model.
-
-    Attributes:
-        creative_id: ID нового креатива
-    """
-
-    creative_id: int = Field(..., ge=1, alias="creativeID")
-
-
 class V1CopyGroupIn(AvitoObject):
     """Payload копирования группы аккаунта
 
@@ -917,12 +897,6 @@ class V1CreateAdvertiserIn(AvitoObject):
     short_name: str = Field(..., alias="shortName")
 
 
-class V1CreateAdvertiserOut(AvitoObject):
-    """V1CreateAdvertiserOut response model."""
-
-    id: int
-
-
 class V1CreateCampaignIn(AvitoObject):
     """Payload запроса на создание кампании
 
@@ -948,12 +922,6 @@ class V1CreateCampaignIn(AvitoObject):
     manager_id: int = Field(..., alias="managerID")
     name: str
     payment_model: CreateCampaignPaymentModel = Field(..., alias="paymentModel")
-
-
-class V1CreateCampaignOut(AvitoObject):
-    """V1CreateCampaignOut response model."""
-
-    id: int
 
 
 class V1CreateContractIn(AvitoObject):
@@ -983,12 +951,6 @@ class V1CreateContractIn(AvitoObject):
     parent_id: int | None = Field(None, alias="parentId")
     subject: ContractSubject | None = None
     type_: ContractType = Field(..., alias="type")
-
-
-class V1CreateContractOut(AvitoObject):
-    """V1CreateContractOut response model."""
-
-    id: int
 
 
 class V1CreateGroupIn(AvitoObject):
@@ -1038,16 +1000,6 @@ class V1CreateGroupIn(AvitoObject):
     targeting_parent_status_ids: list[int] | None = Field(None, alias="targetingParentStatusIDs")
 
 
-class V1CreateGroupOut(AvitoObject):
-    """V1CreateGroupOut response model.
-
-    Attributes:
-        id: ID созданной группы
-    """
-
-    id: int
-
-
 class V1CreateNonPayerAccountIn(AvitoObject):
     """Payload создания аккаунта
 
@@ -1066,36 +1018,6 @@ class V1CreateNonPayerAccountOut(AvitoObject):
     account_id: int = Field(..., alias="accountID")
     client_key: str = Field(..., alias="clientKey")
     client_secret: str = Field(..., alias="clientSecret")
-
-
-class V1DeleteCampaignsIn(AvitoObject):
-    """Payload удаления кампаний аккаунта
-
-    Attributes:
-        campaign_ids: Список ID кампаний
-    """
-
-    campaign_ids: list[int] = Field(..., min_length=1, alias="campaignIDs")
-
-
-class V1DeleteCreativesIn(AvitoObject):
-    """Payload удаления креативов аккаунта
-
-    Attributes:
-        creative_ids: Список ID креативов
-    """
-
-    creative_ids: list[int] = Field(..., min_length=1, alias="creativeIDs")
-
-
-class V1DeleteGroupsIn(AvitoObject):
-    """Payload удаления групп аккаунта
-
-    Attributes:
-        group_ids: Список ID групп
-    """
-
-    group_ids: list[int] = Field(..., min_length=1, alias="groupIDs")
 
 
 class V1GetAccountBalanceByIdOut(AvitoObject):
@@ -1387,16 +1309,6 @@ class V1GetVideoOut(AvitoObject):
     video_url: str | None = Field(None, alias="videoUrl")
 
 
-class V1LaunchCampaignsIn(AvitoObject):
-    """Payload запуска кампаний аккаунта
-
-    Attributes:
-        campaign_ids: Список ID кампаний
-    """
-
-    campaign_ids: list[int] = Field(..., min_length=1, alias="campaignIDs")
-
-
 class V1LaunchGroupIn(AvitoObject):
     """Payload запуска группы аккаунта
 
@@ -1405,36 +1317,6 @@ class V1LaunchGroupIn(AvitoObject):
     """
 
     group_id: int = Field(..., alias="groupID")
-
-
-class V1PauseCampaignsIn(AvitoObject):
-    """Payload паузы кампаний
-
-    Attributes:
-        campaign_ids: Список ID кампаний для паузы
-    """
-
-    campaign_ids: list[int] = Field(..., min_length=1, alias="campaignIDs")
-
-
-class V1PauseCreativesIn(AvitoObject):
-    """Payload паузы креативов аккаунта
-
-    Attributes:
-        creative_ids: Список ID креативов
-    """
-
-    creative_ids: list[int] = Field(..., min_length=1, alias="creativeIDs")
-
-
-class V1PauseGroupsIn(AvitoObject):
-    """Payload паузы групп аккаунта
-
-    Attributes:
-        group_ids: Список ID групп
-    """
-
-    group_ids: list[int] = Field(..., min_length=1, alias="groupIDs")
 
 
 class V1ReferenceDataCreateCreativeOut(AvitoObject):
@@ -1454,16 +1336,6 @@ class V1SetUserRoleIn(AvitoObject):
 
     role: UserRole
     user_id: int = Field(..., alias="userId")
-
-
-class V1StopCampaignsIn(AvitoObject):
-    """Payload остановки кампаний
-
-    Attributes:
-        campaign_ids: Список ID кампаний для остановки
-    """
-
-    campaign_ids: list[int] = Field(..., min_length=1, alias="campaignIDs")
 
 
 class V1TransferBonusIn(AvitoObject):
@@ -1488,36 +1360,6 @@ class V1TransferFundsIn(AvitoObject):
 
     account_id_to: int = Field(..., alias="accountIdTo")
     amount: int = Field(..., ge=1)
-
-
-class V1UnpauseCampaignsIn(AvitoObject):
-    """Payload снятия кампаний с паузы
-
-    Attributes:
-        campaign_ids: Список ID кампаний для снятия с паузы
-    """
-
-    campaign_ids: list[int] = Field(..., min_length=1, alias="campaignIDs")
-
-
-class V1UnpauseCreativesIn(AvitoObject):
-    """Payload снятия креативов аккаунта с паузы
-
-    Attributes:
-        creative_ids: Список ID креативов
-    """
-
-    creative_ids: list[int] = Field(..., min_length=1, alias="creativeIDs")
-
-
-class V1UnpauseGroupsIn(AvitoObject):
-    """Payload снятия групп аккаунта с паузы
-
-    Attributes:
-        group_ids: Список ID групп
-    """
-
-    group_ids: list[int] = Field(..., min_length=1, alias="groupIDs")
 
 
 class V1UploadHtmlOut(AvitoObject):

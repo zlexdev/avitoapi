@@ -10,7 +10,7 @@ from typing import Any
 from pydantic import Field
 
 from ._base import AvitoObject
-from ._shared import TooManyRequestsErrorError
+from ._shared import CodeResponse, MessageResponse
 from .common import AvitoErrorBody
 
 
@@ -147,45 +147,6 @@ class CreateComplaintV4In(AvitoObject):
 
     action_id: int = Field(..., alias="actionId")
     message: str
-
-
-class CreateComplaintV4Out(AvitoObject):
-    """CreateComplaintV4Out response model.
-
-    Attributes:
-        success: Успех/неуспех создания жалобы
-    """
-
-    success: bool | None = None
-
-
-class Error(AvitoObject):
-    """Error response model.
-
-    Attributes:
-        code: Internal error code
-        message: Human readable error text
-    """
-
-    code: int
-    message: str
-    payload: ErrorPayload | None = None
-
-
-class ErrorPayload(AvitoObject):
-    """ErrorPayload response model.
-
-    Attributes:
-        balance: Баланс пользователя
-    """
-
-    balance: int | None = None
-
-
-class InternalError(AvitoObject):
-    """InternalError response model."""
-
-    result: InternalErrorResult
 
 
 class InternalErrorResult(AvitoObject):
@@ -336,7 +297,7 @@ class OpenApiChatByActionIdOut(AvitoObject):
     """OpenApiChatByActionIdOut response model."""
 
     chat: OpenApiChatsComposition | None = None
-    error: Error | None = None
+    error: MessageResponse | None = None
 
 
 class OpenApiChatsBuyer(AvitoObject):
@@ -432,42 +393,10 @@ class OpenApiErrorOldResult(AvitoObject):
     payload: dict[str, Any] | None = None
 
 
-class NotFoundError(AvitoObject):
-    """NotFoundError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
-class ServiceError(AvitoObject):
-    """ServiceError response model."""
-
-    error: AvitoErrorBody | None = None
-
-
 class TooManyRequestsError(AvitoObject):
     """TooManyRequestsError response model."""
 
-    error: TooManyRequestsErrorError | None = None
-
-
-class ValidatingError(AvitoObject):
-    """ValidatingError response model."""
-
-    error: ValidatingErrorError | None = None
-
-
-class ValidatingErrorError(AvitoObject):
-    """ValidatingErrorError response model.
-
-    Attributes:
-        code: Код ошибки
-        fields: Информация об ошибке валидации параметров в формате ключ-значение
-        message: Сообщение об ошибке
-    """
-
-    code: int
-    fields: dict[str, Any] | None = None
-    message: str
+    error: CodeResponse | None = None
 
 
 class ChatByActionIdResponse(AvitoObject):
@@ -552,13 +481,3 @@ class ChatsByTime2Response(AvitoObject):
     """ChatsByTime2Response response model."""
 
     chats: list[OpenApiChatsComposition] | None = None
-
-
-class BalanceInfoV3Response(AvitoObject):
-    """BalanceInfoV3Response response model.
-
-    Attributes:
-        balance: Текущий баланс пользователя в копейках
-    """
-
-    balance: int | None = None

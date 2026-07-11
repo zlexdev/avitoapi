@@ -107,12 +107,12 @@ from ..methods.job import (
     VacancyUpdate2,
     VacancyUpdateV2,
 )
+from ..models._shared import EmployeeIdResponse, OkResponse
 from ..models.common import TZDatetime
 from ..models.job import (
     AgeCriteria,
     ApplicationsGetStatesResult,
     ApplicationsSetIsViewedApplies,
-    ApplicationsWebhookDeleteResponse,
     ApplyProcessing,
     Contacts,
     Coordinates,
@@ -138,7 +138,6 @@ from ..models.job import (
     VacancyCreate2Schedule,
     VacancyCreateResult,
     VacancyCreateV2Contacts,
-    VacancyCreateV2Hierarchy,
     VacancyCreateV2Location,
     VacancyCreateV2Salary,
     VacancyStatusesResult,
@@ -147,7 +146,6 @@ from ..models.job import (
     VacancyUpdate2PayoutFrequency,
     VacancyUpdate2SalaryRange,
     VacancyUpdateV2Contacts,
-    VacancyUpdateV2Hierarchy,
     VacancyUpdateV2Location,
     VacancyUpdateV2Salary,
     WebhooksSubscriptionResultList,
@@ -220,9 +218,7 @@ class JobFacade(FacadeBase):
         """
         return await self.execute(ApplicationsSetIsViewed(applies=applies))
 
-    async def applications_webhook_delete(
-        self, url: str | None = None
-    ) -> ApplicationsWebhookDeleteResponse:
+    async def applications_webhook_delete(self, url: str | None = None) -> OkResponse:
         """Отключение уведомлений по откликам (webhook) via ``DELETE /job/v1/applications/webhook``.
 
         Args:
@@ -778,7 +774,7 @@ class JobFacade(FacadeBase):
         facility_type: list[FacilityTypeValue] | None = None,
         food_production_shop_type: list[FoodProductionShopTypeValue] | None = None,
         grade: Grade | None = None,
-        employee_id: int | None = None,
+        hierarchy: EmployeeIdResponse | None = None,
         image_url: str | None = None,
         is_company_car: bool | None = None,
         is_side_job: bool | None = None,
@@ -826,7 +822,7 @@ class JobFacade(FacadeBase):
             driving_experience: Стаж вождения
             employment: Занятость Возможные значения: - temporary - Временная - full - Полная - partial - Частичная Если ничего не выбрать то будет автоматически проставляться в зависимости от графика работы: При flexible и partTime, тип занятости - partial. ßДля всех остальных full. deprecated значение internship будет заменено на temporary
             experience: Опыт работы
-            employee_id: Идентификатор сотрудника на Авито
+            hierarchy: employee_id - Идентификатор сотрудника на Авито. Если этот параметр указан, то с баланса сотрудника в Avito Pro будет списано размещение. Использовать параметр можно только с billing_type равным package. Сотрудник должен быть в активен.
             image_url: URL-адрес логотипа вакансии. Ссылка на файл должна быть прямой | (при переходе не открываются элементы другого сайта (логотипы, кнопки или другие детали интерфейса) и не запрашивается логин и пароль) и доступной для IP 185.89.12.0/22, 146.158.48.0/21, 185.79.237.224/28 и 87.245.204.32/28;
             is_company_car: Предоставляет ли компания автомобиль
             is_side_job: Подработка
@@ -872,7 +868,7 @@ class JobFacade(FacadeBase):
                 facility_type=facility_type,
                 food_production_shop_type=food_production_shop_type,
                 grade=grade,
-                hierarchy=VacancyCreateV2Hierarchy(employee_id=employee_id),
+                hierarchy=hierarchy,
                 image_url=image_url,
                 is_company_car=is_company_car,
                 is_side_job=is_side_job,
@@ -951,7 +947,7 @@ class JobFacade(FacadeBase):
         facility_type: list[FacilityTypeValue] | None = None,
         food_production_shop_type: list[FoodProductionShopTypeValue] | None = None,
         grade: Grade | None = None,
-        employee_id: int | None = None,
+        hierarchy: EmployeeIdResponse | None = None,
         image_url: str | None = None,
         is_company_car: bool | None = None,
         is_side_job: bool | None = None,
@@ -1000,7 +996,7 @@ class JobFacade(FacadeBase):
             driving_experience: Стаж вождения
             employment: Занятость Возможные значения: - temporary - Временная - full - Полная - partial - Частичная Если ничего не выбрать то будет автоматически проставляться в зависимости от графика работы: При flexible и partTime, тип занятости - partial. ßДля всех остальных full. deprecated значение internship будет заменено на temporary
             experience: Опыт работы
-            employee_id: Идентификатор сотрудника на Авито
+            hierarchy: employee_id - Идентификатор сотрудника на Авито. Если этот параметр указан, то с баланса сотрудника в Avito Pro будет списано размещение. Использовать параметр можно только с billing_type равным package. Сотрудник должен быть в активен.
             image_url: URL-адрес логотипа вакансии. Ссылка на файл должна быть прямой | (при переходе не открываются элементы другого сайта (логотипы, кнопки или другие детали интерфейса) и не запрашивается логин и пароль) и доступной для IP 185.89.12.0/22, 146.158.48.0/21, 185.79.237.224/28 и 87.245.204.32/28;
             is_company_car: Предоставляет ли компания автомобиль
             is_side_job: Подработка
@@ -1047,7 +1043,7 @@ class JobFacade(FacadeBase):
                 facility_type=facility_type,
                 food_production_shop_type=food_production_shop_type,
                 grade=grade,
-                hierarchy=VacancyUpdateV2Hierarchy(employee_id=employee_id),
+                hierarchy=hierarchy,
                 image_url=image_url,
                 is_company_car=is_company_car,
                 is_side_job=is_side_job,

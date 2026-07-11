@@ -8,13 +8,13 @@ from typing import ClassVar
 
 from pydantic import Field
 
+from ..models._shared import DaysResponse
 from ..models.short_term_rental import (
     GetRealtyBookingsResponse,
     ParamPriceItemRealty,
     PostBaseParamsDiscount,
     PostBaseParamsFees,
     PostBaseParamsInstant,
-    PostBaseParamsRefund,
     PostRealtyPricesResponse,
     PutBookingsInfoBookings,
     PutBookingsInfoResponse,
@@ -139,4 +139,4 @@ class PostBaseParams(BaseMethod[None]):
     instant: PostBaseParamsInstant | None = None
     minimal_duration: int | None = None
     night_price: int | None = None
-    refund: PostBaseParamsRefund | None = None
+    refund: DaysResponse | None = None

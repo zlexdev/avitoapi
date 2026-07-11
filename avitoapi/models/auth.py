@@ -30,20 +30,6 @@ class RefreshRequest(AvitoObject):
     refresh_token: str
 
 
-class GetAccessTokenResponse(AvitoObject):
-    """GetAccessTokenResponse response model.
-
-    Attributes:
-        access_token: Ключ для временной авторизации в системе
-        expires_in: Время жизни ключа в секундах
-        token_type: Тип ключа авторизации
-    """
-
-    access_token: str | None = None
-    expires_in: float | None = None
-    token_type: str | None = None
-
-
 class GetAccessTokenAuthorizationCodeResponse(AvitoObject):
     """GetAccessTokenAuthorizationCodeResponse response model.
 
