@@ -14,9 +14,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from ..config import ACCOUNT_CONTEXT_PARAMS, ENTITY_BINDINGS
+from ..parser import Domain, Operation
 from . import naming
-from .config import ACCOUNT_CONTEXT_PARAMS, ENTITY_BINDINGS
-from .spec import Domain, Operation
 from .types import FieldSpec
 
 

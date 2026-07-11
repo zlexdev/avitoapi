@@ -9,9 +9,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from . import config, entities, naming
+from .. import config
+from ..parser import Domain
+from . import entities, naming
 from .entities import BoundMethod
-from .spec import Domain
 from .types import EnumSpec, FieldSpec, ModelBuilder, ModelSpec
 
 

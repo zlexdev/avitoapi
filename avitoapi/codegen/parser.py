@@ -11,8 +11,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from . import naming
 from .config import IDEMPOTENT_VERBS, SKIP_HEADER_PARAMS
+from .engine import naming
 
 _HTTP_VERBS = frozenset({"get", "post", "put", "patch", "delete", "head", "options"})
 

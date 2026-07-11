@@ -14,6 +14,6 @@ Usage::
 
 from __future__ import annotations
 
-from .generate import all_slugs, generate, render_domain
+from .engine.generate import all_slugs, generate, render_domain
 
 __all__ = ["all_slugs", "generate", "render_domain"]

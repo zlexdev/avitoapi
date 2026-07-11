@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 import sys
 
-from .generate import generate, generate_all
+from .engine.generate import generate, generate_all
 
 
 def main(argv: list[str] | None = None) -> int:

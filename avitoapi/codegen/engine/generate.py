@@ -14,10 +14,11 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 
-from . import build, collisions, dedup, emit_enums, emit_facade, emit_methods, emit_models, fetch, spec
+from .. import fetch, parser
+from . import build, collisions, dedup, emit_enums, emit_facade, emit_methods, emit_models
 from .build import GeneratedDomain
 
-_PACKAGE_ROOT = Path(__file__).resolve().parent.parent
+_PACKAGE_ROOT = Path(__file__).resolve().parent.parent.parent  # codegen/engine/ -> avitoapi/
 
 
 def build_one(slug: str, *, use_cache: bool = True) -> GeneratedDomain:
@@ -26,7 +27,7 @@ def build_one(slug: str, *, use_cache: bool = True) -> GeneratedDomain:
     info = next((d for d in fetch.list_domains() if d.slug == slug), None)
     title = info.title if info else slug
     document = fetch.fetch_spec(slug, use_cache=use_cache)
-    domain = spec.build_domain(slug, title, document)
+    domain = parser.build_domain(slug, title, document)
     return build.build_domain(domain)
 
 

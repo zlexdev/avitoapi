@@ -17,8 +17,8 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
+from ..parser import Domain, Resolver
 from . import naming
-from .spec import Domain, Resolver
 
 _ENUM_INVALID = re.compile(r"\W+")
 
