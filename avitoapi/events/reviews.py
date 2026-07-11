@@ -19,37 +19,14 @@ class ReviewEvent(BaseEvent, event_name="reviews"):
     account_id: str
     review_id: str
 
-    def __init__(self, *, account_id: str, review_id: str, **kwargs: object) -> None:
-        super().__init__()
-        self.account_id = account_id
-        self.review_id = review_id
-        for k, v in kwargs.items():
-            setattr(self, k, v)
-
 
 class ReviewReceived(ReviewEvent, event_name="reviews.received"):
     """A buyer left a new review on one of the seller's items."""
 
     rating: int
-    item_id: int | None
-    text: str | None
     received_at: datetime
-
-    def __init__(
-        self,
-        *,
-        account_id: str,
-        review_id: str,
-        rating: int,
-        received_at: datetime,
-        item_id: int | None = None,
-        text: str | None = None,
-    ) -> None:
-        super().__init__(account_id=account_id, review_id=review_id)
-        self.rating = rating
-        self.item_id = item_id
-        self.text = text
-        self.received_at = received_at
+    item_id: int | None = None
+    text: str | None = None
 
 
 class ReviewAnswered(ReviewEvent, event_name="reviews.answered"):
@@ -57,18 +34,6 @@ class ReviewAnswered(ReviewEvent, event_name="reviews.answered"):
 
     answer: str
     answered_at: datetime
-
-    def __init__(
-        self,
-        *,
-        account_id: str,
-        review_id: str,
-        answer: str,
-        answered_at: datetime,
-    ) -> None:
-        super().__init__(account_id=account_id, review_id=review_id)
-        self.answer = answer
-        self.answered_at = answered_at
 
 
 __all__ = ["ReviewAnswered", "ReviewEvent", "ReviewReceived"]

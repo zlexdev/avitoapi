@@ -27,6 +27,7 @@ class ItemStatus(StrEnum):
     REMOVED = "removed"
     REJECTED = "rejected"
     OLD = "old"
+    UNKNOWN = "unknown"  # unmapped upstream status — never silently coerced to a real state
 
 
 class ItemEvent(BaseEvent, event_name="items"):
@@ -34,13 +35,6 @@ class ItemEvent(BaseEvent, event_name="items"):
 
     account_id: str
     item_id: int
-
-    def __init__(self, *, account_id: str, item_id: int, **kwargs: object) -> None:
-        super().__init__()
-        self.account_id = account_id
-        self.item_id = item_id
-        for k, v in kwargs.items():
-            setattr(self, k, v)
 
 
 class ItemStatusChanged(ItemEvent, event_name="items.status_changed"):
@@ -50,48 +44,18 @@ class ItemStatusChanged(ItemEvent, event_name="items.status_changed"):
     current: ItemStatus
     occurred_at: datetime
 
-    def __init__(
-        self,
-        *,
-        account_id: str,
-        item_id: int,
-        previous: ItemStatus,
-        current: ItemStatus,
-        occurred_at: datetime,
-    ) -> None:
-        super().__init__(account_id=account_id, item_id=item_id)
-        self.previous = previous
-        self.current = current
-        self.occurred_at = occurred_at
-
 
 class ItemPublished(ItemEvent, event_name="items.published"):
     """An item became active and is now visible on the site."""
 
     published_at: datetime
 
-    def __init__(self, *, account_id: str, item_id: int, published_at: datetime) -> None:
-        super().__init__(account_id=account_id, item_id=item_id)
-        self.published_at = published_at
-
 
 class ItemBlocked(ItemEvent, event_name="items.blocked"):
     """Moderation blocked the item."""
 
     blocked_at: datetime
-    reason: str | None
-
-    def __init__(
-        self,
-        *,
-        account_id: str,
-        item_id: int,
-        blocked_at: datetime,
-        reason: str | None = None,
-    ) -> None:
-        super().__init__(account_id=account_id, item_id=item_id)
-        self.blocked_at = blocked_at
-        self.reason = reason
+    reason: str | None = None
 
 
 class ItemUnblocked(ItemEvent, event_name="items.unblocked"):
@@ -99,29 +63,17 @@ class ItemUnblocked(ItemEvent, event_name="items.unblocked"):
 
     unblocked_at: datetime
 
-    def __init__(self, *, account_id: str, item_id: int, unblocked_at: datetime) -> None:
-        super().__init__(account_id=account_id, item_id=item_id)
-        self.unblocked_at = unblocked_at
-
 
 class ItemSold(ItemEvent, event_name="items.sold"):
     """The seller marked the item as sold."""
 
     sold_at: datetime
 
-    def __init__(self, *, account_id: str, item_id: int, sold_at: datetime) -> None:
-        super().__init__(account_id=account_id, item_id=item_id)
-        self.sold_at = sold_at
-
 
 class ItemArchived(ItemEvent, event_name="items.archived"):
     """An item was removed from public surface and moved to archive."""
 
     archived_at: datetime
-
-    def __init__(self, *, account_id: str, item_id: int, archived_at: datetime) -> None:
-        super().__init__(account_id=account_id, item_id=item_id)
-        self.archived_at = archived_at
 
 
 __all__ = [
